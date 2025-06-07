@@ -27,26 +27,8 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Listimet",
+          headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Pressable>
-              {({ pressed }) => (
-                <FontAwesome
-                  name="moon-o"
-                  size={25}
-                  color={Colors[colorScheme ?? "light"].text}
-                  style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  onPress={() => {
-                    if (colorScheme === "dark") {
-                      Appearance.setColorScheme("light");
-                    } else {
-                      Appearance.setColorScheme("dark");
-                    }
-                  }}
-                />
-              )}
-            </Pressable>
-          ),
         }}
       />
       <Tabs.Screen
