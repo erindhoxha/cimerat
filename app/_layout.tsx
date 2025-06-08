@@ -54,34 +54,7 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack
         screenOptions={{
-          headerStyle: {
-            backgroundColor: Colors[colorScheme ?? "light"].yellow,
-          },
-          headerBackTitle: "Back",
-          headerTintColor: Colors[colorScheme ?? "light"].text,
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
-          headerTitle: "Cimerat",
-          headerRight: () => (
-            <Pressable>
-              {({ pressed }) => (
-                <FontAwesome
-                  name="moon-o"
-                  size={25}
-                  color={Colors[colorScheme ?? "light"].text}
-                  style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  onPress={() => {
-                    if (colorScheme === "dark") {
-                      Appearance.setColorScheme("light");
-                    } else {
-                      Appearance.setColorScheme("dark");
-                    }
-                  }}
-                />
-              )}
-            </Pressable>
-          ),
+          headerShown: false,
         }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
