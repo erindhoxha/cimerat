@@ -1,4 +1,4 @@
-import { FlatList, Pressable, StyleSheet } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
 
 import { Text, View } from "@/components/Themed";
 import { Image } from "expo-image";
@@ -31,10 +31,10 @@ const DATA = [
   },
 ];
 
-type ItemProps = { title: string; image: string; description?: string; price?: string };
+type ItemProps = { title: string; image: string; description?: string; price?: string; id: string };
 
-const Item = ({ title, image, description, price }: ItemProps) => (
-  <Link href="/1" style={{ marginBottom: 20 }}>
+const Item = ({ title, image, description, price, id }: ItemProps) => (
+  <Link href={`/${id}`} style={{ marginBottom: 20 }}>
     <View style={styles.card}>
       <Image style={styles.image} source={image} placeholder={{ blurhash }} contentFit="cover" transition={1000} />
       <View style={styles.cardContent}>
@@ -74,7 +74,7 @@ export default function TabOneScreen() {
         }}
         data={DATA}
         renderItem={({ item }) => (
-          <Item title={item.title} image={item.image} description={item.description} price={item.price} />
+          <Item id={item.id} title={item.title} image={item.image} description={item.description} price={item.price} />
         )}
         keyExtractor={(item) => item.id}
       />
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 12,
   },
   pillText: {
     fontSize: 14,

@@ -3,37 +3,30 @@ import React from "react";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Stack } from "expo-router";
+import { Stack, Tabs } from "expo-router";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Stack
+      <Tabs
         screenOptions={{
-          headerStyle: {
-            backgroundColor: Colors[colorScheme ?? "light"].yellow,
-          },
-          headerTintColor: Colors[colorScheme ?? "light"].text,
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
-          headerTitle: "Cimerat",
+          headerShown: false,
         }}>
-        <Stack.Screen
+        <Tabs.Screen
           name="index"
           options={{
             title: "Tabs",
           }}
         />
-        <Stack.Screen
+        <Tabs.Screen
           name="two"
           options={{
             title: "Tab Two",
           }}
         />
-      </Stack>
+      </Tabs>
     </GestureHandlerRootView>
   );
 }

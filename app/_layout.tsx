@@ -54,10 +54,17 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack
         screenOptions={{
-          headerShown: false,
+          headerStyle: {
+            backgroundColor: Colors[colorScheme ?? "light"].yellow,
+          },
+          headerTintColor: Colors[colorScheme ?? "light"].text,
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitle: "Cimerat",
         }}>
+        <Stack.Screen name="(item)/[item]" />
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="[item]" />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
       </Stack>
     </ThemeProvider>
