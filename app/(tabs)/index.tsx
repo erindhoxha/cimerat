@@ -1,7 +1,8 @@
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList, Pressable, StyleSheet } from "react-native";
 
 import { Text, View } from "@/components/Themed";
 import { Image } from "expo-image";
+import { Link } from "expo-router";
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -33,20 +34,22 @@ const DATA = [
 type ItemProps = { title: string; image: string; description?: string; price?: string };
 
 const Item = ({ title, image, description, price }: ItemProps) => (
-  <View style={styles.card}>
-    <Image style={styles.image} source={image} placeholder={{ blurhash }} contentFit="cover" transition={1000} />
-    <View style={styles.cardContent}>
-      <View style={styles.topCardContent}>
-        <Text style={styles.cardTitle}>{title}</Text>
-        <Text ellipsizeMode="tail" numberOfLines={2}>
-          {description}
-        </Text>
-      </View>
-      <View>
-        <Text style={styles.cardPrice}>{price}</Text>
+  <Link href="/1" style={{ marginBottom: 20 }}>
+    <View style={styles.card}>
+      <Image style={styles.image} source={image} placeholder={{ blurhash }} contentFit="cover" transition={1000} />
+      <View style={styles.cardContent}>
+        <View style={styles.topCardContent}>
+          <Text style={styles.cardTitle}>{title}</Text>
+          <Text ellipsizeMode="tail" numberOfLines={2}>
+            {description}
+          </Text>
+        </View>
+        <View>
+          <Text style={styles.cardPrice}>{price}</Text>
+        </View>
       </View>
     </View>
-  </View>
+  </Link>
 );
 
 export default function TabOneScreen() {

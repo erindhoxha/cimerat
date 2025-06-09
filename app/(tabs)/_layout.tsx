@@ -1,18 +1,16 @@
 import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Appearance } from "react-native";
 
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Drawer } from "expo-router/drawer";
+import { Stack } from "expo-router";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Drawer
+      <Stack
         screenOptions={{
           headerStyle: {
             backgroundColor: Colors[colorScheme ?? "light"].yellow,
@@ -22,35 +20,20 @@ export default function TabLayout() {
             fontWeight: "bold",
           },
           headerTitle: "Cimerat",
-          drawerType: "back",
         }}>
-        <Drawer.Screen
+        <Stack.Screen
           name="index"
           options={{
-            drawerLabel: "Home",
             title: "Tabs",
           }}
         />
-
-        <Drawer.Screen
+        <Stack.Screen
           name="two"
-          listeners={{
-            drawerItemPress: (e) => {
-              e.preventDefault();
-              console.log("Drawer item pressed");
-              if (colorScheme === "dark") {
-                Appearance.setColorScheme("light");
-              } else {
-                Appearance.setColorScheme("dark");
-              }
-            },
-          }}
           options={{
-            drawerLabel: "Toggle Theme",
-            title: "Toggle Theme",
+            title: "Tab Two",
           }}
         />
-      </Drawer>
+      </Stack>
     </GestureHandlerRootView>
   );
 }
