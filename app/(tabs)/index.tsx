@@ -1,14 +1,10 @@
 import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
-
 import { Text, View } from "@/components/Themed";
-import { Image } from "expo-image";
-import { Link } from "expo-router";
 import SelectDropdown from "react-native-select-dropdown";
 import { useRef, useState } from "react";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
-
-const blurhash =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
+import { CardItem } from "@/components/CardItem";
+import { SliderComponent } from "@/components/Slider";
 
 const DATA = [
   {
@@ -59,46 +55,64 @@ const cities = [
   "Suhareke",
 ];
 
-type ItemProps = { title: string; image: string; description?: string; price?: string; id: string; date: string };
+const neighborhoods = [
+  "Dardani",
+  "Bregu i Diellit",
+  "Arbëria",
+  "Qendra",
+  "Mati 1",
+  "Mati 2",
+  "Mati 3",
+  "Bajram Curri",
+  "Liqeni i Badovcit",
+];
 
-const Item = ({ title, image, description, price, id, date }: ItemProps) => (
-  <Link href={`/${id}`} style={{ marginBottom: 20, width: "100%", flex: 1 }}>
-    <View style={styles.card}>
-      <Image style={styles.image} source={image} placeholder={{ blurhash }} contentFit="cover" transition={1000} />
-      <View style={styles.cardContent}>
-        <View style={styles.topCardContent}>
-          <Text style={styles.cardTitle}>{title}</Text>
-          <Text ellipsizeMode="tail" numberOfLines={2}>
-            {description}
-          </Text>
-          <Text style={styles.cardPrice}>{price}</Text>
-        </View>
-        <View
-          style={{
-            alignItems: "flex-end",
-            justifyContent: "space-between",
-            flexDirection: "column",
-            flex: 1,
-            height: "auto",
-          }}>
-          <Text
-            ellipsizeMode="tail"
-            numberOfLines={1}
-            style={{
-              marginBottom: 6,
-            }}>
-            {date}
-          </Text>
-        </View>
-      </View>
-    </View>
-  </Link>
-);
+const numriIDhomave = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+
+const cimerat = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+
+const cmimi = [
+  "0€",
+  "50€",
+  "100€",
+  "150€",
+  "200€",
+  "250€",
+  "300€",
+  "350€",
+  "400€",
+  "450€",
+  "500€",
+  "550€",
+  "600€",
+  "650€",
+  "700€",
+  "750€",
+  "800€",
+  "850€",
+  "900€",
+  "950€",
+  "1000€",
+  "1050€",
+  "1100€",
+  "1150€",
+  "1200€",
+  "1250€",
+  "1300€",
+  "1350€",
+  "1400€",
+  "1450€",
+  "1500+€",
+];
 
 export default function TabOneScreen() {
   const [disabled, setDisabled] = useState(true);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string | null>(null);
+  const [selectedRooms, setSelectedRooms] = useState<string | null>(null);
+  const [selectedCimer, setSelectedCimer] = useState<string | null>(null);
+  const [selectedPriceFrom, setSelectedPriceFrom] = useState<string | null>(null);
+  const [selectedPriceTo, setSelectedPriceTo] = useState<string | null>(null);
 
   const cityRef = useRef<SelectDropdown>(null);
   const neighborHoodRef = useRef<SelectDropdown>(null);
@@ -110,6 +124,11 @@ export default function TabOneScreen() {
           padding: 20,
           paddingBottom: 80,
         }}
+        ListEmptyComponent={() => (
+          <View>
+            <Text>Asnjë rezultat</Text>
+          </View>
+        )}
         ListHeaderComponent={() => (
           <>
             <View
@@ -119,76 +138,275 @@ export default function TabOneScreen() {
                 gap: 12,
                 maxWidth: "100%",
               }}>
-              <SelectDropdown
-                data={cities}
-                onSelect={(selectedItem, index) => {
-                  setDisabled(false);
-                  setSelectedCity(selectedItem);
-                }}
-                ref={cityRef}
-                renderButton={(_, isOpened) => {
-                  console.log(isOpened);
-                  // Apply a different style if disabled
-                  return (
-                    <View style={[styles.dropdownButtonStyle]}>
-                      <Text style={[styles.dropdownButtonTxtStyle]}>{selectedCity || "Zgjedh Qytetin"}</Text>
-                      <Text>
-                        <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
-                      </Text>
-                    </View>
-                  );
-                }}
-                renderItem={(item, index, isSelected) => {
-                  return (
-                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
-                      <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-                    </View>
-                  );
-                }}
-                showsVerticalScrollIndicator={false}
-                dropdownStyle={styles.dropdownMenuStyle}
-              />
+              <View
+                style={{
+                  flex: 1,
+                  width: "100%",
+                }}>
+                <Text
+                  style={{
+                    marginBottom: 6,
+                    width: "100%",
+                  }}>
+                  Qyteti
+                </Text>
+                <SelectDropdown
+                  searchInputStyle={{
+                    backgroundColor: "#E9ECEF",
+                    borderRadius: 12,
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                  }}
+                  searchPlaceHolder="Kërko qytetin..."
+                  searchPlaceHolderColor="#6c757d"
+                  search={true}
+                  data={cities}
+                  onSelect={(selectedItem, index) => {
+                    setDisabled(false);
+                    setSelectedCity(selectedItem);
+                  }}
+                  ref={cityRef}
+                  renderButton={(_, isOpened) => {
+                    console.log(isOpened);
+                    // Apply a different style if disabled
+                    return (
+                      <View style={[styles.dropdownButtonStyle]}>
+                        <Text style={[styles.dropdownButtonTxtStyle]}>{selectedCity || "Zgjedh Qytetin"}</Text>
+                        <Text>
+                          <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
+                        </Text>
+                      </View>
+                    );
+                  }}
+                  renderItem={(item, index, isSelected) => {
+                    return (
+                      <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+                        <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+                      </View>
+                    );
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  dropdownStyle={styles.dropdownMenuStyle}
+                />
+              </View>
 
-              <SelectDropdown
-                data={cities}
-                disabled={disabled}
-                ref={neighborHoodRef}
-                onSelect={(selectedItem, index) => {
-                  console.log(selectedItem, index);
-                  setSelectedNeighborhood(selectedItem);
-                }}
-                renderButton={(_, isOpened) => {
-                  // Apply a different style if disabled
-                  return (
-                    <View
-                      style={[
-                        styles.dropdownButtonStyle,
-                        disabled ? styles.dropdownButtonDisabledStyle : null, // add this style
-                      ]}>
-                      <Text
-                        style={[
-                          styles.dropdownButtonTxtStyle,
-                          disabled ? styles.dropdownButtonTxtDisabledStyle : null, // add this style
-                        ]}>
-                        {selectedNeighborhood || "Zgjedh lagjen"}
-                      </Text>
-                      <Text>
-                        <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
-                      </Text>
-                    </View>
-                  );
-                }}
-                renderItem={(item, index, isSelected) => {
-                  return (
-                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
-                      <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-                    </View>
-                  );
-                }}
-                showsVerticalScrollIndicator={false}
-                dropdownStyle={styles.dropdownMenuStyle}
-              />
+              <View style={{ flex: 1, width: "100%" }}>
+                <Text
+                  style={{
+                    marginBottom: 6,
+                    width: "100%",
+                  }}>
+                  Lagja
+                </Text>
+                <SelectDropdown
+                  search={true}
+                  searchInputStyle={{
+                    backgroundColor: "#E9ECEF",
+                    borderRadius: 12,
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                  }}
+                  searchPlaceHolder="Kërko lagjen..."
+                  searchPlaceHolderColor="#6c757d"
+                  data={neighborhoods}
+                  disabled={disabled}
+                  ref={neighborHoodRef}
+                  onSelect={(selectedItem, index) => {
+                    console.log(selectedItem, index);
+                    setSelectedNeighborhood(selectedItem);
+                  }}
+                  renderButton={(_, isOpened) => {
+                    return (
+                      <View style={[styles.dropdownButtonStyle, disabled ? styles.dropdownButtonDisabledStyle : null]}>
+                        <Text
+                          style={[
+                            styles.dropdownButtonTxtStyle,
+                            disabled ? styles.dropdownButtonTxtDisabledStyle : null,
+                          ]}>
+                          {selectedNeighborhood || "Zgjedh"}
+                        </Text>
+                        <Text>
+                          <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
+                        </Text>
+                      </View>
+                    );
+                  }}
+                  renderItem={(item, index, isSelected) => {
+                    return (
+                      <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+                        <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+                      </View>
+                    );
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  dropdownStyle={styles.dropdownMenuStyle}
+                />
+              </View>
             </View>
+            <View
+              style={{
+                flexShrink: 1,
+                flexDirection: "row",
+                gap: 12,
+                maxWidth: "100%",
+              }}>
+              <View
+                style={{
+                  flex: 1,
+                  width: "100%",
+                  flexDirection: "column",
+                }}>
+                <Text
+                  style={{
+                    marginBottom: 6,
+                    width: "100%",
+                  }}>
+                  Numri i dhomave
+                </Text>
+                <SelectDropdown
+                  data={numriIDhomave}
+                  onSelect={(selectedItem, index) => {
+                    setSelectedRooms(selectedItem);
+                  }}
+                  ref={cityRef}
+                  renderButton={(_, isOpened) => {
+                    console.log(isOpened);
+                    // Apply a different style if disabled
+                    return (
+                      <View style={[styles.dropdownButtonStyle]}>
+                        <Text style={[styles.dropdownButtonTxtStyle]}>{selectedRooms || "Zgjedh"}</Text>
+                        <Text>
+                          <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
+                        </Text>
+                      </View>
+                    );
+                  }}
+                  renderItem={(item, index, isSelected) => {
+                    return (
+                      <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+                        <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+                      </View>
+                    );
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  dropdownStyle={styles.dropdownMenuStyle}
+                />
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  width: "100%",
+                }}>
+                <Text
+                  style={{
+                    marginBottom: 6,
+                  }}>
+                  Numri i cimerave
+                </Text>
+                <SelectDropdown
+                  data={cimerat}
+                  onSelect={(selectedItem, index) => {
+                    setSelectedCimer(selectedItem);
+                  }}
+                  ref={cityRef}
+                  renderButton={(_, isOpened) => {
+                    console.log(isOpened);
+                    // Apply a different style if disabled
+                    return (
+                      <View style={[styles.dropdownButtonStyle]}>
+                        <Text style={[styles.dropdownButtonTxtStyle]}>{selectedCimer || "Zgjedh"}</Text>
+                        <Text>
+                          <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
+                        </Text>
+                      </View>
+                    );
+                  }}
+                  renderItem={(item, index, isSelected) => {
+                    return (
+                      <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+                        <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+                      </View>
+                    );
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  dropdownStyle={styles.dropdownMenuStyle}
+                />
+              </View>
+            </View>
+            <View>
+              <Text
+                style={{
+                  marginBottom: 6,
+                }}>
+                Çmimi
+              </Text>
+              <View
+                style={{
+                  flexShrink: 1,
+                  flexDirection: "row",
+                  gap: 12,
+                  maxWidth: "100%",
+                }}>
+                <SelectDropdown
+                  data={cmimi}
+                  onSelect={(selectedItem, index) => {
+                    setSelectedPriceFrom(selectedItem);
+                  }}
+                  ref={cityRef}
+                  renderButton={(_, isOpened) => {
+                    console.log(isOpened);
+                    // Apply a different style if disabled
+                    return (
+                      <View style={[styles.dropdownButtonStyle]}>
+                        <Text style={[styles.dropdownButtonTxtStyle]}>{selectedPriceFrom || "Nga"}</Text>
+                        <Text>
+                          <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
+                        </Text>
+                      </View>
+                    );
+                  }}
+                  renderItem={(item, index, isSelected) => {
+                    return (
+                      <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+                        <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+                      </View>
+                    );
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  dropdownStyle={styles.dropdownMenuStyle}
+                />
+
+                <SelectDropdown
+                  data={cmimi}
+                  onSelect={(selectedItem, index) => {
+                    setSelectedPriceTo(selectedItem);
+                  }}
+                  ref={cityRef}
+                  renderButton={(_, isOpened) => {
+                    console.log(isOpened);
+                    // Apply a different style if disabled
+                    return (
+                      <View style={[styles.dropdownButtonStyle]}>
+                        <Text style={[styles.dropdownButtonTxtStyle]}>{selectedPriceTo || "Deri në"}</Text>
+                        <Text>
+                          <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
+                        </Text>
+                      </View>
+                    );
+                  }}
+                  renderItem={(item, index, isSelected) => {
+                    return (
+                      <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+                        <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+                      </View>
+                    );
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  dropdownStyle={styles.dropdownMenuStyle}
+                />
+              </View>
+            </View>
+
             {selectedCity && selectedNeighborhood && (
               <View style={styles.pillMainText}>
                 <Text>Listimet në </Text>
@@ -217,7 +435,7 @@ export default function TabOneScreen() {
         }}
         data={DATA}
         renderItem={({ item }) => (
-          <Item
+          <CardItem
             id={item.id}
             title={item.title}
             image={item.image}
@@ -236,25 +454,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  cardContent: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    marginTop: 10,
-  },
+
   title: {
     fontSize: 16,
     fontWeight: "light",
   },
-  card: {
-    marginVertical: 16,
-    width: "100%",
-  },
-  topCardContent: {
-    flexDirection: "column",
-    justifyContent: "space-between",
-    width: "70%",
-  },
+
   pill: {
     backgroundColor: "#0553",
     color: "#fff",
@@ -275,34 +480,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
   },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: "light",
-    marginBottom: 4,
-  },
-  cardPrice: {
-    fontSize: 14,
-    marginTop: 6,
-  },
-  cardSubtitle: {
-    fontSize: 14,
-    fontWeight: "light",
-    color: "#666",
-  },
+
   separator: {
     marginVertical: 30,
     height: 1,
     width: "80%",
   },
-  image: {
-    flex: 1,
-    backgroundColor: "#0553",
-    height: 200,
-    width: "100%",
-    borderRadius: 10,
-  },
   dropdownButtonStyle: {
-    width: "50%",
+    width: "100%",
+    height: 50,
+    marginBottom: 12,
+    backgroundColor: "#E9ECEF",
+    borderRadius: 12,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    flexShrink: 1,
+  },
+  dropdownButtonStyleFull: {
+    width: "100%",
     height: 50,
     marginBottom: 12,
     backgroundColor: "#E9ECEF",
