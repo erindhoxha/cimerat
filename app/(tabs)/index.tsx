@@ -1,10 +1,10 @@
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
 
 import { Text, View } from "@/components/Themed";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import SelectDropdown from "react-native-select-dropdown";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -81,6 +81,8 @@ export default function TabOneScreen() {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string | null>(null);
 
+  const cityRef = useRef<SelectDropdown>(null);
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -103,6 +105,7 @@ export default function TabOneScreen() {
                   setDisabled(false);
                   setSelectedCity(selectedItem);
                 }}
+                ref={cityRef}
                 renderButton={() => {
                   // Apply a different style if disabled
                   return (
@@ -161,9 +164,13 @@ export default function TabOneScreen() {
 
             <View style={styles.pillMainText}>
               <Text>Listimet në </Text>
-              <View style={styles.pill}>
-                <Text style={styles.pillText}>Prishtinë</Text>
-              </View>
+              <TouchableOpacity
+                style={styles.pill}
+                onPress={() => {
+                  cityRef.current?.openDropdown();
+                }}>
+                <Text style={styles.pillText}>{selectedCity}</Text>
+              </TouchableOpacity>
             </View>
           </>
         )}
