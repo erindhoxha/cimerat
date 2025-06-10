@@ -5,6 +5,7 @@ import { Image } from "expo-image";
 import { Link } from "expo-router";
 import SelectDropdown from "react-native-select-dropdown";
 import { useRef, useState } from "react";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -16,6 +17,7 @@ const DATA = [
     description: "Banesë per qira në Dardani, i ka të gjitha pajisjet e nevojshme, 2 cimera jane qe jetojne ketu",
     price: "250€ për muaj",
     image: require("../../assets/images/apt.jpg"),
+    date: "10/06/2025",
   },
   {
     id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
@@ -23,6 +25,7 @@ const DATA = [
     description: "Banesë për qira në Dardani, i ka të gjitha pajisjet e nevojshme, 2 cimera jane qe jetojne ketu",
     price: "350€ për muaj",
     image: require("../../assets/images/apt2.jpg"),
+    date: "10/06/2025",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d72",
@@ -30,6 +33,7 @@ const DATA = [
     description: "Banesë për qira në Dardani, i ka të gjitha pajisjet e nevojshme, 2 cimera jane qe jetojne ketu",
     price: "400€ per muaj",
     image: require("../../assets/images/apt3.jpg"),
+    date: "10/06/2025",
   },
 ];
 
@@ -55,9 +59,9 @@ const cities = [
   "Suhareke",
 ];
 
-type ItemProps = { title: string; image: string; description?: string; price?: string; id: string };
+type ItemProps = { title: string; image: string; description?: string; price?: string; id: string; date: string };
 
-const Item = ({ title, image, description, price, id }: ItemProps) => (
+const Item = ({ title, image, description, price, id, date }: ItemProps) => (
   <Link href={`/${id}`} style={{ marginBottom: 20, width: "100%", flex: 1 }}>
     <View style={styles.card}>
       <Image style={styles.image} source={image} placeholder={{ blurhash }} contentFit="cover" transition={1000} />
@@ -67,9 +71,24 @@ const Item = ({ title, image, description, price, id }: ItemProps) => (
           <Text ellipsizeMode="tail" numberOfLines={2}>
             {description}
           </Text>
-        </View>
-        <View>
           <Text style={styles.cardPrice}>{price}</Text>
+        </View>
+        <View
+          style={{
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            flexDirection: "column",
+            flex: 1,
+            height: "auto",
+          }}>
+          <Text
+            ellipsizeMode="tail"
+            numberOfLines={1}
+            style={{
+              marginBottom: 6,
+            }}>
+            {date}
+          </Text>
         </View>
       </View>
     </View>
@@ -82,6 +101,7 @@ export default function TabOneScreen() {
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string | null>(null);
 
   const cityRef = useRef<SelectDropdown>(null);
+  const neighborHoodRef = useRef<SelectDropdown>(null);
 
   return (
     <View style={styles.container}>
@@ -106,11 +126,15 @@ export default function TabOneScreen() {
                   setSelectedCity(selectedItem);
                 }}
                 ref={cityRef}
-                renderButton={() => {
+                renderButton={(_, isOpened) => {
+                  console.log(isOpened);
                   // Apply a different style if disabled
                   return (
                     <View style={[styles.dropdownButtonStyle]}>
                       <Text style={[styles.dropdownButtonTxtStyle]}>{selectedCity || "Zgjedh Qytetin"}</Text>
+                      <Text>
+                        <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
+                      </Text>
                     </View>
                   );
                 }}
@@ -128,11 +152,12 @@ export default function TabOneScreen() {
               <SelectDropdown
                 data={cities}
                 disabled={disabled}
+                ref={neighborHoodRef}
                 onSelect={(selectedItem, index) => {
                   console.log(selectedItem, index);
                   setSelectedNeighborhood(selectedItem);
                 }}
-                renderButton={() => {
+                renderButton={(_, isOpened) => {
                   // Apply a different style if disabled
                   return (
                     <View
@@ -146,6 +171,9 @@ export default function TabOneScreen() {
                           disabled ? styles.dropdownButtonTxtDisabledStyle : null, // add this style
                         ]}>
                         {selectedNeighborhood || "Zgjedh lagjen"}
+                      </Text>
+                      <Text>
+                        <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
                       </Text>
                     </View>
                   );
@@ -161,17 +189,26 @@ export default function TabOneScreen() {
                 dropdownStyle={styles.dropdownMenuStyle}
               />
             </View>
-
-            <View style={styles.pillMainText}>
-              <Text>Listimet në </Text>
-              <TouchableOpacity
-                style={styles.pill}
-                onPress={() => {
-                  cityRef.current?.openDropdown();
-                }}>
-                <Text style={styles.pillText}>{selectedCity}</Text>
-              </TouchableOpacity>
-            </View>
+            {selectedCity && selectedNeighborhood && (
+              <View style={styles.pillMainText}>
+                <Text>Listimet në </Text>
+                <TouchableOpacity
+                  style={styles.pill}
+                  onPress={() => {
+                    cityRef.current?.openDropdown();
+                  }}>
+                  <Text style={styles.pillText}>{selectedCity}</Text>
+                </TouchableOpacity>
+                <Text>, </Text>
+                <TouchableOpacity
+                  style={styles.pill}
+                  onPress={() => {
+                    neighborHoodRef.current?.openDropdown();
+                  }}>
+                  <Text style={styles.pillText}>{selectedNeighborhood}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </>
         )}
         style={{
@@ -180,7 +217,14 @@ export default function TabOneScreen() {
         }}
         data={DATA}
         renderItem={({ item }) => (
-          <Item id={item.id} title={item.title} image={item.image} description={item.description} price={item.price} />
+          <Item
+            id={item.id}
+            title={item.title}
+            image={item.image}
+            description={item.description}
+            price={item.price}
+            date={item.date}
+          />
         )}
         keyExtractor={(item) => item.id}
       />
@@ -194,7 +238,7 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "flex-start",
     justifyContent: "space-between",
     marginTop: 10,
   },
@@ -238,6 +282,7 @@ const styles = StyleSheet.create({
   },
   cardPrice: {
     fontSize: 14,
+    marginTop: 6,
   },
   cardSubtitle: {
     fontSize: 14,
@@ -270,7 +315,7 @@ const styles = StyleSheet.create({
   },
   dropdownButtonTxtStyle: {
     flex: 1,
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "500",
     color: "#151E26",
   },
