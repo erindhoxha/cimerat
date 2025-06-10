@@ -1,4 +1,3 @@
-import DrawerExample from "@/components/Drawer";
 import { useLocalSearchParams } from "expo-router";
 import { View, Text } from "react-native";
 

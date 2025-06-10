@@ -7,9 +7,8 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/components/useColorScheme";
-import { Appearance, Pressable } from "react-native";
+import { Pressable } from "react-native";
 import Colors from "@/constants/Colors";
-import DrawerExample from "@/components/Drawer";
 import { View } from "@/components/Themed";
 import { DrawerProvider, useDrawer } from "@/components/context/DrawerProvider";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";

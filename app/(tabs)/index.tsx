@@ -3,6 +3,8 @@ import { FlatList, StyleSheet } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
+import SelectDropdown from "react-native-select-dropdown";
+import { useState } from "react";
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -31,10 +33,32 @@ const DATA = [
   },
 ];
 
+const cities = [
+  "Prishtina",
+  "Peja",
+  "Mitrovica",
+  "Ferizaj",
+  "Gjakova",
+  "Gjilan",
+  "Vushtrri",
+  "Shtime",
+  "Obiliq",
+  "Lipjan",
+  "Fushë Kosovë",
+  "Drenas",
+  "Kaçanik",
+  "Dragash",
+  "Klinë",
+  "Deçan",
+  "Istog",
+  "Rahovec",
+  "Suhareke",
+];
+
 type ItemProps = { title: string; image: string; description?: string; price?: string; id: string };
 
 const Item = ({ title, image, description, price, id }: ItemProps) => (
-  <Link href={`/${id}`} style={{ marginBottom: 20 }}>
+  <Link href={`/${id}`} style={{ marginBottom: 20, width: "100%", flex: 1 }}>
     <View style={styles.card}>
       <Image style={styles.image} source={image} placeholder={{ blurhash }} contentFit="cover" transition={1000} />
       <View style={styles.cardContent}>
@@ -53,6 +77,10 @@ const Item = ({ title, image, description, price, id }: ItemProps) => (
 );
 
 export default function TabOneScreen() {
+  const [disabled, setDisabled] = useState(true);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState<string | null>(null);
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -61,12 +89,83 @@ export default function TabOneScreen() {
           paddingBottom: 80,
         }}
         ListHeaderComponent={() => (
-          <View style={styles.pillMainText}>
-            <Text>Listimet në </Text>
-            <View style={styles.pill}>
-              <Text style={styles.pillText}>Prishtinë</Text>
+          <>
+            <View
+              style={{
+                flexShrink: 1,
+                flexDirection: "row",
+                gap: 12,
+                maxWidth: "100%",
+              }}>
+              <SelectDropdown
+                data={cities}
+                onSelect={(selectedItem, index) => {
+                  setDisabled(false);
+                  setSelectedCity(selectedItem);
+                }}
+                renderButton={() => {
+                  // Apply a different style if disabled
+                  return (
+                    <View style={[styles.dropdownButtonStyle]}>
+                      <Text style={[styles.dropdownButtonTxtStyle]}>{selectedCity || "Zgjedh Qytetin"}</Text>
+                    </View>
+                  );
+                }}
+                renderItem={(item, index, isSelected) => {
+                  return (
+                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+                      <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+                    </View>
+                  );
+                }}
+                showsVerticalScrollIndicator={false}
+                dropdownStyle={styles.dropdownMenuStyle}
+              />
+
+              <SelectDropdown
+                data={cities}
+                disabled={disabled}
+                onSelect={(selectedItem, index) => {
+                  console.log(selectedItem, index);
+                  setSelectedNeighborhood(selectedItem);
+                }}
+                renderButton={() => {
+                  // Apply a different style if disabled
+                  return (
+                    <View
+                      style={[
+                        styles.dropdownButtonStyle,
+                        disabled ? styles.dropdownButtonDisabledStyle : null, // add this style
+                      ]}>
+                      <Text
+                        style={[
+                          styles.dropdownButtonTxtStyle,
+                          disabled ? styles.dropdownButtonTxtDisabledStyle : null, // add this style
+                        ]}>
+                        {selectedNeighborhood || "Zgjedh lagjen"}
+                      </Text>
+                    </View>
+                  );
+                }}
+                renderItem={(item, index, isSelected) => {
+                  return (
+                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+                      <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+                    </View>
+                  );
+                }}
+                showsVerticalScrollIndicator={false}
+                dropdownStyle={styles.dropdownMenuStyle}
+              />
             </View>
-          </View>
+
+            <View style={styles.pillMainText}>
+              <Text>Listimet në </Text>
+              <View style={styles.pill}>
+                <Text style={styles.pillText}>Prishtinë</Text>
+              </View>
+            </View>
+          </>
         )}
         style={{
           padding: 0,
@@ -98,6 +197,7 @@ const styles = StyleSheet.create({
   },
   card: {
     marginVertical: 16,
+    width: "100%",
   },
   topCardContent: {
     flexDirection: "column",
@@ -148,5 +248,57 @@ const styles = StyleSheet.create({
     height: 200,
     width: "100%",
     borderRadius: 10,
+  },
+  dropdownButtonStyle: {
+    width: "50%",
+    height: 50,
+    marginBottom: 12,
+    backgroundColor: "#E9ECEF",
+    borderRadius: 12,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    flexShrink: 1,
+  },
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#151E26",
+  },
+  dropdownButtonDisabledStyle: {
+    backgroundColor: "#e0e0e0",
+    opacity: 0.6,
+  },
+  dropdownButtonTxtDisabledStyle: {
+    color: "#aaa",
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 28,
+  },
+  dropdownButtonIconStyle: {
+    fontSize: 28,
+    marginRight: 8,
+  },
+  dropdownMenuStyle: {
+    backgroundColor: "#E9ECEF",
+    borderRadius: 8,
+  },
+  dropdownItemStyle: {
+    flexDirection: "row",
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  dropdownItemTxtStyle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#151E26",
+  },
+  dropdownItemIconStyle: {
+    fontSize: 28,
   },
 });
