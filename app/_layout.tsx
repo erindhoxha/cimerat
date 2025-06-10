@@ -12,6 +12,7 @@ import Colors from "@/constants/Colors";
 import DrawerExample from "@/components/Drawer";
 import { View } from "@/components/Themed";
 import { DrawerProvider, useDrawer } from "@/components/context/DrawerProvider";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -25,6 +26,8 @@ export const unstable_settings = {
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -49,9 +52,11 @@ export default function RootLayout() {
 
   return (
     <View style={{ flex: 1 }}>
-      <DrawerProvider>
-        <RootLayoutNav />
-      </DrawerProvider>
+      <QueryClientProvider client={queryClient}>
+        <DrawerProvider>
+          <RootLayoutNav />
+        </DrawerProvider>
+      </QueryClientProvider>
     </View>
   );
 }
