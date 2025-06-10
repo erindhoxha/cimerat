@@ -9,6 +9,9 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/components/useColorScheme";
 import { Appearance, Pressable } from "react-native";
 import Colors from "@/constants/Colors";
+import DrawerExample from "@/components/Drawer";
+import { View } from "@/components/Themed";
+import { DrawerProvider, useDrawer } from "@/components/context/DrawerProvider";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -44,11 +47,18 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <View style={{ flex: 1 }}>
+      <DrawerProvider>
+        <RootLayoutNav />
+      </DrawerProvider>
+    </View>
+  );
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const { openDrawer, closeDrawer, isOpen } = useDrawer();
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -62,6 +72,11 @@ function RootLayoutNav() {
             fontWeight: "bold",
           },
           headerTitle: "Cimerat",
+          headerRight: () => (
+            <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={{ marginRight: 16 }}>
+              <FontAwesome name={isOpen ? "close" : "cog"} size={24} color={Colors[colorScheme ?? "light"].text} />
+            </Pressable>
+          ),
         }}>
         <Stack.Screen name="(item)/[item]" />
         <Stack.Screen name="(tabs)" />
