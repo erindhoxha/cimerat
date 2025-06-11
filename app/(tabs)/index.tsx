@@ -55,17 +55,81 @@ const cities = [
   "Suhareke",
 ];
 
-const neighborhoods = [
-  "Dardani",
-  "Bregu i Diellit",
-  "Arbëria",
-  "Qendra",
-  "Mati 1",
-  "Mati 2",
-  "Mati 3",
-  "Bajram Curri",
-  "Liqeni i Badovcit",
-];
+const neighborhoods: { [key: string]: string[] } = {
+  Prishtina: [
+    "Ulpiana",
+    "Dardania",
+    "Bregu i Diellit",
+    "Lakrishtë",
+    "Arbëria",
+    "Mati 1",
+    "Mati 2",
+    "Veternik",
+    "Velania",
+    "Qafa",
+    "Qendra",
+    "Kalabria",
+    "Emshir",
+    "Taslixhe",
+    "Tophane",
+    "Kodra e Trimave",
+  ],
+  Mitrovica: [
+    "North Mitrovica",
+    "South Mitrovica",
+    "Bosniak Mahala",
+    "Roma Mahalla",
+    "Fidanishte",
+    "Ilirida",
+    "Zhabar i Poshtëm",
+    "Mikronaselje (Lagjja e Minatorëve)",
+    "Tri Solitera",
+    "Dolina Doktoreve",
+    "Brdjani (Kroi i Vitakut)",
+    "Suvi Do (Suhodoll)",
+  ],
+  Peja: [
+    "City Center (Bazaar/Çarshia)",
+    "Babanaj",
+    "Fidanishte",
+    "Dardania",
+    "Qyshk",
+    "Rugova region (surrounding mountain communities)",
+  ],
+  Ferizaj: [
+    "City Center",
+    "Pika 6 / Zona akova",
+    "Old Bazaar (Çarshia e Madhe / Hadumitku Mahala)",
+    "Çabrati",
+    "Ura e Gurit",
+    "City Center",
+    "...plus many rural settlements (e.g. Agaj, Botusha, Doli…) ",
+  ],
+  Gjilan: [
+    "City Center / Old Bazaar",
+    "Parku i Qytetit area",
+    "Germia Park area",
+    "...plus villages around Lake Badovc",
+  ],
+  Vushtrri: [
+    "City Center (ancient fortress area)",
+    "Rashan",
+    "Roger",
+    // (Note: larger town with surrounding villages)
+  ],
+  Shtime: ["City Center", "Strimberk", "Runik"],
+  Obiliq: ["City Center", "Gërmadhë", "Llukar"],
+  Lipjan: ["City Center", "Uçë", "Gllarevë"],
+  "Fushë Kosovë": ["City Center", "Skivjan", "Bubël"],
+  Drenas: ["City Center", "Komoran", "Likoc"],
+  Kaçanik: ["City Center", "Besiane", "Proklate"],
+  Dragash: ["City Center", "Brods"],
+  Klinë: ["City Center", "Pekl", "Lukare"],
+  Deçan: ["City Center", "Isniq", "Rashan"],
+  Istog: ["City Center", "Lumbardh", "Stubëll"],
+  Rahovec: ["City Center", "Malisheve", "Ormoc"],
+  Suhareke: ["City Center", "Lower Suharekë", "Upper Suharekë"],
+};
 
 const numriIDhomave = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
@@ -163,7 +227,13 @@ export default function TabOneScreen() {
                   data={cities}
                   onSelect={(selectedItem, index) => {
                     setDisabled(false);
-                    setSelectedCity(selectedItem);
+                    setSelectedCity((prev) => {
+                      if (prev === selectedItem) {
+                        return null; // Reset if the same city is selected
+                      }
+                      setSelectedNeighborhood(null); // Reset neighborhood when city changes
+                      return selectedItem;
+                    });
                   }}
                   ref={cityRef}
                   renderButton={(_, isOpened) => {
@@ -208,7 +278,7 @@ export default function TabOneScreen() {
                   }}
                   searchPlaceHolder="Kërko lagjen..."
                   searchPlaceHolderColor="#6c757d"
-                  data={neighborhoods}
+                  data={selectedCity ? neighborhoods[selectedCity] : []}
                   disabled={disabled}
                   ref={neighborHoodRef}
                   onSelect={(selectedItem, index) => {
