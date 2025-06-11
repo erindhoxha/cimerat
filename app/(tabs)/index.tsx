@@ -2,9 +2,8 @@ import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, View } from "@/components/Themed";
 import SelectDropdown from "react-native-select-dropdown";
 import { useRef, useState } from "react";
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import { CardItem } from "@/components/CardItem";
-import { SliderComponent } from "@/components/Slider";
 
 const DATA = [
   {
