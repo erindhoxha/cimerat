@@ -75,6 +75,7 @@ function RootLayoutNav() {
           headerTitleStyle: {
             fontWeight: "bold",
           },
+          headerBackTitle: "Back",
           headerTitle: "Cimerat",
           headerRight: () => (
             <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={{ marginRight: 16 }}>
@@ -84,6 +85,7 @@ function RootLayoutNav() {
         }}>
         <Stack.Screen name="(item)/[item]" />
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="login" />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
       </Stack>
     </ThemeProvider>

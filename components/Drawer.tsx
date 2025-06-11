@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, TouchableOpacity, TouchableWithoutFeedback, StyleSheet, Animated, Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -40,6 +41,13 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
       </TouchableWithoutFeedback>
       <Animated.View style={[styles.drawer, { transform: [{ translateX: animation }], paddingTop: insets.top + 20 }]}>
         <Text style={styles.drawerText}>Drawer Content</Text>
+        <Link
+          href="/login"
+          onPress={() => {
+            onClose();
+          }}>
+          Log in
+        </Link>
         <TouchableOpacity onPress={onClose}>
           <Text>Close Drawer</Text>
         </TouchableOpacity>
