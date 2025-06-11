@@ -1,20 +1,19 @@
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
-import { useRouter } from "expo-router";
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
   const {
+    register,
     handleSubmit,
     reset,
     setValue,
     formState: { errors },
   } = useForm();
-  const router = useRouter();
 
   return (
     <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 16 }}>Kyçu</Text>
+      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 16 }}>Regjistrohu</Text>
       <TextInput
         style={{
           padding: 12,
@@ -25,9 +24,11 @@ export default function LoginScreen() {
         }}
         placeholder="Email adresa"
         autoCapitalize="none"
-        onChangeText={(text) => setValue("email", text)}
+        onChangeText={text => setValue("email", text)}
       />
-      {errors.email && <Text style={{ color: "red", marginTop: 4 }}>Email është i detyrueshëm</Text>}
+      {errors.email && (
+        <Text style={{ color: "red", marginTop: 4 }}>Email është i detyrueshëm</Text>
+      )}
       <TextInput
         style={{
           padding: 12,
@@ -38,9 +39,11 @@ export default function LoginScreen() {
         }}
         placeholder="Fjalëkalimi"
         secureTextEntry
-        onChangeText={(text) => setValue("password", text)}
+        onChangeText={text => setValue("password", text)}
       />
-      {errors.password && <Text style={{ color: "red", marginTop: 4 }}>Fjalëkalimi është i detyrueshëm</Text>}
+      {errors.password && (
+        <Text style={{ color: "red", marginTop: 4 }}>Fjalëkalimi është i detyrueshëm</Text>
+      )}
       <TouchableOpacity
         style={{
           backgroundColor: Colors.light.yellow,
@@ -50,34 +53,13 @@ export default function LoginScreen() {
           alignItems: "center",
         }}
         onPress={handleSubmit((data) => {
-          // Handle login action with data
+          // Handle register action with data
           console.log(data);
           reset();
-        })}>
-        <Text style={{ color: "#000" }}>Kyçu</Text>
+        })}
+      >
+        <Text style={{ color: "#000" }}>Regjistrohu</Text>
       </TouchableOpacity>
-      <Text
-        style={{
-          marginTop: 20,
-          color: "#007BFF",
-          textDecorationLine: "underline",
-        }}
-        onPress={() => {
-          // Handle forgot password action
-        }}>
-        Harrove fjalëkalimin?
-      </Text>
-      <Text
-        style={{
-          marginTop: 20,
-          color: "#007BFF",
-          textDecorationLine: "underline",
-        }}
-        onPress={() => {
-          router.push("/register");
-        }}>
-        Regjistrohu
-      </Text>
     </View>
   );
 }
