@@ -24,11 +24,9 @@ export default function RegisterScreen() {
         }}
         placeholder="Email adresa"
         autoCapitalize="none"
-        onChangeText={text => setValue("email", text)}
+        onChangeText={(text) => setValue("email", text)}
       />
-      {errors.email && (
-        <Text style={{ color: "red", marginTop: 4 }}>Email është i detyrueshëm</Text>
-      )}
+      {errors.email && <Text style={{ color: "red", marginTop: 4 }}>Email është i detyrueshëm</Text>}
       <TextInput
         style={{
           padding: 12,
@@ -39,11 +37,9 @@ export default function RegisterScreen() {
         }}
         placeholder="Fjalëkalimi"
         secureTextEntry
-        onChangeText={text => setValue("password", text)}
+        onChangeText={(text) => setValue("password", text)}
       />
-      {errors.password && (
-        <Text style={{ color: "red", marginTop: 4 }}>Fjalëkalimi është i detyrueshëm</Text>
-      )}
+      {errors.password && <Text style={{ color: "red", marginTop: 4 }}>Fjalëkalimi është i detyrueshëm</Text>}
       <TouchableOpacity
         style={{
           backgroundColor: Colors.light.yellow,
@@ -56,8 +52,7 @@ export default function RegisterScreen() {
           // Handle register action with data
           console.log(data);
           reset();
-        })}
-      >
+        })}>
         <Text style={{ color: "#000" }}>Regjistrohu</Text>
       </TouchableOpacity>
     </View>

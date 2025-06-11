@@ -95,6 +95,16 @@ const neighborhoods: { [key: string]: string[] } = {
     "Qyshk",
     "Rugova region (surrounding mountain communities)",
   ],
+  Gjakova: [
+    "City Center",
+    "Bajram Curri",
+    "Dardania",
+    "Bajgora",
+    "Gjakovë e Re",
+    "Krasniqi",
+    "Përlepnicë",
+    "Blloku i Ri",
+  ],
   Ferizaj: [
     "City Center",
     "Pika 6 / Zona akova",
@@ -337,7 +347,6 @@ export default function TabOneScreen() {
                   onSelect={(selectedItem, index) => {
                     setSelectedRooms(selectedItem);
                   }}
-                  ref={cityRef}
                   renderButton={(_, isOpened) => {
                     console.log(isOpened);
                     // Apply a different style if disabled
@@ -377,7 +386,6 @@ export default function TabOneScreen() {
                   onSelect={(selectedItem, index) => {
                     setSelectedCimer(selectedItem);
                   }}
-                  ref={cityRef}
                   renderButton={(_, isOpened) => {
                     console.log(isOpened);
                     // Apply a different style if disabled
@@ -421,7 +429,6 @@ export default function TabOneScreen() {
                   onSelect={(selectedItem, index) => {
                     setSelectedPriceFrom(selectedItem);
                   }}
-                  ref={cityRef}
                   renderButton={(_, isOpened) => {
                     console.log(isOpened);
                     // Apply a different style if disabled
@@ -450,7 +457,6 @@ export default function TabOneScreen() {
                   onSelect={(selectedItem, index) => {
                     setSelectedPriceTo(selectedItem);
                   }}
-                  ref={cityRef}
                   renderButton={(_, isOpened) => {
                     console.log(isOpened);
                     // Apply a different style if disabled
