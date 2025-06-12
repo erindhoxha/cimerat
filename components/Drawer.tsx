@@ -2,7 +2,16 @@ import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, TouchableWithoutFeedback, StyleSheet, Animated, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  StyleSheet,
+  Animated,
+  Dimensions,
+  Touchable,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -47,14 +56,15 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
         <TouchableOpacity
           onPress={onClose}
           style={{
-            padding: 10,
+            padding: 4,
             backgroundColor: "white",
-            borderRadius: 50,
-            elevation: 5,
+            borderRadius: 9999,
             marginBottom: 20,
             alignSelf: "flex-end",
+            alignItems: "center",
+            justifyContent: "center",
           }}>
-          <FontAwesome name="close" size={24} color="#000" style={{ alignSelf: "flex-end" }} />
+          <FontAwesome name="close" size={24} color="#000" style={{ height: 24, width: 24, textAlign: "center" }} />
         </TouchableOpacity>
         <Text
           style={styles.drawerText}
@@ -72,36 +82,91 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
           }}>
           Krijo
         </Text>
-        <Text
+        <TouchableOpacity
           style={{
             padding: 10,
-            backgroundColor: Colors.light.yellow,
+            marginTop: "auto",
+            backgroundColor: "white",
             borderRadius: 8,
-            marginBottom: 10,
-            textAlign: "center",
-            color: "#000",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            borderWidth: 2,
+            gap: 8,
+            marginBottom: 12,
           }}
           onPress={() => {
             onClose();
             router.push("/register");
           }}>
-          Regjistrohu
-        </Text>
-        <Text
+          <FontAwesome name="user-plus" size={16} color="#000" />
+          <Text
+            style={{
+              textAlign: "center",
+              color: "#000",
+              fontWeight: "500",
+              fontSize: 16,
+            }}>
+            Regjistrohu
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           style={{
             padding: 10,
-            backgroundColor: Colors.light.yellow,
+            backgroundColor: "white",
             borderRadius: 8,
-            marginBottom: 10,
-            textAlign: "center",
-            color: "#000",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            borderWidth: 2,
+            marginBottom: 48,
+            gap: 8,
           }}
           onPress={() => {
             onClose();
             router.push("/login");
           }}>
-          Kyçu
-        </Text>
+          <FontAwesome name="user" size={16} color="#000" />
+          <Text
+            style={{
+              textAlign: "center",
+              color: "#000",
+              fontWeight: "500",
+              fontSize: 16,
+            }}>
+            Kyçu
+          </Text>
+        </TouchableOpacity>
+        {false && (
+          <TouchableOpacity
+            style={{
+              padding: 10,
+              marginTop: "auto",
+              backgroundColor: "white",
+              borderRadius: 8,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              borderWidth: 2,
+              marginBottom: 48,
+              gap: 8,
+            }}
+            onPress={() => {
+              onClose();
+              router.push("/login");
+            }}>
+            <FontAwesome name="user" size={16} color="#000" />
+            <Text
+              style={{
+                textAlign: "center",
+                color: "#000",
+                fontWeight: "500",
+                fontSize: 16,
+              }}>
+              Profili
+            </Text>
+          </TouchableOpacity>
+        )}
       </Animated.View>
     </>
   );
@@ -119,17 +184,22 @@ const styles = StyleSheet.create({
     left: 0,
     width: SCREEN_WIDTH * 0.7,
     height: "100%",
-    backgroundColor: "white",
+    backgroundColor: Colors.light.yellow,
     paddingHorizontal: 20,
     zIndex: 100,
     elevation: 12,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
   },
   drawerText: {
     padding: 10,
     borderRadius: 8,
     marginBottom: 10,
-    textAlign: "center",
-    borderWidth: 2,
+    textAlign: "left",
+    color: "black",
+    borderBottomWidth: 2,
+    fontSize: 20,
+    fontWeight: "500",
   },
 });
 
