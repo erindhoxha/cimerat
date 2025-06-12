@@ -1,4 +1,6 @@
-import { Link } from "expo-router";
+import Colors from "@/constants/Colors";
+import { FontAwesome } from "@expo/vector-icons";
+import { Link, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, TouchableOpacity, TouchableWithoutFeedback, StyleSheet, Animated, Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -34,23 +36,72 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
 
   if (!visible) return null;
 
+  const router = useRouter();
+
   return (
     <>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.overlay} />
       </TouchableWithoutFeedback>
       <Animated.View style={[styles.drawer, { transform: [{ translateX: animation }], paddingTop: insets.top + 20 }]}>
-        <Text style={styles.drawerText}>Drawer Content</Text>
-        <Link
-          href="/login"
+        <TouchableOpacity
+          onPress={onClose}
+          style={{
+            padding: 10,
+            backgroundColor: "white",
+            borderRadius: 50,
+            elevation: 5,
+            marginBottom: 20,
+            alignSelf: "flex-end",
+          }}>
+          <FontAwesome name="close" size={24} color="#000" style={{ alignSelf: "flex-end" }} />
+        </TouchableOpacity>
+        <Text
+          style={styles.drawerText}
           onPress={() => {
             onClose();
+            router.push("/");
           }}>
-          Log in
-        </Link>
-        <TouchableOpacity onPress={onClose}>
-          <Text>Close Drawer</Text>
-        </TouchableOpacity>
+          Listimet
+        </Text>
+        <Text
+          style={styles.drawerText}
+          onPress={() => {
+            onClose();
+            router.push("/(tabs)/two");
+          }}>
+          Krijo
+        </Text>
+        <Text
+          style={{
+            padding: 10,
+            backgroundColor: Colors.light.yellow,
+            borderRadius: 8,
+            marginBottom: 10,
+            textAlign: "center",
+            color: "#000",
+          }}
+          onPress={() => {
+            onClose();
+            router.push("/register");
+          }}>
+          Regjistrohu
+        </Text>
+        <Text
+          style={{
+            padding: 10,
+            backgroundColor: Colors.light.yellow,
+            borderRadius: 8,
+            marginBottom: 10,
+            textAlign: "center",
+            color: "#000",
+          }}
+          onPress={() => {
+            onClose();
+            router.push("/login");
+          }}>
+          Kyçu
+        </Text>
       </Animated.View>
     </>
   );
@@ -74,9 +125,11 @@ const styles = StyleSheet.create({
     elevation: 12,
   },
   drawerText: {
-    fontSize: 18,
-    marginBottom: 20,
-    color: "#000",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+    textAlign: "center",
+    borderWidth: 2,
   },
 });
 

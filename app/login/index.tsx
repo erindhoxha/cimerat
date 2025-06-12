@@ -1,7 +1,7 @@
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 export default function LoginScreen() {
   const {
@@ -67,17 +67,15 @@ export default function LoginScreen() {
         }}>
         Harrove fjalëkalimin?
       </Text>
-      <Text
+      <Link
+        href="/register"
         style={{
           marginTop: 20,
           color: "#007BFF",
           textDecorationLine: "underline",
-        }}
-        onPress={() => {
-          router.push("/register");
         }}>
         Regjistrohu
-      </Text>
+      </Link>
     </View>
   );
 }
