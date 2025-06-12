@@ -5554,10 +5554,10 @@ react-native-awesome-slider@^2.9.0:
   resolved "https://registry.yarnpkg.com/react-native-awesome-slider/-/react-native-awesome-slider-2.9.0.tgz#7d5013a0e0e15ed84d59b4fa4c26a8b7ab9b2454"
   integrity sha512-sc5qgX4YtM6IxjtosjgQLdsal120MvU+YWs0F2MdgQWijps22AXLDCUoBnZZ8vxVhVyJ2WnnIPrmtVBvVJjSuQ==
 
-react-native-custom-animated-accordion@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/react-native-custom-animated-accordion/-/react-native-custom-animated-accordion-1.0.5.tgz#36ba85e50cf89aaf351427676c517e9d82ad4143"
-  integrity sha512-wb6zvTDnBTnIo+j/AlokCaFZhsU9ZKk98OLuvQ1hvfCio4aoNitzQic6wHMz+9MpdsIb5VoiJmG+kipQXTOaYA==
+react-native-collapsible@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/react-native-collapsible/-/react-native-collapsible-1.6.2.tgz#3b67fa402a6ba3c291022f5db8f345083862c3d8"
+  integrity sha512-MCOBVJWqHNjnDaGkvxX997VONmJeebh6wyJxnHEgg0L1PrlcXU1e/bo6eK+CDVFuMrCafw8Qh4DOv/C4V/+Iew==
 
 react-native-drawer-layout@^4.1.10:
   version "4.1.10"
@@ -5585,10 +5585,10 @@ react-native-is-edge-to-edge@1.1.7, react-native-is-edge-to-edge@^1.1.6, react-n
   resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.1.7.tgz#28947688f9fafd584e73a4f935ea9603bd9b1939"
   integrity sha512-EH6i7E8epJGIcu7KpfXYXiV2JFIYITtq+rVS8uEb+92naMRBdxhTuS8Wn2Q7j9sqyO0B+Xbaaf9VdipIAmGW4w==
 
-react-native-reanimated@^3.18.0:
-  version "3.18.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.18.0.tgz#0a246eab38a9e807887fe561a2868cfe85351f3c"
-  integrity sha512-eVcNcqeOkMW+BUWAHdtvN3FKgC8J8wiEJkX6bNGGQaLS7m7e4amTfjIcqf/Ta+lerZLurmDaQ0lICI1CKPrb1Q==
+react-native-reanimated@~3.17.4:
+  version "3.17.5"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.17.5.tgz#09ebe3c9e3379c5c0c588b7ab30c131ea29b60f0"
+  integrity sha512-SxBK7wQfJ4UoWoJqQnmIC7ZjuNgVb9rcY5Xc67upXAFKftWg0rnkknTw6vgwnjRcvYThrjzUVti66XoZdDJGtw==
   dependencies:
     "@babel/plugin-transform-arrow-functions" "^7.0.0-0"
     "@babel/plugin-transform-class-properties" "^7.0.0-0"

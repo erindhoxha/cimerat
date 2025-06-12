@@ -4,6 +4,8 @@ import SelectDropdown from "react-native-select-dropdown";
 import { useRef, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { CardItem } from "@/components/CardItem";
+import Collapsible from "react-native-collapsible";
+import { AccordionView } from "@/components/Accordion";
 
 const DATA = [
   {
@@ -216,6 +218,9 @@ export default function TabOneScreen() {
                   flex: 1,
                   width: "100%",
                 }}>
+                <Collapsible collapsed={false}>
+                  <Text>Hello world</Text>
+                </Collapsible>
                 <Text
                   style={{
                     marginBottom: 6,
@@ -481,6 +486,7 @@ export default function TabOneScreen() {
                 />
               </View>
             </View>
+            {/* <AccordionView /> */}
 
             {selectedCity && selectedNeighborhood && (
               <View style={styles.pillMainText}>
