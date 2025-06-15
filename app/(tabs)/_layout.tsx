@@ -22,7 +22,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="two"
+          name="your-listings"
           options={{
             title: "Krijo",
             tabBarIcon: ({ color }) => <FontAwesome name="plus" size={24} color={color} />,

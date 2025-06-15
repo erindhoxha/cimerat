@@ -72,15 +72,15 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
             onClose();
             router.push("/");
           }}>
-          Listimet
+          Faqja kryesore
         </Text>
         <Text
           style={styles.drawerText}
           onPress={() => {
             onClose();
-            router.push("/(tabs)/two");
+            router.push("/(tabs)/your-listings");
           }}>
-          Krijo
+          Listimet e mia
         </Text>
         <Text
           style={styles.drawerText}

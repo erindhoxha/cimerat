@@ -57,6 +57,7 @@ export default function TabTwoScreen() {
       {cardItems.map((item) => {
         return (
           <TouchableOpacity
+            key={item.id}
             style={styles.listCard}
             onPress={() => {
               router.push(`/${item.id}`);
