@@ -63,6 +63,7 @@ export default function LoginScreen() {
           textDecorationLine: "underline",
         }}
         onPress={() => {
+          router.push("/forgot-password");
           // Handle forgot password action
         }}>
         Harrove fjalëkalimin?

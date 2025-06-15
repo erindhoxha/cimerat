@@ -82,6 +82,14 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
           }}>
           Krijo
         </Text>
+        <Text
+          style={styles.drawerText}
+          onPress={() => {
+            onClose();
+            router.push("/profile");
+          }}>
+          Profili
+        </Text>
         <TouchableOpacity
           style={{
             padding: 10,
