@@ -50,7 +50,6 @@ export default function RegisterScreen() {
         }}
         onPress={handleSubmit((data) => {
           // Handle register action with data
-          console.log(data);
           reset();
         })}>
         <Text style={{ color: "#000" }}>Regjistrohu</Text>

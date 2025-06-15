@@ -51,7 +51,6 @@ export default function LoginScreen() {
         }}
         onPress={handleSubmit((data) => {
           // Handle login action with data
-          console.log(data);
           reset();
         })}>
         <Text style={{ color: "#000" }}>Kyçu</Text>

@@ -79,7 +79,7 @@ function RootLayoutNav() {
           headerTitle: "Cimerat",
           headerRight: () => (
             <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={{ marginRight: 16 }}>
-              <FontAwesome name={isOpen ? "close" : "cog"} size={24} color={Colors[colorScheme ?? "light"].text} />
+              <FontAwesome name={isOpen ? "close" : "navicon"} size={24} color={Colors[colorScheme ?? "light"].text} />
             </Pressable>
           ),
         }}>

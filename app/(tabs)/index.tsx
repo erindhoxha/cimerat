@@ -251,7 +251,6 @@ export default function TabOneScreen() {
                   }}
                   ref={cityRef}
                   renderButton={(_, isOpened) => {
-                    console.log(isOpened);
                     // Apply a different style if disabled
                     return (
                       <View style={[styles.dropdownButtonStyle]}>
@@ -296,7 +295,6 @@ export default function TabOneScreen() {
                   disabled={disabled}
                   ref={neighborHoodRef}
                   onSelect={(selectedItem, index) => {
-                    console.log(selectedItem, index);
                     setSelectedNeighborhood(selectedItem);
                   }}
                   renderButton={(_, isOpened) => {
@@ -353,7 +351,6 @@ export default function TabOneScreen() {
                     setSelectedRooms(selectedItem);
                   }}
                   renderButton={(_, isOpened) => {
-                    console.log(isOpened);
                     // Apply a different style if disabled
                     return (
                       <View style={[styles.dropdownButtonStyle]}>
@@ -392,7 +389,6 @@ export default function TabOneScreen() {
                     setSelectedCimer(selectedItem);
                   }}
                   renderButton={(_, isOpened) => {
-                    console.log(isOpened);
                     // Apply a different style if disabled
                     return (
                       <View style={[styles.dropdownButtonStyle]}>
@@ -435,7 +431,6 @@ export default function TabOneScreen() {
                     setSelectedPriceFrom(selectedItem);
                   }}
                   renderButton={(_, isOpened) => {
-                    console.log(isOpened);
                     // Apply a different style if disabled
                     return (
                       <View style={[styles.dropdownButtonStyle]}>
@@ -463,7 +458,6 @@ export default function TabOneScreen() {
                     setSelectedPriceTo(selectedItem);
                   }}
                   renderButton={(_, isOpened) => {
-                    console.log(isOpened);
                     // Apply a different style if disabled
                     return (
                       <View style={[styles.dropdownButtonStyle]}>
