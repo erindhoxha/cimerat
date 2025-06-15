@@ -3,8 +3,27 @@ import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
+
+const cardItems = [
+  {
+    id: "1",
+    title: "Listimi 1",
+    description:
+      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Labore cum esse itaque veritatis asperiores, voluptates non dolorum voluptatibus, nostrum aperiam illum sed laborum, repellendus nesciunt sequi. At corrupti quaerat sapiente eius nam reprehenderit consequuntur quibusdam consequatur quae fugiat? Ad a sunt quas! Atque nam minima totam laborum beatae placeat possimus!",
+    image: require("../../assets/images/apt.jpg"),
+  },
+  {
+    id: "2",
+    title: "Listimi 2",
+    description:
+      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Labore cum esse itaque veritatis asperiores, voluptates non dolorum voluptatibus, nostrum aperiam illum sed laborum, repellendus nesciunt sequi. At corrupti quaerat sapiente eius nam reprehenderit consequuntur quibusdam consequatur quae fugiat? Ad a sunt quas! Atque nam minima totam laborum beatae placeat possimus!",
+    image: require("../../assets/images/apt.jpg"),
+  },
+];
 
 export default function TabTwoScreen() {
+  const router = useRouter();
   return (
     <ScrollView style={styles.container}>
       <View style={{ backgroundColor: "#fff", borderRadius: 10, marginBottom: 0 }}>
@@ -35,125 +54,23 @@ export default function TabTwoScreen() {
         Nuk keni asnjë listim të krijuar. Shtoni një listim të ri duke klikuar në butonin "Krijo" në skedën e sipërme.
       </Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <View style={styles.listCard}>
-        <Image
-          style={styles.cardImage}
-          source={require("../../assets/images/apt.jpg")}
-          contentFit="cover"
-          transition={1000}
-        />
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>Listimi 1</Text>
-          <Text style={styles.cardDescription} ellipsizeMode="tail" numberOfLines={3}>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Labore cum esse itaque veritatis asperiores,
-            voluptates non dolorum voluptatibus, nostrum aperiam illum sed laborum, repellendus nesciunt sequi. At
-            corrupti quaerat sapiente eius nam reprehenderit consequuntur quibusdam consequatur quae fugiat? Ad a sunt
-            quas! Atque nam minima totam laborum beatae placeat possimus!
-          </Text>
-        </View>
-      </View>
-      <View style={styles.listCard}>
-        <Image
-          style={styles.cardImage}
-          source={require("../../assets/images/apt.jpg")}
-          contentFit="cover"
-          transition={1000}
-        />
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>Listimi 1</Text>
-          <Text style={styles.cardDescription} ellipsizeMode="tail" numberOfLines={3}>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Labore cum esse itaque veritatis asperiores,
-            voluptates non dolorum voluptatibus, nostrum aperiam illum sed laborum, repellendus nesciunt sequi. At
-            corrupti quaerat sapiente eius nam reprehenderit consequuntur quibusdam consequatur quae fugiat? Ad a sunt
-            quas! Atque nam minima totam laborum beatae placeat possimus!
-          </Text>
-        </View>
-      </View>
-      <View style={styles.listCard}>
-        <Image
-          style={styles.cardImage}
-          source={require("../../assets/images/apt.jpg")}
-          contentFit="cover"
-          transition={1000}
-        />
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>Listimi 1</Text>
-          <Text style={styles.cardDescription} ellipsizeMode="tail" numberOfLines={3}>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Labore cum esse itaque veritatis asperiores,
-            voluptates non dolorum voluptatibus, nostrum aperiam illum sed laborum, repellendus nesciunt sequi. At
-            corrupti quaerat sapiente eius nam reprehenderit consequuntur quibusdam consequatur quae fugiat? Ad a sunt
-            quas! Atque nam minima totam laborum beatae placeat possimus!
-          </Text>
-        </View>
-      </View>
-      <View style={styles.listCard}>
-        <Image
-          style={styles.cardImage}
-          source={require("../../assets/images/apt.jpg")}
-          contentFit="cover"
-          transition={1000}
-        />
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>Listimi 1</Text>
-          <Text style={styles.cardDescription} ellipsizeMode="tail" numberOfLines={3}>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Labore cum esse itaque veritatis asperiores,
-            voluptates non dolorum voluptatibus, nostrum aperiam illum sed laborum, repellendus nesciunt sequi. At
-            corrupti quaerat sapiente eius nam reprehenderit consequuntur quibusdam consequatur quae fugiat? Ad a sunt
-            quas! Atque nam minima totam laborum beatae placeat possimus!
-          </Text>
-        </View>
-      </View>
-      <View style={styles.listCard}>
-        <Image
-          style={styles.cardImage}
-          source={require("../../assets/images/apt.jpg")}
-          contentFit="cover"
-          transition={1000}
-        />
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>Listimi 1</Text>
-          <Text style={styles.cardDescription} ellipsizeMode="tail" numberOfLines={3}>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Labore cum esse itaque veritatis asperiores,
-            voluptates non dolorum voluptatibus, nostrum aperiam illum sed laborum, repellendus nesciunt sequi. At
-            corrupti quaerat sapiente eius nam reprehenderit consequuntur quibusdam consequatur quae fugiat? Ad a sunt
-            quas! Atque nam minima totam laborum beatae placeat possimus!
-          </Text>
-        </View>
-      </View>
-      <View style={styles.listCard}>
-        <Image
-          style={styles.cardImage}
-          source={require("../../assets/images/apt.jpg")}
-          contentFit="cover"
-          transition={1000}
-        />
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>Listimi 1</Text>
-          <Text style={styles.cardDescription} ellipsizeMode="tail" numberOfLines={3}>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Labore cum esse itaque veritatis asperiores,
-            voluptates non dolorum voluptatibus, nostrum aperiam illum sed laborum, repellendus nesciunt sequi. At
-            corrupti quaerat sapiente eius nam reprehenderit consequuntur quibusdam consequatur quae fugiat? Ad a sunt
-            quas! Atque nam minima totam laborum beatae placeat possimus!
-          </Text>
-        </View>
-      </View>
-      <View style={styles.listCard}>
-        <Image
-          style={styles.cardImage}
-          source={require("../../assets/images/apt.jpg")}
-          contentFit="cover"
-          transition={1000}
-        />
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>Listimi 1</Text>
-          <Text style={styles.cardDescription} ellipsizeMode="tail" numberOfLines={3}>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Labore cum esse itaque veritatis asperiores,
-            voluptates non dolorum voluptatibus, nostrum aperiam illum sed laborum, repellendus nesciunt sequi. At
-            corrupti quaerat sapiente eius nam reprehenderit consequuntur quibusdam consequatur quae fugiat? Ad a sunt
-            quas! Atque nam minima totam laborum beatae placeat possimus!
-          </Text>
-        </View>
-      </View>
+      {cardItems.map((item) => {
+        return (
+          <TouchableOpacity
+            style={styles.listCard}
+            onPress={() => {
+              router.push(`/${item.id}`);
+            }}>
+            <Image style={styles.cardImage} source={item.image} contentFit="cover" transition={1000} />
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>{item.title}</Text>
+              <Text style={styles.cardDescription} ellipsizeMode="tail" numberOfLines={3}>
+                {item.description}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        );
+      })}
     </ScrollView>
   );
 }
