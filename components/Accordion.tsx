@@ -12,12 +12,16 @@ const SECTIONS = [
   },
 ];
 
+interface Section {
+  title: string;
+  content: string;
+}
 export class AccordionView extends Component {
   state = {
     activeSections: [],
   };
 
-  _renderSectionTitle = (section) => {
+  _renderSectionTitle = (section: Section) => {
     return (
       <View>
         <Text>{section.content}</Text>
@@ -25,7 +29,7 @@ export class AccordionView extends Component {
     );
   };
 
-  _renderHeader = (section) => {
+  _renderHeader = (section: Section) => {
     return (
       <View
         style={{
@@ -50,7 +54,7 @@ export class AccordionView extends Component {
     );
   };
 
-  _renderContent = (section) => {
+  _renderContent = (section: Section) => {
     return (
       <View>
         <SelectDropdown
@@ -93,7 +97,7 @@ export class AccordionView extends Component {
     );
   };
 
-  _updateSections = (activeSections) => {
+  _updateSections = (activeSections: number[]) => {
     this.setState({ activeSections });
   };
 
