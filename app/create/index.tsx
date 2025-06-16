@@ -1,3 +1,4 @@
+import { SelectDropdownComponent } from "@/components/SelectDropdown";
 import { Text, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
@@ -6,8 +7,15 @@ import SelectDropdown from "react-native-select-dropdown";
 
 export default function CreateScreen() {
   return (
-    <ScrollView style={{ flex: 1, padding: 20 }}>
+    <ScrollView style={{ flex: 1, padding: 20, backgroundColor: "white" }}>
       <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 20 }}>Krijo një listim të ri</Text>
+
+      <SelectDropdownComponent
+        label="Lloji i Listimit"
+        options={["Apartament", "Shtëpi", "Zyrë"]}
+        placeholder="Zgjedh Llojin e Listimit"
+        onSelect={() => {}}
+      />
 
       <View
         style={{

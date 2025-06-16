@@ -12,13 +12,15 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
+          tabBarStyle: {
+            borderTopWidth: 0,
+          },
         }}>
         <Tabs.Screen
           name="index"
           options={{
             tabBarIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} />,
             title: "Listimet",
-            tabBarActiveTintColor: Colors.light.tabIconSelected,
           }}
         />
         <Tabs.Screen

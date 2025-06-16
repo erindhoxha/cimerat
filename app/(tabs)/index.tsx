@@ -218,9 +218,6 @@ export default function TabOneScreen() {
                   flex: 1,
                   width: "100%",
                 }}>
-                <Collapsible collapsed={false}>
-                  <Text>Hello world</Text>
-                </Collapsible>
                 <Text
                   style={{
                     marginBottom: 6,

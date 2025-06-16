@@ -6,17 +6,18 @@ import SelectDropdown from "react-native-select-dropdown";
 interface SelectDropdownProps {
   options: string[];
   placeholder?: string;
+  label: string;
   onSelect: (selectedItem: string, index: number) => void;
 }
 
-export const SelectDropdownComponent = ({ options, placeholder, onSelect }: SelectDropdownProps) => {
+export const SelectDropdownComponent = ({ options, placeholder, label, onSelect }: SelectDropdownProps) => {
   return (
     <View>
       <Text
         style={{
           marginBottom: 6,
         }}>
-        Çmimi
+        {label}
       </Text>
       <View
         style={{
