@@ -30,7 +30,7 @@ export default function TabTwoScreen() {
         <Text style={{ fontSize: 18, fontWeight: "bold" }}>Listimet tua</Text>
         <TouchableOpacity
           onPress={() => {
-            // Handle create listing action
+            router.push("/create");
           }}
           style={{
             backgroundColor: Colors.light.yellow,

@@ -58,7 +58,7 @@ export default function LoginScreen() {
       <Text
         style={{
           marginTop: 20,
-          color: "#007BFF",
+          color: Colors.light.tint,
           textDecorationLine: "underline",
         }}
         onPress={() => {
@@ -71,7 +71,7 @@ export default function LoginScreen() {
         href="/register"
         style={{
           marginTop: 20,
-          color: "#007BFF",
+          color: Colors.light.tint,
           textDecorationLine: "underline",
         }}>
         Regjistrohu
