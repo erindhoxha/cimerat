@@ -18,7 +18,6 @@ export default function LoginScreen() {
       <TextInput
         style={{
           padding: 12,
-          marginTop: 12,
           borderWidth: 1,
           borderColor: errors.email ? "red" : "#ccc",
           borderRadius: 12,
@@ -53,7 +52,7 @@ export default function LoginScreen() {
           // Handle login action with data
           reset();
         })}>
-        <Text style={{ color: "#000" }}>Kyçu</Text>
+        <Text>Kyçu</Text>
       </TouchableOpacity>
       <Text
         style={{
@@ -63,7 +62,6 @@ export default function LoginScreen() {
         }}
         onPress={() => {
           router.push("/forgot-password");
-          // Handle forgot password action
         }}>
         Harrove fjalëkalimin?
       </Text>

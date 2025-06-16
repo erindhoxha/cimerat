@@ -1,10 +1,11 @@
-import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
 import { Text, View } from "@/components/Themed";
 import SelectDropdown from "react-native-select-dropdown";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { CardItem } from "@/components/CardItem";
 import { cimerat, cities, cmimi, DATA, neighborhoods, numriIDhomave } from "@/constants/mock";
+import { useRouter } from "expo-router";
 
 export default function TabOneScreen() {
   const [disabled, setDisabled] = useState(true);
@@ -17,6 +18,15 @@ export default function TabOneScreen() {
 
   const cityRef = useRef<SelectDropdown>(null);
   const neighborHoodRef = useRef<SelectDropdown>(null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.canGoBack()) {
+      router.dismissAll();
+      router.replace("/");
+    }
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -92,7 +102,6 @@ export default function TabOneScreen() {
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
               </View>
-
               <View style={{ flex: 1, width: "100%" }}>
                 <Text
                   style={{
@@ -301,33 +310,8 @@ export default function TabOneScreen() {
               </View>
             </View>
             {/* <AccordionView /> */}
-
-            {selectedCity && selectedNeighborhood && (
-              <View style={styles.pillMainText}>
-                <Text>Listimet në </Text>
-                <TouchableOpacity
-                  style={styles.pill}
-                  onPress={() => {
-                    cityRef.current?.openDropdown();
-                  }}>
-                  <Text style={styles.pillText}>{selectedCity}</Text>
-                </TouchableOpacity>
-                <Text>, </Text>
-                <TouchableOpacity
-                  style={styles.pill}
-                  onPress={() => {
-                    neighborHoodRef.current?.openDropdown();
-                  }}>
-                  <Text style={styles.pillText}>{selectedNeighborhood}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
           </>
         )}
-        style={{
-          padding: 0,
-          margin: 0,
-        }}
         data={DATA}
         renderItem={({ item }) => (
           <CardItem
@@ -353,50 +337,7 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 80,
   },
-  title: {
-    fontSize: 16,
-    fontWeight: "light",
-  },
-
-  pill: {
-    backgroundColor: "#0553",
-    color: "#fff",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 20,
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  pillMainText: {
-    fontWeight: "bold",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  pillText: {
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
-  },
   dropdownButtonStyle: {
-    width: "100%",
-    height: 50,
-    marginBottom: 12,
-    backgroundColor: "#E9ECEF",
-    borderRadius: 12,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    flexShrink: 1,
-  },
-  dropdownButtonStyleFull: {
     width: "100%",
     height: 50,
     marginBottom: 12,
@@ -424,10 +365,6 @@ const styles = StyleSheet.create({
   dropdownButtonArrowStyle: {
     fontSize: 28,
   },
-  dropdownButtonIconStyle: {
-    fontSize: 28,
-    marginRight: 8,
-  },
   dropdownMenuStyle: {
     backgroundColor: "#E9ECEF",
     borderRadius: 8,
@@ -444,8 +381,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "500",
     color: "#151E26",
-  },
-  dropdownItemIconStyle: {
-    fontSize: 28,
   },
 });

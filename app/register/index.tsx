@@ -20,7 +20,6 @@ export default function RegisterScreen() {
       <TextInput
         style={{
           padding: 12,
-          marginTop: 12,
           borderWidth: 1,
           borderColor: errors.email ? "red" : "#ccc",
           borderRadius: 12,

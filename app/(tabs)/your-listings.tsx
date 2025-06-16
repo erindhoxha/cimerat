@@ -1,8 +1,6 @@
 import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
-
 import { Text, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
-import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { HorizontalCardItem } from "@/components/HorizontalCardItem";
 
@@ -49,11 +47,10 @@ export default function TabTwoScreen() {
           <Text style={{ color: "#000", fontSize: 14 }}>Krijo një listim të ri</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <Text style={{ marginTop: 10, marginBottom: 24 }}>
+      <View style={styles.separator} lightColor="#eee" />
+      <Text style={styles.emptyText}>
         Nuk keni asnjë listim të krijuar. Shtoni një listim të ri duke klikuar në butonin "Krijo" në skedën e sipërme.
       </Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       {cardItems.map((item) => (
         <HorizontalCardItem item={item} router={router} key={item.id} />
       ))}
@@ -66,6 +63,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     backgroundColor: "#fff",
+  },
+  emptyText: {
+    marginTop: 10,
+    marginBottom: 24,
   },
   title: {
     fontSize: 16,

@@ -2,21 +2,19 @@ import { SelectDropdownComponent } from "@/components/SelectDropdown";
 import { Text, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
-import { Button, ScrollView, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 
 export default function CreateScreen() {
   return (
-    <ScrollView style={{ flex: 1, padding: 20, backgroundColor: "white" }}>
+    <ScrollView style={styles.container}>
       <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 20 }}>Krijo një listim të ri</Text>
-
       <SelectDropdownComponent
         label="Lloji i Listimit"
         options={["Apartament", "Shtëpi", "Zyrë"]}
         placeholder="Zgjedh Llojin e Listimit"
         onSelect={() => {}}
       />
-
       <View
         style={{
           flex: 1,
@@ -326,7 +324,6 @@ export default function CreateScreen() {
             return undefined;
           }}
           renderButton={(_, isOpened) => {
-            // Apply a different style if disabled
             return (
               <View style={[styles.dropdownButtonStyle]}>
                 <Text style={[styles.dropdownButtonTxtStyle]}>{"Numri i Cimerave"}</Text>
@@ -362,6 +359,7 @@ export default function CreateScreen() {
 }
 
 const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20, backgroundColor: "white" },
   dropdownButtonStyle: {
     width: "100%",
     height: 50,
@@ -375,35 +373,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
   },
-  dropdownButtonStyleFull: {
-    width: "100%",
-    height: 50,
-    marginBottom: 12,
-    borderRadius: 12,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    flexShrink: 1,
-  },
   dropdownButtonTxtStyle: {
     flex: 1,
     fontSize: 14,
     fontWeight: "500",
     color: "#151E26",
-  },
-  dropdownButtonDisabledStyle: {
-    opacity: 0.6,
-  },
-  dropdownButtonTxtDisabledStyle: {
-    color: "#aaa",
-  },
-  dropdownButtonArrowStyle: {
-    fontSize: 28,
-  },
-  dropdownButtonIconStyle: {
-    fontSize: 28,
-    marginRight: 8,
   },
   dropdownMenuStyle: {
     borderRadius: 8,
@@ -420,8 +394,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "500",
     color: "#151E26",
-  },
-  dropdownItemIconStyle: {
-    fontSize: 28,
   },
 });

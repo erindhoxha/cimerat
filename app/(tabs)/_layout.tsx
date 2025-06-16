@@ -1,14 +1,14 @@
 import React from "react";
 
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Tabs, useNavigation, useRouter } from "expo-router";
+import { Tabs } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
+import { StyleSheet } from "react-native";
 
 export default function TabLayout() {
-  const router = useRouter();
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.container}>
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -32,3 +32,9 @@ export default function TabLayout() {
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
