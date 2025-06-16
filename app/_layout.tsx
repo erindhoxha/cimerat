@@ -1,7 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
@@ -63,6 +63,7 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const { openDrawer, closeDrawer, isOpen } = useDrawer();
+  const router = useRouter();
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -78,9 +79,22 @@ function RootLayoutNav() {
           headerBackTitle: "Back",
           headerTitle: "Cimerat",
           headerRight: () => (
-            <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={{ marginRight: 16 }}>
-              <FontAwesome name={isOpen ? "close" : "navicon"} size={24} color={Colors[colorScheme ?? "light"].text} />
-            </Pressable>
+            <>
+              <Pressable
+                onPress={() => {
+                  router.push("/profile");
+                }}
+                style={{ marginRight: 16 }}>
+                <FontAwesome name="user-circle-o" size={24} color={Colors[colorScheme ?? "light"].text} />
+              </Pressable>
+              <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={{ marginRight: 16 }}>
+                <FontAwesome
+                  name={isOpen ? "close" : "navicon"}
+                  size={24}
+                  color={Colors[colorScheme ?? "light"].text}
+                />
+              </Pressable>
+            </>
           ),
         }}>
         <Stack.Screen name="(item)/[item]" />
