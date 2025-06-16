@@ -1,8 +1,9 @@
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { TextInput, TouchableOpacity } from "react-native";
 import { useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
 import { useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
+import { Text, View } from "@/components/Themed";
 
 export default function RegisterScreen() {
   const [submitted, setSubmitted] = useState(false);

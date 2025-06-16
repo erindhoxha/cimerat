@@ -9,7 +9,7 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/components/useColorScheme";
 import { Pressable } from "react-native";
 import Colors from "@/constants/Colors";
-import { View } from "@/components/Themed";
+import { Text, View } from "@/components/Themed";
 import { DrawerProvider, useDrawer } from "@/components/context/DrawerProvider";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 
@@ -77,7 +77,17 @@ function RootLayoutNav() {
             fontWeight: "bold",
           },
           headerBackTitle: "Back",
-          headerTitle: "Cimerat",
+          headerTitle: () => {
+            return (
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}>
+                cimerat.com
+              </Text>
+            );
+          },
           headerRight: () => (
             <>
               <Pressable

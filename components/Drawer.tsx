@@ -2,17 +2,9 @@ import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  StyleSheet,
-  Animated,
-  Dimensions,
-  Touchable,
-} from "react-native";
+import { TouchableOpacity, TouchableWithoutFeedback, StyleSheet, Animated, Dimensions, Touchable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Text, View } from "@/components/Themed";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 

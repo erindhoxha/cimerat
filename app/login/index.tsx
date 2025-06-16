@@ -1,7 +1,8 @@
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { TextInput, TouchableOpacity } from "react-native";
 import { useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
+import { Text, View } from "@/components/Themed";
 
 export default function LoginScreen() {
   const {
