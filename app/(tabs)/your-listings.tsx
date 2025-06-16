@@ -27,7 +27,7 @@ export default function TabTwoScreen() {
   const router = useRouter();
   return (
     <ScrollView style={styles.container}>
-      <View style={{ backgroundColor: "#fff", borderRadius: 10, marginBottom: 0 }}>
+      <View>
         <Text style={{ fontSize: 18, fontWeight: "bold" }}>Listimet tua</Text>
         <TouchableOpacity
           onPress={() => {
@@ -43,11 +43,10 @@ export default function TabTwoScreen() {
             marginBottom: 20,
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.25,
+            shadowOpacity: 0.12,
             shadowRadius: 3.84,
-            elevation: 5,
           }}>
-          <Text style={{ color: "#000", fontSize: 16 }}>Krijo një listim të ri</Text>
+          <Text style={{ color: "#000", fontSize: 14 }}>Krijo një listim të ri</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />

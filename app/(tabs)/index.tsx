@@ -4,181 +4,7 @@ import SelectDropdown from "react-native-select-dropdown";
 import { useRef, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { CardItem } from "@/components/CardItem";
-import Collapsible from "react-native-collapsible";
-import { AccordionView } from "@/components/Accordion";
-
-const DATA = [
-  {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    title: "Prishtinë, Dardani, 2+1",
-    description: "Banesë per qira në Dardani, i ka të gjitha pajisjet e nevojshme, 2 cimera jane qe jetojne ketu",
-    price: "250€ për muaj",
-    image: require("../../assets/images/apt.jpg"),
-    date: "10/06/2025",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second Item",
-    description: "Banesë për qira në Dardani, i ka të gjitha pajisjet e nevojshme, 2 cimera jane qe jetojne ketu",
-    price: "350€ për muaj",
-    image: require("../../assets/images/apt2.jpg"),
-    date: "10/06/2025",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third Item",
-    description: "Banesë për qira në Dardani, i ka të gjitha pajisjet e nevojshme, 2 cimera jane qe jetojne ketu",
-    price: "400€ per muaj",
-    image: require("../../assets/images/apt3.jpg"),
-    date: "10/06/2025",
-  },
-];
-
-const cities = [
-  "Prishtina",
-  "Peja",
-  "Mitrovica",
-  "Ferizaj",
-  "Gjakova",
-  "Gjilan",
-  "Vushtrri",
-  "Shtime",
-  "Obiliq",
-  "Lipjan",
-  "Fushë Kosovë",
-  "Drenas",
-  "Kaçanik",
-  "Dragash",
-  "Klinë",
-  "Deçan",
-  "Istog",
-  "Rahovec",
-  "Suhareke",
-];
-
-const neighborhoods: { [key: string]: string[] } = {
-  Prishtina: [
-    "Ulpiana",
-    "Dardania",
-    "Bregu i Diellit",
-    "Lakrishtë",
-    "Arbëria",
-    "Mati 1",
-    "Mati 2",
-    "Veternik",
-    "Velania",
-    "Qafa",
-    "Qendra",
-    "Kalabria",
-    "Emshir",
-    "Taslixhe",
-    "Tophane",
-    "Kodra e Trimave",
-  ],
-  Mitrovica: [
-    "North Mitrovica",
-    "South Mitrovica",
-    "Bosniak Mahala",
-    "Roma Mahalla",
-    "Fidanishte",
-    "Ilirida",
-    "Zhabar i Poshtëm",
-    "Mikronaselje (Lagjja e Minatorëve)",
-    "Tri Solitera",
-    "Dolina Doktoreve",
-    "Brdjani (Kroi i Vitakut)",
-    "Suvi Do (Suhodoll)",
-  ],
-  Peja: [
-    "City Center (Bazaar/Çarshia)",
-    "Babanaj",
-    "Fidanishte",
-    "Dardania",
-    "Qyshk",
-    "Rugova region (surrounding mountain communities)",
-  ],
-  Gjakova: [
-    "City Center",
-    "Bajram Curri",
-    "Dardania",
-    "Bajgora",
-    "Gjakovë e Re",
-    "Krasniqi",
-    "Përlepnicë",
-    "Blloku i Ri",
-  ],
-  Ferizaj: [
-    "City Center",
-    "Pika 6 / Zona akova",
-    "Old Bazaar (Çarshia e Madhe / Hadumitku Mahala)",
-    "Çabrati",
-    "Ura e Gurit",
-    "City Center",
-    "...plus many rural settlements (e.g. Agaj, Botusha, Doli…) ",
-  ],
-  Gjilan: [
-    "City Center / Old Bazaar",
-    "Parku i Qytetit area",
-    "Germia Park area",
-    "...plus villages around Lake Badovc",
-  ],
-  Vushtrri: [
-    "City Center (ancient fortress area)",
-    "Rashan",
-    "Roger",
-    // (Note: larger town with surrounding villages)
-  ],
-  Shtime: ["City Center", "Strimberk", "Runik"],
-  Obiliq: ["City Center", "Gërmadhë", "Llukar"],
-  Lipjan: ["City Center", "Uçë", "Gllarevë"],
-  "Fushë Kosovë": ["City Center", "Skivjan", "Bubël"],
-  Drenas: ["City Center", "Komoran", "Likoc"],
-  Kaçanik: ["City Center", "Besiane", "Proklate"],
-  Dragash: ["City Center", "Brods"],
-  Klinë: ["City Center", "Pekl", "Lukare"],
-  Deçan: ["City Center", "Isniq", "Rashan"],
-  Istog: ["City Center", "Lumbardh", "Stubëll"],
-  Rahovec: ["City Center", "Malisheve", "Ormoc"],
-  Suhareke: ["City Center", "Lower Suharekë", "Upper Suharekë"],
-};
-
-const numriIDhomave = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-
-const cimerat = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-
-const cmimi = [
-  "0€",
-  "50€",
-  "100€",
-  "150€",
-  "200€",
-  "250€",
-  "300€",
-  "350€",
-  "400€",
-  "450€",
-  "500€",
-  "550€",
-  "600€",
-  "650€",
-  "700€",
-  "750€",
-  "800€",
-  "850€",
-  "900€",
-  "950€",
-  "1000€",
-  "1050€",
-  "1100€",
-  "1150€",
-  "1200€",
-  "1250€",
-  "1300€",
-  "1350€",
-  "1400€",
-  "1450€",
-  "1500+€",
-];
+import { cimerat, cities, cmimi, DATA, neighborhoods, numriIDhomave } from "@/constants/mock";
 
 export default function TabOneScreen() {
   const [disabled, setDisabled] = useState(true);
@@ -195,10 +21,7 @@ export default function TabOneScreen() {
   return (
     <View style={styles.container}>
       <FlatList
-        contentContainerStyle={{
-          padding: 20,
-          paddingBottom: 80,
-        }}
+        contentContainerStyle={styles.contentContainerStyle}
         ListEmptyComponent={() => (
           <View>
             <Text>Asnjë rezultat</Text>
@@ -526,7 +349,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-
+  contentContainerStyle: {
+    padding: 20,
+    paddingBottom: 80,
+  },
   title: {
     fontSize: 16,
     fontWeight: "light",
