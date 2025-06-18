@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
 import { Text, View } from "@/components/Themed";
+import Box from "@/components/Box";
 
 export default function LoginScreen() {
   const {
@@ -15,9 +16,11 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header} fontSize="xl" fontWeight="bold">
-        Kyçu
-      </Text>
+      <Box marginBottom={12}>
+        <Text fontSize="xl" fontWeight="bold">
+          Kyçu
+        </Text>
+      </Box>
       <TextInput
         style={{
           padding: 12,
