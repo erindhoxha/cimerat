@@ -1,13 +1,13 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/components/useColorScheme";
-import { Pressable } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import Colors from "@/constants/Colors";
 import { Text, View } from "@/components/Themed";
 import { DrawerProvider, useDrawer } from "@/components/context/DrawerProvider";
@@ -64,6 +64,7 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const { openDrawer, closeDrawer, isOpen } = useDrawer();
   const router = useRouter();
+  const segments = useSegments();
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -78,26 +79,21 @@ function RootLayoutNav() {
           },
           headerBackTitle: "Back",
           headerTitle: () => {
-            return (
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "bold",
-                }}>
-                cimerat.com
-              </Text>
-            );
+            return <Text style={styles.logo}>cimerat.com</Text>;
           },
           headerRight: () => (
             <>
               <Pressable
                 onPress={() => {
+                  if (segments[0] === "profile") {
+                    return;
+                  }
                   router.push("/profile");
                 }}
-                style={{ marginRight: 16 }}>
+                style={styles.sideIcon}>
                 <FontAwesome name="user-circle-o" size={24} color={Colors[colorScheme ?? "light"].text} />
               </Pressable>
-              <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={{ marginRight: 16 }}>
+              <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={styles.sideIcon}>
                 <FontAwesome
                   name={isOpen ? "close" : "navicon"}
                   size={24}
@@ -116,3 +112,13 @@ function RootLayoutNav() {
     </ThemeProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  logo: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  sideIcon: {
+    marginRight: 16,
+  },
+});

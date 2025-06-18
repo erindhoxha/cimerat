@@ -1,4 +1,4 @@
-import { TextInput, TouchableOpacity } from "react-native";
+import { StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import { useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
@@ -14,8 +14,10 @@ export default function LoginScreen() {
   const router = useRouter();
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 16 }}>Kyçu</Text>
+    <View style={styles.container}>
+      <Text style={styles.header} fontSize="xl" fontWeight="bold">
+        Kyçu
+      </Text>
       <TextInput
         style={{
           padding: 12,
@@ -50,7 +52,6 @@ export default function LoginScreen() {
           alignItems: "center",
         }}
         onPress={handleSubmit((data) => {
-          // Handle login action with data
           reset();
         })}>
         <Text>Kyçu</Text>
@@ -78,3 +79,13 @@ export default function LoginScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 24,
+  },
+  header: {
+    marginBottom: 16,
+  },
+});
