@@ -6,6 +6,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { CardItem } from "@/components/CardItem";
 import { cimerat, cities, cmimi, DATA, neighborhoods, numriIDhomave } from "@/constants/mock";
 import { useRouter } from "expo-router";
+import Box from "@/components/Box";
 
 export default function TabOneScreen() {
   const [disabled, setDisabled] = useState(true);
@@ -13,8 +14,8 @@ export default function TabOneScreen() {
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string | null>(null);
   const [selectedRooms, setSelectedRooms] = useState<string | null>(null);
   const [selectedCimer, setSelectedCimer] = useState<string | null>(null);
-  const [selectedPriceFrom, setSelectedPriceFrom] = useState<string | null>(null);
-  const [selectedPriceTo, setSelectedPriceTo] = useState<string | null>(null);
+  const [selectedPriceFrom, setSelectedPriceFrom] = useState<number | null>(null);
+  const [selectedPriceTo, setSelectedPriceTo] = useState<number | null>(null);
 
   const cityRef = useRef<SelectDropdown>(null);
   const neighborHoodRef = useRef<SelectDropdown>(null);
@@ -39,16 +40,16 @@ export default function TabOneScreen() {
         )}
         ListHeaderComponent={() => (
           <>
-            <View
+            <Box
+              flex={1}
+              flexDirection="row"
               style={{
-                flexShrink: 1,
-                flexDirection: "row",
                 gap: 12,
                 maxWidth: "100%",
               }}>
-              <View
+              <Box
+                flex={1}
                 style={{
-                  flex: 1,
                   width: "100%",
                 }}>
                 <Text
@@ -101,7 +102,7 @@ export default function TabOneScreen() {
                   showsVerticalScrollIndicator={false}
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
-              </View>
+              </Box>
               <View style={{ flex: 1, width: "100%" }}>
                 <Text
                   style={{
@@ -153,7 +154,7 @@ export default function TabOneScreen() {
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
               </View>
-            </View>
+            </Box>
             <View
               style={{
                 flexShrink: 1,
@@ -258,12 +259,18 @@ export default function TabOneScreen() {
                   data={cmimi}
                   onSelect={(selectedItem, index) => {
                     setSelectedPriceFrom(selectedItem);
+                    if (selectedPriceTo && selectedItem > selectedPriceTo) {
+                      setSelectedPriceTo(undefined);
+                    }
                   }}
+                  defaultValue={selectedPriceFrom}
                   renderButton={(_, isOpened) => {
                     // Apply a different style if disabled
                     return (
                       <View style={[styles.dropdownButtonStyle]}>
-                        <Text style={[styles.dropdownButtonTxtStyle]}>{selectedPriceFrom || "Nga"}</Text>
+                        <Text style={[styles.dropdownButtonTxtStyle]}>
+                          {(selectedPriceFrom && selectedPriceFrom + "€") || "Nga"}
+                        </Text>
                         <Text>
                           <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
                         </Text>
@@ -282,15 +289,18 @@ export default function TabOneScreen() {
                 />
 
                 <SelectDropdown
-                  data={cmimi}
-                  onSelect={(selectedItem, index) => {
+                  data={cmimi.filter((price) => selectedPriceFrom && price > selectedPriceFrom)}
+                  onSelect={(selectedItem) => {
                     setSelectedPriceTo(selectedItem);
                   }}
+                  defaultValue={selectedPriceTo}
                   renderButton={(_, isOpened) => {
                     // Apply a different style if disabled
                     return (
                       <View style={[styles.dropdownButtonStyle]}>
-                        <Text style={[styles.dropdownButtonTxtStyle]}>{selectedPriceTo || "Deri në"}</Text>
+                        <Text style={[styles.dropdownButtonTxtStyle]}>
+                          {(selectedPriceTo && selectedPriceTo + "€") || "Deri në"}
+                        </Text>
                         <Text>
                           <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
                         </Text>
