@@ -260,7 +260,7 @@ export default function TabOneScreen() {
                   onSelect={(selectedItem, index) => {
                     setSelectedPriceFrom(selectedItem);
                     if (selectedPriceTo && selectedItem > selectedPriceTo) {
-                      setSelectedPriceTo(undefined);
+                      setSelectedPriceTo(null);
                     }
                   }}
                   defaultValue={selectedPriceFrom}
@@ -277,7 +277,7 @@ export default function TabOneScreen() {
                       </View>
                     );
                   }}
-                  renderItem={(item, index, isSelected) => {
+                  renderItem={(item, _, isSelected) => {
                     return (
                       <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
                         <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
