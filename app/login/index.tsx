@@ -59,17 +59,18 @@ export default function LoginScreen() {
         })}>
         <Text>Kyçu</Text>
       </TouchableOpacity>
-      <Text
-        style={{
-          marginTop: 20,
-          color: Colors.light.tint,
-          textDecorationLine: "underline",
-        }}
-        onPress={() => {
-          router.push("/forgot-password");
-        }}>
-        Harrove fjalëkalimin?
-      </Text>
+      <Box marginTop={20}>
+        <Text
+          style={{
+            color: Colors.light.tint,
+            textDecorationLine: "underline",
+          }}
+          onPress={() => {
+            router.push("/forgot-password");
+          }}>
+          Harrove fjalëkalimin?
+        </Text>
+      </Box>
       <Link
         href="/register"
         style={{

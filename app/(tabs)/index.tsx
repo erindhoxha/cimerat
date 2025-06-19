@@ -8,6 +8,23 @@ import { cimerat, cities, cmimi, DATA, neighborhoods, numriIDhomave } from "@/co
 import { useRouter } from "expo-router";
 import Box from "@/components/Box";
 
+const SelectButton = ({
+  title,
+  isOpened,
+  placeholder,
+}: {
+  title: string | null;
+  isOpened?: boolean;
+  placeholder: string;
+}) => (
+  <View style={[styles.dropdownButtonStyle]}>
+    <Text style={[styles.dropdownButtonTxtStyle]}>{title || placeholder}</Text>
+    <Text>
+      <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
+    </Text>
+  </View>
+);
+
 export default function TabOneScreen() {
   const [disabled, setDisabled] = useState(true);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
@@ -84,12 +101,9 @@ export default function TabOneScreen() {
                   renderButton={(_, isOpened) => {
                     // Apply a different style if disabled
                     return (
-                      <View style={[styles.dropdownButtonStyle]}>
-                        <Text style={[styles.dropdownButtonTxtStyle]}>{selectedCity || "Zgjedh Qytetin"}</Text>
-                        <Text>
-                          <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
-                        </Text>
-                      </View>
+                      <>
+                        <SelectButton title={selectedCity} isOpened={isOpened} placeholder="Zgjedh Qytetin" />
+                      </>
                     );
                   }}
                   renderItem={(item, index, isSelected) => {

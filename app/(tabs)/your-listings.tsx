@@ -26,25 +26,15 @@ export default function TabTwoScreen() {
   return (
     <ScrollView style={styles.container}>
       <View>
-        <Text style={{ fontSize: 18, fontWeight: "bold" }}>Listimet tua</Text>
+        <Text fontSize="xl" fontWeight="bold">
+          Listimet tua
+        </Text>
         <TouchableOpacity
           onPress={() => {
             router.push("/create");
           }}
-          style={{
-            backgroundColor: Colors.light.yellow,
-            padding: 10,
-            borderRadius: 5,
-            marginTop: 20,
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: 20,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.12,
-            shadowRadius: 3.84,
-          }}>
-          <Text style={{ color: "#000", fontSize: 14 }}>Krijo një listim të ri</Text>
+          style={styles.primaryButton}>
+          <Text>Krijo një listim të ri</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.separator} lightColor="#eee" />
@@ -75,5 +65,18 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     height: 1,
     width: "100%",
+  },
+  primaryButton: {
+    backgroundColor: Colors.light.yellow,
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 3.84,
   },
 });

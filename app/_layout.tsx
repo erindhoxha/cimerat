@@ -5,7 +5,6 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
-
 import { useColorScheme } from "@/components/useColorScheme";
 import { Pressable, StyleSheet } from "react-native";
 import Colors from "@/constants/Colors";
@@ -71,9 +70,9 @@ function RootLayoutNav() {
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: Colors[colorScheme ?? "light"].yellow,
+            backgroundColor: Colors["light"].yellow,
           },
-          headerTintColor: Colors[colorScheme ?? "light"].text,
+          headerTintColor: Colors["light"].text,
           headerTitleStyle: {
             fontWeight: "bold",
           },
