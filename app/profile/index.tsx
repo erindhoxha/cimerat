@@ -13,12 +13,10 @@ export default function ProfileScreen() {
         <Text>Përditëso email adresën</Text>
         <TextInput style={styles.textInput} placeholder="Email adresa" autoCapitalize="none" />
       </Box>
-
       <Box marginTop={24}>
         <Text>Përditëso fjalëkalimin</Text>
         <TextInput style={styles.textInput} placeholder="Fjalëkalimi i ri" autoCapitalize="none" />
       </Box>
-
       <TouchableOpacity style={styles.primaryButton}>
         <Text>Perditëso të dhënat</Text>
       </TouchableOpacity>

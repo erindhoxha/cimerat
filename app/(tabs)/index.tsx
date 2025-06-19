@@ -7,16 +7,15 @@ import { CardItem } from "@/components/CardItem/CardItem";
 import { cimerat, cities, cmimi, DATA, neighborhoods, numriIDhomave } from "@/constants/mock";
 import { useRouter } from "expo-router";
 import Box from "@/components/Box/Box";
+import Label from "@/components/Label/Label";
 
-const SelectButton = ({
-  title,
-  isOpened,
-  placeholder,
-}: {
+interface SelectButtonProps {
   title: string | null;
   isOpened?: boolean;
   placeholder: string;
-}) => (
+}
+
+const SelectButton = ({ title, isOpened, placeholder }: SelectButtonProps) => (
   <View style={[styles.dropdownButtonStyle]}>
     <Text style={[styles.dropdownButtonTxtStyle]}>{title || placeholder}</Text>
     <Text>
@@ -24,6 +23,19 @@ const SelectButton = ({
     </Text>
   </View>
 );
+
+interface SelectItemProps {
+  item: string | number;
+  isSelected: boolean;
+}
+
+const SelectItem = ({ isSelected, item }: SelectItemProps) => {
+  return (
+    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+      <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+    </View>
+  );
+};
 
 export default function TabOneScreen() {
   const [disabled, setDisabled] = useState(true);
@@ -62,22 +74,11 @@ export default function TabOneScreen() {
               flexDirection="row"
               style={{
                 gap: 12,
-                maxWidth: "100%",
               }}>
               <Box flex={1}>
-                <Text
-                  style={{
-                    marginBottom: 6,
-                  }}>
-                  Qyteti
-                </Text>
+                <Label>Qyteti</Label>
                 <SelectDropdown
-                  searchInputStyle={{
-                    backgroundColor: "#E9ECEF",
-                    borderRadius: 12,
-                    paddingHorizontal: 12,
-                    paddingVertical: 8,
-                  }}
+                  searchInputStyle={styles.searchInputStyle}
                   searchPlaceHolder="Kërko qytetin..."
                   searchPlaceHolderColor="#6c757d"
                   search={true}
@@ -103,9 +104,9 @@ export default function TabOneScreen() {
                   }}
                   renderItem={(item, index, isSelected) => {
                     return (
-                      <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
-                        <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-                      </View>
+                      <>
+                        <SelectItem item={item} isSelected={isSelected} />
+                      </>
                     );
                   }}
                   showsVerticalScrollIndicator={false}
@@ -113,20 +114,10 @@ export default function TabOneScreen() {
                 />
               </Box>
               <Box flex={1}>
-                <Text
-                  style={{
-                    marginBottom: 6,
-                  }}>
-                  Lagja
-                </Text>
+                <Label>Lagja</Label>
                 <SelectDropdown
                   search={true}
-                  searchInputStyle={{
-                    backgroundColor: "#E9ECEF",
-                    borderRadius: 12,
-                    paddingHorizontal: 12,
-                    paddingVertical: 8,
-                  }}
+                  searchInputStyle={styles.searchInputStyle}
                   searchPlaceHolder="Kërko lagjen..."
                   searchPlaceHolderColor="#6c757d"
                   data={selectedCity ? neighborhoods[selectedCity] : []}
@@ -153,9 +144,9 @@ export default function TabOneScreen() {
                   }}
                   renderItem={(item, index, isSelected) => {
                     return (
-                      <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
-                        <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-                      </View>
+                      <>
+                        <SelectItem item={item} isSelected={isSelected} />
+                      </>
                     );
                   }}
                   showsVerticalScrollIndicator={false}
@@ -163,21 +154,14 @@ export default function TabOneScreen() {
                 />
               </Box>
             </Box>
-            <View
+            <Box
+              flex={1}
+              flexDirection="row"
               style={{
-                flexShrink: 1,
-                flexDirection: "row",
                 gap: 12,
-                maxWidth: "100%",
               }}>
               <Box flex={1} flexDirection="column">
-                <Text
-                  style={{
-                    marginBottom: 6,
-                    width: "100%",
-                  }}>
-                  Numri i dhomave
-                </Text>
+                <Label>Numri i dhomave</Label>
                 <SelectDropdown
                   data={numriIDhomave}
                   onSelect={(selectedItem, index) => {
@@ -196,26 +180,17 @@ export default function TabOneScreen() {
                   }}
                   renderItem={(item, index, isSelected) => {
                     return (
-                      <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
-                        <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-                      </View>
+                      <>
+                        <SelectItem item={item} isSelected={isSelected} />
+                      </>
                     );
                   }}
                   showsVerticalScrollIndicator={false}
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
               </Box>
-              <View
-                style={{
-                  flex: 1,
-                  width: "100%",
-                }}>
-                <Text
-                  style={{
-                    marginBottom: 6,
-                  }}>
-                  Numri i cimerave
-                </Text>
+              <Box flex={1}>
+                <Label>Numri i Cimerave</Label>
                 <SelectDropdown
                   data={cimerat}
                   onSelect={(selectedItem, index) => {
@@ -234,29 +209,23 @@ export default function TabOneScreen() {
                   }}
                   renderItem={(item, index, isSelected) => {
                     return (
-                      <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
-                        <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-                      </View>
+                      <>
+                        <SelectItem item={item} isSelected={isSelected} />
+                      </>
                     );
                   }}
                   showsVerticalScrollIndicator={false}
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
-              </View>
-            </View>
+              </Box>
+            </Box>
             <View>
-              <Text
+              <Label>Çmimi</Label>
+              <Box
+                flex={1}
+                flexDirection="row"
                 style={{
-                  marginBottom: 6,
-                }}>
-                Çmimi
-              </Text>
-              <View
-                style={{
-                  flexShrink: 1,
-                  flexDirection: "row",
                   gap: 12,
-                  maxWidth: "100%",
                 }}>
                 <SelectDropdown
                   data={cmimi}
@@ -282,9 +251,9 @@ export default function TabOneScreen() {
                   }}
                   renderItem={(item, _, isSelected) => {
                     return (
-                      <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
-                        <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-                      </View>
+                      <>
+                        <SelectItem item={item} isSelected={isSelected} />
+                      </>
                     );
                   }}
                   showsVerticalScrollIndicator={false}
@@ -292,7 +261,7 @@ export default function TabOneScreen() {
                 />
 
                 <SelectDropdown
-                  data={cmimi.filter((price) => selectedPriceFrom && price > selectedPriceFrom)}
+                  data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
                   onSelect={(selectedItem) => {
                     setSelectedPriceTo(selectedItem);
                   }}
@@ -312,17 +281,16 @@ export default function TabOneScreen() {
                   }}
                   renderItem={(item, index, isSelected) => {
                     return (
-                      <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
-                        <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-                      </View>
+                      <>
+                        <SelectItem item={item} isSelected={isSelected} />
+                      </>
                     );
                   }}
                   showsVerticalScrollIndicator={false}
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
-              </View>
+              </Box>
             </View>
-            {/* <AccordionView /> */}
           </>
         )}
         data={DATA}
@@ -394,5 +362,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "500",
     color: "#151E26",
+  },
+  searchInputStyle: {
+    backgroundColor: "#E9ECEF",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
 });
