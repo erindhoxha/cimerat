@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Text, View } from "./Themed";
+import { Text, View } from "../Themed";
 import { FontAwesome } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
 

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
-import DrawerExample from "@/components/Drawer";
+import DrawerExample from "@/components/Drawer/Drawer";
 
 type DrawerContextType = {
   openDrawer: () => void;

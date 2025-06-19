@@ -1,6 +1,7 @@
 import { useSharedValue } from "react-native-reanimated";
 import { Slider } from "react-native-awesome-slider";
 import { Text, View } from "./Themed";
+import { StyleSheet } from "react-native";
 
 export const SliderComponent = () => {
   const progress = useSharedValue(30);
@@ -9,10 +10,7 @@ export const SliderComponent = () => {
   return (
     <Slider
       snapThreshold={1}
-      style={{
-        marginBottom: 20,
-        marginTop: 20,
-      }}
+      style={styles.slider}
       steps={4}
       forceSnapToStep={true}
       stepTimingOptions={{
@@ -20,14 +18,12 @@ export const SliderComponent = () => {
       }}
       renderMark={({ index }) => (
         <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            width: 30,
-            position: "absolute",
-            left: index * 10,
-            top: -25,
-          }}>
+          style={[
+            styles.thumb,
+            {
+              left: index * 10,
+            },
+          ]}>
           <Text>{index * 10}€</Text>
         </View>
       )}
@@ -37,3 +33,17 @@ export const SliderComponent = () => {
     />
   );
 };
+
+const styles = StyleSheet.create({
+  slider: {
+    marginBottom: 20,
+    marginTop: 20,
+  },
+  thumb: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 30,
+    position: "absolute",
+    top: -25,
+  },
+});

@@ -1,5 +1,5 @@
-import Box from "@/components/Box";
-import { SelectDropdownComponent } from "@/components/SelectDropdown";
+import Box from "@/components/Box/Box";
+import { SelectDropdownComponent } from "@/components/SelectDropdown/SelectDropdown";
 import { Text, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";

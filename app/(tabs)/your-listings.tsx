@@ -2,7 +2,7 @@ import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import { useRouter } from "expo-router";
-import { HorizontalCardItem } from "@/components/HorizontalCardItem";
+import { HorizontalCardItem } from "@/components/HorizontalCardItem/HorizontalCardItem";
 
 const cardItems = [
   {

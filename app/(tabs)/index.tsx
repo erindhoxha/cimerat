@@ -3,10 +3,10 @@ import { Text, View } from "@/components/Themed";
 import SelectDropdown from "react-native-select-dropdown";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
-import { CardItem } from "@/components/CardItem";
+import { CardItem } from "@/components/CardItem/CardItem";
 import { cimerat, cities, cmimi, DATA, neighborhoods, numriIDhomave } from "@/constants/mock";
 import { useRouter } from "expo-router";
-import Box from "@/components/Box";
+import Box from "@/components/Box/Box";
 
 const SelectButton = ({
   title,
@@ -64,15 +64,10 @@ export default function TabOneScreen() {
                 gap: 12,
                 maxWidth: "100%",
               }}>
-              <Box
-                flex={1}
-                style={{
-                  width: "100%",
-                }}>
+              <Box flex={1}>
                 <Text
                   style={{
                     marginBottom: 6,
-                    width: "100%",
                   }}>
                   Qyteti
                 </Text>
@@ -117,11 +112,10 @@ export default function TabOneScreen() {
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
               </Box>
-              <View style={{ flex: 1, width: "100%" }}>
+              <Box flex={1}>
                 <Text
                   style={{
                     marginBottom: 6,
-                    width: "100%",
                   }}>
                   Lagja
                 </Text>
@@ -167,7 +161,7 @@ export default function TabOneScreen() {
                   showsVerticalScrollIndicator={false}
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
-              </View>
+              </Box>
             </Box>
             <View
               style={{
@@ -176,12 +170,7 @@ export default function TabOneScreen() {
                 gap: 12,
                 maxWidth: "100%",
               }}>
-              <View
-                style={{
-                  flex: 1,
-                  width: "100%",
-                  flexDirection: "column",
-                }}>
+              <Box flex={1} flexDirection="column">
                 <Text
                   style={{
                     marginBottom: 6,
@@ -215,7 +204,7 @@ export default function TabOneScreen() {
                   showsVerticalScrollIndicator={false}
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
-              </View>
+              </Box>
               <View
                 style={{
                   flex: 1,

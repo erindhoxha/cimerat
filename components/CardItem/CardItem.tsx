@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { Text, View } from "./Themed";
+import { Text, View } from "../Themed";
 import { Image } from "expo-image";
 import { StyleSheet, TouchableOpacity } from "react-native";
 

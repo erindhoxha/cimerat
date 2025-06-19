@@ -1,20 +1,19 @@
 import { Image } from "expo-image";
-import { StyleSheet, TouchableOpacity } from "react-native";
-import { Text, View } from "./Themed";
+import { ImageSourcePropType, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View } from "../Themed";
 import { Router } from "expo-router";
 
-export const HorizontalCardItem = ({
-  item,
-  router,
-}: {
+interface HorizontalCardItemProps {
   item: {
     id: string;
     title: string;
-    image: any; // Adjust type as needed, e.g., ImageSourcePropType
+    image: ImageSourcePropType;
     description?: string;
   };
   router: Router;
-}) => {
+}
+
+export const HorizontalCardItem = ({ item, router }: HorizontalCardItemProps) => {
   return (
     <TouchableOpacity
       style={styles.listCard}

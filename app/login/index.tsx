@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
 import { Text, View } from "@/components/Themed";
-import Box from "@/components/Box";
+import Box from "@/components/Box/Box";
 
 export default function LoginScreen() {
   const {
@@ -61,25 +61,18 @@ export default function LoginScreen() {
       </TouchableOpacity>
       <Box marginTop={20}>
         <Text
-          style={{
-            color: Colors.light.tint,
-            textDecorationLine: "underline",
-          }}
+          style={styles.linkText}
           onPress={() => {
             router.push("/forgot-password");
           }}>
           Harrove fjalëkalimin?
         </Text>
       </Box>
-      <Link
-        href="/register"
-        style={{
-          marginTop: 20,
-          color: Colors.light.tint,
-          textDecorationLine: "underline",
-        }}>
-        Regjistrohu
-      </Link>
+      <Box marginTop={20}>
+        <Link href="/register" style={styles.linkText}>
+          Regjistrohu
+        </Link>
+      </Box>
     </View>
   );
 }
@@ -88,6 +81,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
+  },
+  linkText: {
+    color: Colors.light.tint,
+    textDecorationLine: "underline",
   },
   header: {
     marginBottom: 16,

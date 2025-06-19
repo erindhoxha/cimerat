@@ -72,7 +72,6 @@ export class AccordionView extends Component {
             return undefined;
           }}
           renderButton={(_, isOpened) => {
-            // Apply a different style if disabled
             return (
               <View style={[styles.dropdownButtonStyle]}>
                 <Text style={[styles.dropdownButtonTxtStyle]}>{"Zgjedh Qytetin"}</Text>

@@ -2,7 +2,7 @@ import React from "react";
 import { View, ViewProps, StyleProp, ViewStyle } from "react-native";
 
 type BoxProps = ViewProps & {
-  marginTop?: number;
+  marginTop?: number | "auto";
   marginBottom?: number;
   marginLeft?: number;
   marginRight?: number;

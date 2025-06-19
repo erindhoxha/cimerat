@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { TouchableOpacity, TouchableWithoutFeedback, StyleSheet, Animated, Dimensions, Touchable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, View } from "@/components/Themed";
+import Box from "../Box/Box";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -45,17 +46,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
         <View style={styles.overlay} />
       </TouchableWithoutFeedback>
       <Animated.View style={[styles.drawer, { transform: [{ translateX: animation }], paddingTop: insets.top + 20 }]}>
-        <TouchableOpacity
-          onPress={onClose}
-          style={{
-            padding: 4,
-            backgroundColor: "white",
-            borderRadius: 9999,
-            marginBottom: 20,
-            alignSelf: "flex-end",
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
+        <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
           <FontAwesome name="close" size={24} color="#000" style={{ height: 24, width: 24, textAlign: "center" }} />
         </TouchableOpacity>
         <Text
@@ -82,91 +73,45 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
           }}>
           Profili
         </Text>
-        <TouchableOpacity
-          style={{
-            padding: 10,
-            marginTop: "auto",
-            backgroundColor: "white",
-            borderRadius: 8,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            borderWidth: 2,
-            gap: 8,
-            marginBottom: 12,
-          }}
-          onPress={() => {
-            onClose();
-            router.push("/register");
-          }}>
-          <FontAwesome name="user-plus" size={16} color="#000" />
-          <Text
-            style={{
-              textAlign: "center",
-              color: "#000",
-              fontWeight: "500",
-              fontSize: 16,
-            }}>
-            Regjistrohu
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            padding: 10,
-            backgroundColor: "white",
-            borderRadius: 8,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            borderWidth: 2,
-            marginBottom: 48,
-            gap: 8,
-          }}
-          onPress={() => {
-            onClose();
-            router.push("/login");
-          }}>
-          <FontAwesome name="user" size={16} color="#000" />
-          <Text
-            style={{
-              textAlign: "center",
-              color: "#000",
-              fontWeight: "500",
-              fontSize: 16,
-            }}>
-            Kyçu
-          </Text>
-        </TouchableOpacity>
-        {false && (
+        <Box marginBottom={48} marginTop="auto">
           <TouchableOpacity
-            style={{
-              padding: 10,
-              marginTop: "auto",
-              backgroundColor: "white",
-              borderRadius: 8,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              borderWidth: 2,
-              marginBottom: 48,
-              gap: 8,
-            }}
+            style={styles.linkButton}
+            onPress={() => {
+              onClose();
+              router.push("/register");
+            }}>
+            <FontAwesome name="user-plus" size={16} color="#000" />
+            <Text fontWeight="bold">Regjistrohu</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.linkButton}
             onPress={() => {
               onClose();
               router.push("/login");
             }}>
             <FontAwesome name="user" size={16} color="#000" />
-            <Text
-              style={{
-                textAlign: "center",
-                color: "#000",
-                fontWeight: "500",
-                fontSize: 16,
-              }}>
-              Profili
-            </Text>
+            <Text fontWeight="bold">Kyçu</Text>
           </TouchableOpacity>
-        )}
+          {false && (
+            <TouchableOpacity
+              style={styles.linkButton}
+              onPress={() => {
+                onClose();
+                router.push("/login");
+              }}>
+              <FontAwesome name="user" size={16} color="#000" />
+              <Text
+                style={{
+                  textAlign: "center",
+                  color: "#000",
+                  fontWeight: "500",
+                  fontSize: 16,
+                }}>
+                Profili
+              </Text>
+            </TouchableOpacity>
+          )}
+        </Box>
       </Animated.View>
     </>
   );
@@ -177,6 +122,26 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0,0,0,0.5)",
     zIndex: 99,
+  },
+  linkButton: {
+    padding: 10,
+    backgroundColor: "white",
+    borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    gap: 8,
+    marginBottom: 12,
+  },
+  closeIcon: {
+    padding: 4,
+    backgroundColor: "white",
+    borderRadius: 9999,
+    marginBottom: 20,
+    alignSelf: "flex-end",
+    alignItems: "center",
+    justifyContent: "center",
   },
   drawer: {
     position: "absolute",
