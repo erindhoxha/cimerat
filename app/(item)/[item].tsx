@@ -2,6 +2,8 @@ import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { StyleSheet } from "react-native";
 import { Text, View } from "@/components/Themed";
+import { FontAwesome } from "@expo/vector-icons";
+import Box from "@/components/Box";
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -10,7 +12,7 @@ export default function ItemDetailScreen() {
   const { item } = useLocalSearchParams();
 
   return (
-    <View style={{ flex: 1 }}>
+    <Box style={{ flex: 1 }}>
       <Image
         style={styles.cardImage}
         source={require("../../assets/images/apt.jpg")}
@@ -20,11 +22,45 @@ export default function ItemDetailScreen() {
         }}
         transition={1000}
       />
-      <View style={{ paddingHorizontal: 20 }}>
-        <Text style={{ fontSize: 24, fontWeight: "bold", marginVertical: 10 }}>Item {item}</Text>
+      <Box flex={1} style={{ paddingHorizontal: 24, height: "auto" }}>
+        <Box
+          flexDirection="row"
+          justifyContent="space-between"
+          style={{
+            alignItems: "flex-start",
+          }}>
+          <Text style={{ fontSize: 24, fontWeight: "bold" }}>Titulli {item}</Text>
+          <Box
+            flexDirection="row"
+            alignItems="center"
+            paddingHorizontal={8}
+            paddingVertical={4}
+            style={{
+              gap: 12,
+              borderWidth: 1,
+              borderColor: "#ccc",
+              borderRadius: 24,
+            }}>
+            <Box
+              flexDirection="row"
+              alignItems="center"
+              style={{
+                gap: 4,
+              }}>
+              <Text fontSize="md">4</Text>
+              <FontAwesome name="user-o" size={14} color="black" />
+            </Box>
+            <Text>250€</Text>
+          </Box>
+        </Box>
+
         <Text>Item ID: {item}</Text>
-      </View>
-    </View>
+        <Text style={{ marginTop: 10 }}>
+          This is a detailed view of item {item}. Here you can add more information about the item, including
+          descriptions, features, and other relevant details.
+        </Text>
+      </Box>
+    </Box>
   );
 }
 

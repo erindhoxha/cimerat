@@ -1,18 +1,16 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Colors from "@/constants/Colors";
+import * as SplashScreen from "expo-splash-screen";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack, useRouter, useSegments } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
+import { Link, Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
-import "react-native-reanimated";
-import { useColorScheme } from "@/app/hooks/useColorScheme";
-import { Pressable, StyleSheet } from "react-native";
-import Colors from "@/constants/Colors";
+import { Pressable, StyleSheet, useColorScheme } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DrawerProvider, useDrawer } from "../context/DrawerProvider";
-
 export { ErrorBoundary } from "expo-router";
+import "react-native-reanimated";
 
 export const unstable_settings = {
   initialRouteName: "(tabs)",
@@ -76,16 +74,9 @@ function RootLayoutNav() {
           },
           headerRight: () => (
             <>
-              <Pressable
-                onPress={() => {
-                  if (segments[0] === "profile") {
-                    return;
-                  }
-                  router.push("/profile");
-                }}
-                style={styles.sideIcon}>
+              <Link href="/profile" style={styles.sideIcon}>
                 <FontAwesome name="user-circle-o" size={24} color={Colors[colorScheme ?? "light"].text} />
-              </Pressable>
+              </Link>
               <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={styles.sideIcon}>
                 <FontAwesome
                   name={isOpen ? "close" : "navicon"}
