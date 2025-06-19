@@ -1,4 +1,5 @@
 import Box from "@/components/Box/Box";
+import Input from "@/components/Input/Input";
 import { SelectDropdownComponent } from "@/components/SelectDropdown/SelectDropdown";
 import { Text } from "@/components/Text";
 import { View } from "@/components/View/View";
@@ -167,7 +168,7 @@ export default function CreateScreen() {
         }}>
         Titulli<Text style={{ color: "red" }}>*</Text>
       </Text>
-      <TextInput
+      <Input
         placeholder="Titulli i listimit"
         style={{
           borderWidth: 1,

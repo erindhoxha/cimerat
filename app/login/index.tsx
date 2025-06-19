@@ -1,10 +1,11 @@
-import { StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
 import { View } from "@/components/View/View";
 import Box from "@/components/Box/Box";
 import { Text } from "@/components/Text";
+import Input from "@/components/Input/Input";
 
 export default function LoginScreen() {
   const {
@@ -22,30 +23,9 @@ export default function LoginScreen() {
           Kyçu
         </Text>
       </Box>
-      <TextInput
-        style={{
-          padding: 12,
-          borderWidth: 1,
-          borderColor: errors.email ? "red" : "#ccc",
-          borderRadius: 12,
-        }}
-        placeholder="Email adresa"
-        autoCapitalize="none"
-        onChangeText={(text) => setValue("email", text)}
-      />
+      <Input placeholder="Email adresa" autoCapitalize="none" onChangeText={(text) => setValue("email", text)} />
       {errors.email && <Text style={{ color: "red", marginTop: 4 }}>Email është i detyrueshëm</Text>}
-      <TextInput
-        style={{
-          padding: 12,
-          marginTop: 12,
-          borderWidth: 1,
-          borderColor: errors.password ? "red" : "#ccc",
-          borderRadius: 12,
-        }}
-        placeholder="Fjalëkalimi"
-        secureTextEntry
-        onChangeText={(text) => setValue("password", text)}
-      />
+      <Input placeholder="Fjalëkalimi" secureTextEntry onChangeText={(text) => setValue("password", text)} />
       {errors.password && <Text style={{ color: "red", marginTop: 4 }}>Fjalëkalimi është i detyrueshëm</Text>}
       <TouchableOpacity
         style={{
