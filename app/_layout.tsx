@@ -9,8 +9,8 @@ import { useColorScheme } from "@/app/hooks/useColorScheme";
 import { Pressable, StyleSheet } from "react-native";
 import Colors from "@/constants/Colors";
 import { Text, View } from "@/components/Themed";
-import { DrawerProvider, useDrawer } from "@/components/context/DrawerProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { DrawerProvider, useDrawer } from "../context/DrawerProvider";
 
 export { ErrorBoundary } from "expo-router";
 
