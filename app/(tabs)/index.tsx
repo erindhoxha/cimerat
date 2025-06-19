@@ -1,13 +1,14 @@
 import { FlatList, StyleSheet } from "react-native";
-import { Text, View } from "@/components/Themed";
+import { View } from "@/components/View/View";
 import SelectDropdown from "react-native-select-dropdown";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { CardItem } from "@/components/CardItem/CardItem";
-import { cimerat, cities, cmimi, DATA, neighborhoods, numriIDhomave } from "@/constants/mock";
+import { cimerat, cities, cmimi, DATA, neighborhoods, numriIDhomave } from "@/mocks/mocks";
 import { useRouter } from "expo-router";
 import Box from "@/components/Box/Box";
 import Label from "@/components/Label/Label";
+import { Text } from "@/components/Text";
 
 interface SelectButtonProps {
   title: string | null;

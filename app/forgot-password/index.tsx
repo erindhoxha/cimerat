@@ -1,6 +1,7 @@
 import Box from "@/components/Box/Box";
 import Input from "@/components/Input/Input";
-import { Text, View } from "@/components/Themed";
+import { Text } from "@/components/Text";
+import { View } from "@/components/View/View";
 import Colors from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { StyleSheet, TouchableOpacity } from "react-native";
@@ -9,7 +10,9 @@ export default function ForgotPasswordScreen() {
   const router = useRouter();
   return (
     <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 16 }}>Harruar Fjalëkalimin</Text>
+      <Text fontSize="xl" fontWeight="bold" style={{ marginBottom: 16 }}>
+        Harruar Fjalëkalimin
+      </Text>
       <Input placeholder="Email adresa" autoCapitalize="none" />
       <TouchableOpacity style={styles.primaryButton}>
         <Text>Dërgo Emailin e Rindërtimit</Text>

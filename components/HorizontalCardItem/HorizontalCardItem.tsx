@@ -1,7 +1,8 @@
 import { Image } from "expo-image";
 import { ImageSourcePropType, StyleSheet, TouchableOpacity } from "react-native";
-import { Text, View } from "../Themed";
+import { View } from "../View/View";
 import { Router } from "expo-router";
+import { Text } from "../Text";
 
 interface HorizontalCardItemProps {
   item: {

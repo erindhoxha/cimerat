@@ -1,5 +1,5 @@
 import Box from "@/components/Box/Box";
-import { Text, View } from "@/components/Themed";
+import { Text } from "@/components/Text";
 import Colors from "@/constants/Colors";
 import { StyleSheet, TextInput, TouchableOpacity } from "react-native";
 

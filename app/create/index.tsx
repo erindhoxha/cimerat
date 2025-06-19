@@ -1,6 +1,7 @@
 import Box from "@/components/Box/Box";
 import { SelectDropdownComponent } from "@/components/SelectDropdown/SelectDropdown";
-import { Text, View } from "@/components/Themed";
+import { Text } from "@/components/Text";
+import { View } from "@/components/View/View";
 import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { ScrollView, StyleSheet, TextInput, TouchableOpacity } from "react-native";

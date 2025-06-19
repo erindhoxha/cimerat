@@ -4,8 +4,9 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { TouchableOpacity, TouchableWithoutFeedback, StyleSheet, Animated, Dimensions, Touchable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Text, View } from "@/components/Themed";
+import { View } from "@/components/View/View";
 import Box from "../Box/Box";
+import { Text } from "../Text";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -89,26 +90,27 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
               onClose();
               router.push("/login");
             }}>
-            <FontAwesome name="user" size={16} color="#000" />
+            <FontAwesome name="sign-in" size={16} />
             <Text fontWeight="bold">Kyçu</Text>
           </TouchableOpacity>
-          {false && (
+          <TouchableOpacity
+            style={styles.linkButton}
+            onPress={() => {
+              onClose();
+              router.push("/logout");
+            }}>
+            <FontAwesome name="sign-out" size={16} />
+            <Text fontWeight="bold">Dil</Text>
+          </TouchableOpacity>
+          {true && (
             <TouchableOpacity
               style={styles.linkButton}
               onPress={() => {
                 onClose();
                 router.push("/login");
               }}>
-              <FontAwesome name="user" size={16} color="#000" />
-              <Text
-                style={{
-                  textAlign: "center",
-                  color: "#000",
-                  fontWeight: "500",
-                  fontSize: 16,
-                }}>
-                Profili
-              </Text>
+              <FontAwesome name="user" size={16} />
+              <Text fontWeight="bold">Profili</Text>
             </TouchableOpacity>
           )}
         </Box>

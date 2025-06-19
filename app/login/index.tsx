@@ -2,8 +2,9 @@ import { StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import { useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
-import { Text, View } from "@/components/Themed";
+import { View } from "@/components/View/View";
 import Box from "@/components/Box/Box";
+import { Text } from "@/components/Text";
 
 export default function LoginScreen() {
   const {

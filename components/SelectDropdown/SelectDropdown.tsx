@@ -1,7 +1,8 @@
 import { StyleSheet } from "react-native";
-import { Text, View } from "../Themed";
+import { View } from "../View/View";
 import { FontAwesome } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
+import { Text } from "../Text";
 
 interface SelectDropdownProps {
   options: string[];

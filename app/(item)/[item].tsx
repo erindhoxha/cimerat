@@ -1,9 +1,9 @@
 import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { StyleSheet } from "react-native";
-import { Text, View } from "@/components/Themed";
 import { FontAwesome } from "@expo/vector-icons";
 import Box from "@/components/Box";
+import { Text } from "@/components/Text";
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";

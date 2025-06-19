@@ -6,11 +6,12 @@ import { useFonts } from "expo-font";
 import { Link, Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, useColorScheme } from "react-native";
-import { Text, View } from "@/components/Themed";
+import { View } from "@/components/View/View";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { DrawerProvider, useDrawer } from "../context/DrawerProvider";
+import DrawerProvider, { useDrawer } from "../context/DrawerProvider";
 export { ErrorBoundary } from "expo-router";
 import "react-native-reanimated";
+import { Text } from "@/components/Text";
 
 export const unstable_settings = {
   initialRouteName: "(tabs)",

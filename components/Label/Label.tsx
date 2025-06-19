@@ -1,4 +1,4 @@
-import { Text } from "../Themed";
+import { Text } from "../Text";
 
 interface LabelProps {
   children: React.ReactNode;

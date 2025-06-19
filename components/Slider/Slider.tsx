@@ -1,7 +1,8 @@
 import { useSharedValue } from "react-native-reanimated";
 import { Slider } from "react-native-awesome-slider";
-import { Text, View } from "./Themed";
+import { View } from "../View/View";
 import { StyleSheet } from "react-native";
+import { Text } from "../Text";
 
 export const SliderComponent = () => {
   const progress = useSharedValue(30);

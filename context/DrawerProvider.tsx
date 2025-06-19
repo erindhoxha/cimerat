@@ -17,7 +17,7 @@ export function useDrawer() {
   return useContext(DrawerContext);
 }
 
-export function DrawerProvider({ children }: { children: React.ReactNode }) {
+function DrawerProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const openDrawer = useCallback(() => setIsOpen(true), []);
@@ -30,3 +30,5 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
     </DrawerContext.Provider>
   );
 }
+
+export default DrawerProvider;

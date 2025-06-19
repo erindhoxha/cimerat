@@ -1,9 +1,10 @@
 import { Component } from "react";
-import { View, Text } from "./Themed";
+import { View } from "../View/View";
 import Accordion from "react-native-collapsible/Accordion";
 import { FontAwesome } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
 import { StyleSheet } from "react-native";
+import { Text } from "../Text";
 
 const SECTIONS = [
   {

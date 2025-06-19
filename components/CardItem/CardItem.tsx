@@ -1,7 +1,8 @@
 import { useRouter } from "expo-router";
-import { Text, View } from "../Themed";
+import { View } from "../View/View";
 import { Image } from "expo-image";
 import { StyleSheet, TouchableOpacity } from "react-native";
+import { Text } from "../Text";
 
 interface ItemProps {
   title: string;

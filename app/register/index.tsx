@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
 import { useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
-import { Text, View } from "@/components/Themed";
+import { View } from "@/components/View/View";
+import { Text } from "@/components/Text";
 
 export default function RegisterScreen() {
   const [submitted, setSubmitted] = useState(false);

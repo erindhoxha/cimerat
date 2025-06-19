@@ -1,7 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import { Platform, StyleSheet, useColorScheme } from "react-native";
 
-import { Text, View } from "@/components/Themed";
+import { View } from "@/components/View/View";
+import { Text } from "@/components/Text";
 
 export default function ModalScreen() {
   const colorScheme = useColorScheme();
