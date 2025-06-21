@@ -15,6 +15,7 @@ export default {
     yellow,
     midDarkYellow,
     darkYellow,
+    gray: "#ccc",
   },
   dark: {
     text: "#fff",

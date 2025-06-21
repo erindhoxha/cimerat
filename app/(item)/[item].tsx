@@ -4,6 +4,7 @@ import { StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { Text } from "@/components/Text";
 import { Box } from "@/components/Box";
+import Colors from "@/constants/Colors";
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -38,7 +39,7 @@ export default function ItemDetailScreen() {
             style={{
               gap: 12,
               borderWidth: 1,
-              borderColor: "#ccc",
+              borderColor: Colors.light.gray,
               borderRadius: 24,
             }}>
             <Box

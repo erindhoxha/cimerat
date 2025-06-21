@@ -1,36 +1,35 @@
 import { Box } from "@/components/Box";
+import { Button } from "@/components/Button/Button";
+import Input from "@/components/Input/Input";
 import { Text } from "@/components/Text";
 import Colors from "@/constants/Colors";
 import { StyleSheet, TextInput, TouchableOpacity } from "react-native";
 
 export default function ProfileScreen() {
   return (
-    <Box flex={1} padding={24}>
+    <Box
+      flex={1}
+      padding={24}
+      style={{
+        gap: 12,
+      }}>
       <Text fontSize="xl" fontWeight="bold">
         Profili
       </Text>
-      <Box marginTop={12}>
-        <Text>Përditëso email adresën</Text>
-        <TextInput style={styles.textInput} placeholder="Email adresa" autoCapitalize="none" />
+      <Box>
+        <Box>
+          <Input label="Përditëso email adresën" placeholder="Email adresa" autoCapitalize="none" />
+        </Box>
+        <Box>
+          <Input label="Përditëso fjalëkalimin" placeholder="Fjalëkalimi i ri" autoCapitalize="none" />
+        </Box>
+        <Button variant="primary">Perditëso të dhënat</Button>
       </Box>
-      <Box marginTop={24}>
-        <Text>Përditëso fjalëkalimin</Text>
-        <TextInput style={styles.textInput} placeholder="Fjalëkalimi i ri" autoCapitalize="none" />
-      </Box>
-      <TouchableOpacity style={styles.primaryButton}>
-        <Text>Perditëso të dhënat</Text>
-      </TouchableOpacity>
     </Box>
   );
 }
 
 const styles = StyleSheet.create({
-  textInput: {
-    padding: 12,
-    marginTop: 12,
-    borderWidth: 1,
-    borderRadius: 12,
-  },
   primaryButton: {
     backgroundColor: Colors.light.yellow,
     padding: 12,

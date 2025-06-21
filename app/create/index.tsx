@@ -1,11 +1,11 @@
 import { Box } from "@/components/Box";
+import { Button } from "@/components/Button/Button";
 import Input from "@/components/Input/Input";
 import { SelectDropdownComponent } from "@/components/SelectDropdown/SelectDropdown";
 import { Text } from "@/components/Text";
 import { View } from "@/components/View/View";
-import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 
 export default function CreateScreen() {
@@ -162,80 +162,15 @@ export default function CreateScreen() {
         />
       </View>
 
-      <Text
-        style={{
-          marginBottom: 8,
-        }}>
-        Titulli<Text style={{ color: "red" }}>*</Text>
-      </Text>
-      <Input
-        placeholder="Titulli i listimit"
-        style={{
-          borderWidth: 1,
-          borderColor: "#ccc",
-          borderRadius: 8,
-          padding: 10,
-          marginBottom: 20,
-        }}
-      />
-      <Text
-        style={{
-          marginBottom: 8,
-        }}>
-        Përshkrimi<Text style={{ color: "red" }}>*</Text>
-      </Text>
-      <TextInput
-        placeholder="Përshkrimi"
-        multiline
-        numberOfLines={10}
-        style={{
-          borderWidth: 1,
-          borderColor: "#ccc",
-          borderRadius: 8,
-          padding: 10,
-          height: 150,
-          marginBottom: 20,
-        }}
-      />
+      <Input label="Titulli" placeholder="Titulli i listimit" required />
 
-      <Text
-        style={{
-          marginBottom: 8,
-        }}>
-        Çmimi<Text style={{ color: "red" }}>*</Text>
-      </Text>
-      <TextInput
-        placeholder="Çmimi i listimit"
-        multiline
-        style={{
-          borderWidth: 1,
-          borderColor: "#ccc",
-          borderRadius: 8,
-          padding: 10,
-          marginBottom: 20,
-        }}
-      />
+      <Input label="Përshkrimi" placeholder="Përshkrimi" multiline numberOfLines={10} required />
 
-      <View
-        style={{
-          flex: 1,
-          width: "100%",
-          backgroundColor: "transparent",
-        }}>
-        <Text
-          style={{
-            marginBottom: 6,
-            width: "100%",
-          }}>
-          Numri i Dhomave
-        </Text>
+      <Input label="Çmimi" placeholder="Çmimi" required />
+
+      <View>
+        <Text>Numri i Dhomave</Text>
         <SelectDropdown
-          searchInputStyle={{
-            backgroundColor: "#E9ECEF",
-            borderRadius: 12,
-            paddingHorizontal: 12,
-            paddingVertical: 8,
-          }}
           data={[
             "Prishtina",
             "Peja",
@@ -261,7 +196,6 @@ export default function CreateScreen() {
             return undefined;
           }}
           renderButton={(_, isOpened) => {
-            // Apply a different style if disabled
             return (
               <View style={[styles.dropdownButtonStyle]}>
                 <Text style={[styles.dropdownButtonTxtStyle]}>{"Numri i Dhomave"}</Text>
@@ -283,19 +217,8 @@ export default function CreateScreen() {
         />
       </View>
 
-      <View
-        style={{
-          flex: 1,
-          width: "100%",
-          backgroundColor: "transparent",
-        }}>
-        <Text
-          style={{
-            marginBottom: 6,
-            width: "100%",
-          }}>
-          Numri i Cimerave
-        </Text>
+      <View>
+        <Text>Numri i Cimerave</Text>
         <SelectDropdown
           searchInputStyle={{
             backgroundColor: "#E9ECEF",
@@ -351,22 +274,13 @@ export default function CreateScreen() {
           dropdownStyle={styles.dropdownMenuStyle}
         />
       </View>
-
-      <TouchableOpacity
-        style={{
-          backgroundColor: Colors.light.yellow,
-          padding: 12,
-          borderRadius: 12,
-          alignItems: "center",
-        }}>
-        <Text style={{ color: "#000" }}>Krijo</Text>
-      </TouchableOpacity>
+      <Button variant="primary">Krijo Listimin</Button>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "white" },
+  container: { flex: 1, padding: 24, backgroundColor: "white", gap: 12 },
   dropdownButtonStyle: {
     width: "100%",
     height: 50,

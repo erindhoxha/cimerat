@@ -4,6 +4,7 @@ import Colors from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { HorizontalCardItem } from "@/components/HorizontalCardItem/HorizontalCardItem";
 import { Text } from "@/components/Text";
+import { Button } from "@/components/Button/Button";
 
 const cardItems = [
   {
@@ -30,13 +31,14 @@ export default function TabTwoScreen() {
         <Text fontSize="xl" fontWeight="bold">
           Listimet tua
         </Text>
-        <TouchableOpacity
+        <Button
+          variant="primary"
           onPress={() => {
             router.push("/create");
           }}
           style={styles.primaryButton}>
           <Text>Krijo një listim të ri</Text>
-        </TouchableOpacity>
+        </Button>
       </View>
       <View style={styles.separator} />
       <Text style={styles.emptyText}>
@@ -66,6 +68,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     height: 1,
     width: "100%",
+    backgroundColor: Colors.light.gray,
   },
   primaryButton: {
     backgroundColor: Colors.light.yellow,
