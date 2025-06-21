@@ -3,6 +3,7 @@ import { View } from "../View/View";
 import { FontAwesome } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
 import { Text } from "../Text";
+import Label from "../Label";
 
 interface SelectDropdownProps {
   options: string[];
@@ -14,12 +15,7 @@ interface SelectDropdownProps {
 export const SelectDropdownComponent = ({ options, placeholder, label, onSelect }: SelectDropdownProps) => {
   return (
     <View>
-      <Text
-        style={{
-          marginBottom: 6,
-        }}>
-        {label}
-      </Text>
+      <Label>{label}</Label>
       <View
         style={{
           flexShrink: 1,

@@ -28,7 +28,7 @@ export default function TabTwoScreen() {
   const router = useRouter();
   return (
     <ScrollView style={styles.container}>
-      <Box>
+      <Box gap={12}>
         <Text fontSize="xl" fontWeight="bold">
           Listimet tua
         </Text>
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     marginBottom: 12,
+    marginTop: 24,
     height: 1,
     width: "100%",
     backgroundColor: Colors.light.gray,

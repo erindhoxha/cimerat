@@ -5,6 +5,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
 import { StyleSheet } from "react-native";
 import { Text } from "../Text";
+import { Box } from "../Box";
 
 const SECTIONS = [
   {
@@ -32,7 +33,7 @@ export class AccordionView extends Component {
 
   _renderHeader = (section: Section) => {
     return (
-      <View
+      <Box
         style={{
           paddingVertical: 16,
           paddingHorizontal: 12,
@@ -51,7 +52,7 @@ export class AccordionView extends Component {
           Filtro më shumë
         </Text>
         <FontAwesome name="chevron-down" size={12} color="#333" />
-      </View>
+      </Box>
     );
   };
 

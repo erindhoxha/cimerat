@@ -1,3 +1,4 @@
+import { Box } from "../Box";
 import { Text } from "../Text";
 
 interface LabelProps {
@@ -6,12 +7,9 @@ interface LabelProps {
 
 const Label = ({ children }: LabelProps) => {
   return (
-    <Text
-      style={{
-        marginBottom: 6,
-      }}>
-      {children}
-    </Text>
+    <Box marginBottom={6}>
+      <Text>{children}</Text>
+    </Box>
   );
 };
 

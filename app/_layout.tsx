@@ -43,19 +43,20 @@ export default function RootLayout() {
   }
 
   return (
-    <Box flex={1}>
+    <View
+      style={{
+        flex: 1,
+      }}>
       <QueryClientProvider client={queryClient}>
         <DrawerProvider>
           <RootLayoutNav />
         </DrawerProvider>
       </QueryClientProvider>
-    </Box>
+    </View>
   );
 }
 
 function RootLayoutNav() {
-  const router = useRouter();
-  const segments = useSegments();
   const colorScheme = useColorScheme();
   const { openDrawer, closeDrawer, isOpen } = useDrawer();
 

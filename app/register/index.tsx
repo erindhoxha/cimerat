@@ -2,7 +2,6 @@ import { useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
 import { useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
-import { View } from "@/components/View/View";
 import { Text } from "@/components/Text";
 import Input from "@/components/Input/Input";
 import { Box } from "@/components/Box";
@@ -18,12 +17,13 @@ export default function RegisterScreen() {
   } = useForm();
 
   return (
-    <View style={{ flex: 1, padding: 24 }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 16 }}>Regjistrohu</Text>
-      <Box
-        style={{
-          gap: 12,
-        }}>
+    <Box padding={24} flex={1}>
+      <Box marginBottom={12}>
+        <Text fontSize="xl" fontWeight="bold">
+          Regjistrohu
+        </Text>
+      </Box>
+      <Box gap={12}>
         <Box>
           <Input placeholder="Email adresa" autoCapitalize="none" onChangeText={(text) => setValue("email", text)} />
           {errors.email && <Text style={{ color: "red", marginTop: 4 }}>Email është i detyrueshëm</Text>}
@@ -39,7 +39,7 @@ export default function RegisterScreen() {
             // Handle register action with data
             reset();
           })}>
-          <Text style={{ color: "#000" }}>
+          <Text>
             {submitted ? (
               <>
                 Derguar <FontAwesome name="check" />
@@ -50,11 +50,7 @@ export default function RegisterScreen() {
           </Text>
         </Button>
       </Box>
-      <Box
-        marginTop={24}
-        style={{
-          gap: 12,
-        }}>
+      <Box marginTop={24} gap={12}>
         <Text>
           Keni pranuar nje email me udhëzimet për regjistrim. Ju lutemi kontrolloni kutinë tuaj të postës elektronike
           për të vazhduar.
@@ -70,6 +66,6 @@ export default function RegisterScreen() {
           Nese nuk keni marrë emailin, provojeni përsëri
         </Text>
       </Box>
-    </View>
+    </Box>
   );
 }

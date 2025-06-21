@@ -34,17 +34,12 @@ export default function ItemDetailScreen() {
             paddingHorizontal={8}
             paddingVertical={4}
             borderRadius={24}
+            gap={12}
             style={{
-              gap: 12,
               borderWidth: 1,
               borderColor: Colors.light.gray,
             }}>
-            <Box
-              flexDirection="row"
-              alignItems="center"
-              style={{
-                gap: 4,
-              }}>
+            <Box flexDirection="row" alignItems="center" gap={4}>
               <Text>4</Text>
               <FontAwesome name="bed" size={12} />
             </Box>
