@@ -3,16 +3,16 @@ import Colors from "@/constants/Colors";
 import * as SplashScreen from "expo-splash-screen";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Link, Stack, useRouter, useSegments } from "expo-router";
+import { Link, Stack } from "expo-router";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, useColorScheme } from "react-native";
-import { View } from "@/components/View/View";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import DrawerProvider, { useDrawer } from "../context/DrawerProvider";
 export { ErrorBoundary } from "expo-router";
 import "react-native-reanimated";
 import { Text } from "@/components/Text";
 import { Box } from "@/components/Box";
+import Toast from "react-native-toast-message";
 
 export const unstable_settings = {
   initialRouteName: "(tabs)",
@@ -43,16 +43,14 @@ export default function RootLayout() {
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-      }}>
+    <Box flex={1}>
       <QueryClientProvider client={queryClient}>
         <DrawerProvider>
           <RootLayoutNav />
         </DrawerProvider>
       </QueryClientProvider>
-    </View>
+      <Toast position="bottom" bottomOffset={40} type="info" autoHide swipeable />
+    </Box>
   );
 }
 

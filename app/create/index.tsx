@@ -5,10 +5,13 @@ import Label from "@/components/Label";
 import { Text } from "@/components/Text";
 import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
+import Toast from "react-native-toast-message";
 
 export default function CreateScreen() {
+  const router = useRouter();
   return (
     <ScrollView style={styles.container}>
       <Box marginBottom={20}>
@@ -314,6 +317,21 @@ export default function CreateScreen() {
         variant="primary"
         style={{
           marginBottom: 48,
+        }}
+        onPress={() => {
+          router.push("/your-listings");
+          Toast.show({
+            type: "success",
+            text1: "Keni krijuar një listim të ri",
+            text2: "Shikoni listimet tuaja për të parë ndryshimet.",
+            text1Style: {
+              fontSize: 14,
+              fontWeight: "bold",
+            },
+            text2Style: {
+              fontSize: 12,
+            },
+          });
         }}>
         Krijo Listimin
       </Button>
