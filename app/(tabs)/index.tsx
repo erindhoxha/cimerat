@@ -8,16 +8,20 @@ import { useRouter } from "expo-router";
 import { Box } from "@/components/Box";
 import Label from "@/components/Label/Label";
 import { Text } from "@/components/Text";
+import { SelectDropdownComponent } from "@/components/SelectDropdown";
 
 interface SelectButtonProps {
   title: string | null;
   isOpened?: boolean;
   placeholder: string;
+  disabled?: boolean;
 }
 
-const SelectButton = ({ title, isOpened, placeholder }: SelectButtonProps) => (
-  <Box style={[styles.dropdownButtonStyle]}>
-    <Text style={[styles.dropdownButtonTxtStyle]}>{title || placeholder}</Text>
+const SelectButton = ({ title, isOpened, placeholder, disabled }: SelectButtonProps) => (
+  <Box style={[styles.dropdownButtonStyle, disabled ? styles.dropdownButtonDisabledStyle : null]}>
+    <Text style={[styles.dropdownButtonTxtStyle, disabled ? styles.dropdownButtonTxtDisabledStyle : null]}>
+      {title || placeholder}
+    </Text>
     <Text>
       <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
     </Text>
@@ -82,28 +86,23 @@ export default function TabOneScreen() {
                     setDisabled(false);
                     setSelectedCity((prev) => {
                       if (prev === selectedItem) {
-                        return null; // Reset if the same city is selected
+                        return null;
                       }
-                      setSelectedNeighborhood(null); // Reset neighborhood when city changes
+                      setSelectedNeighborhood(null);
                       return selectedItem;
                     });
                   }}
                   ref={cityRef}
-                  renderButton={(_, isOpened) => {
-                    // Apply a different style if disabled
-                    return (
-                      <>
-                        <SelectButton title={selectedCity} isOpened={isOpened} placeholder="Zgjedh Qytetin" />
-                      </>
-                    );
-                  }}
-                  renderItem={(item, index, isSelected) => {
-                    return (
-                      <>
-                        <SelectItem item={item} isSelected={isSelected} />
-                      </>
-                    );
-                  }}
+                  renderButton={(_, isOpened) => (
+                    <>
+                      <SelectButton title={selectedCity} isOpened={isOpened} placeholder="Zgjedh Qytetin" />
+                    </>
+                  )}
+                  renderItem={(item, index, isSelected) => (
+                    <>
+                      <SelectItem item={item} isSelected={isSelected} />
+                    </>
+                  )}
                   showsVerticalScrollIndicator={false}
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
@@ -123,18 +122,14 @@ export default function TabOneScreen() {
                   }}
                   renderButton={(_, isOpened) => {
                     return (
-                      <Box style={[styles.dropdownButtonStyle, disabled ? styles.dropdownButtonDisabledStyle : null]}>
-                        <Text
-                          style={[
-                            styles.dropdownButtonTxtStyle,
-                            disabled ? styles.dropdownButtonTxtDisabledStyle : null,
-                          ]}>
-                          {selectedNeighborhood || "Zgjedh"}
-                        </Text>
-                        <Text>
-                          <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
-                        </Text>
-                      </Box>
+                      <>
+                        <SelectButton
+                          title={selectedNeighborhood}
+                          isOpened={isOpened}
+                          placeholder="Zgjedh Lagjen"
+                          disabled={disabled}
+                        />
+                      </>
                     );
                   }}
                   renderItem={(item, index, isSelected) => {
@@ -163,14 +158,10 @@ export default function TabOneScreen() {
                     setSelectedRooms(selectedItem);
                   }}
                   renderButton={(_, isOpened) => {
-                    // Apply a different style if disabled
                     return (
-                      <Box style={[styles.dropdownButtonStyle]}>
-                        <Text style={[styles.dropdownButtonTxtStyle]}>{selectedRooms || "Zgjedh"}</Text>
-                        <Text>
-                          <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
-                        </Text>
-                      </Box>
+                      <>
+                        <SelectButton title={selectedRooms} isOpened={isOpened} placeholder="Zgjedh" />
+                      </>
                     );
                   }}
                   renderItem={(item, index, isSelected) => {
@@ -194,12 +185,9 @@ export default function TabOneScreen() {
                   renderButton={(_, isOpened) => {
                     // Apply a different style if disabled
                     return (
-                      <Box style={[styles.dropdownButtonStyle]}>
-                        <Text style={[styles.dropdownButtonTxtStyle]}>{selectedCimer || "Zgjedh"}</Text>
-                        <Text>
-                          <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
-                        </Text>
-                      </Box>
+                      <>
+                        <SelectButton title={selectedCimer} isOpened={isOpened} placeholder="Zgjedh" />
+                      </>
                     );
                   }}
                   renderItem={(item, index, isSelected) => {
@@ -229,13 +217,16 @@ export default function TabOneScreen() {
                   renderButton={(_, isOpened) => {
                     // Apply a different style if disabled
                     return (
-                      <Box style={[styles.dropdownButtonStyle]}>
-                        <Text style={[styles.dropdownButtonTxtStyle]}>
-                          {(selectedPriceFrom && selectedPriceFrom + "€") || "Nga"}
-                        </Text>
-                        <Text>
-                          <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
-                        </Text>
+                      <Box
+                        flex={1}
+                        style={{
+                          flexShrink: 1,
+                        }}>
+                        <SelectButton
+                          title={(selectedPriceFrom && selectedPriceFrom + "€") || "Nga"}
+                          isOpened={isOpened}
+                          placeholder="Zgjedh"
+                        />
                       </Box>
                     );
                   }}
@@ -257,15 +248,17 @@ export default function TabOneScreen() {
                   }}
                   defaultValue={selectedPriceTo}
                   renderButton={(_, isOpened) => {
-                    // Apply a different style if disabled
                     return (
-                      <Box style={[styles.dropdownButtonStyle]}>
-                        <Text style={[styles.dropdownButtonTxtStyle]}>
-                          {(selectedPriceTo && selectedPriceTo + "€") || "Deri në"}
-                        </Text>
-                        <Text>
-                          <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
-                        </Text>
+                      <Box
+                        flex={1}
+                        style={{
+                          flexShrink: 1,
+                        }}>
+                        <SelectButton
+                          title={(selectedPriceTo && selectedPriceTo + "€") || "Deri në"}
+                          isOpened={isOpened}
+                          placeholder="Zgjedh"
+                        />
                       </Box>
                     );
                   }}
@@ -333,9 +326,6 @@ const styles = StyleSheet.create({
   },
   dropdownButtonTxtDisabledStyle: {
     color: "#aaa",
-  },
-  dropdownButtonArrowStyle: {
-    fontSize: 28,
   },
   dropdownMenuStyle: {
     backgroundColor: "#E9ECEF",
