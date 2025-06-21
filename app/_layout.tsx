@@ -12,6 +12,7 @@ import DrawerProvider, { useDrawer } from "../context/DrawerProvider";
 export { ErrorBoundary } from "expo-router";
 import "react-native-reanimated";
 import { Text } from "@/components/Text";
+import { Box } from "@/components/Box";
 
 export const unstable_settings = {
   initialRouteName: "(tabs)",
@@ -42,13 +43,13 @@ export default function RootLayout() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <Box flex={1}>
       <QueryClientProvider client={queryClient}>
         <DrawerProvider>
           <RootLayoutNav />
         </DrawerProvider>
       </QueryClientProvider>
-    </View>
+    </Box>
   );
 }
 

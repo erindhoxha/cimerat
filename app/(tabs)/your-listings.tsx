@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { HorizontalCardItem } from "@/components/HorizontalCardItem/HorizontalCardItem";
 import { Text } from "@/components/Text";
 import { Button } from "@/components/Button/Button";
+import { Box } from "@/components/Box";
 
 const cardItems = [
   {
@@ -27,7 +28,7 @@ export default function TabTwoScreen() {
   const router = useRouter();
   return (
     <ScrollView style={styles.container}>
-      <View>
+      <Box>
         <Text fontSize="xl" fontWeight="bold">
           Listimet tua
         </Text>
@@ -35,11 +36,10 @@ export default function TabTwoScreen() {
           variant="primary"
           onPress={() => {
             router.push("/create");
-          }}
-          style={styles.primaryButton}>
+          }}>
           <Text>Krijo një listim të ri</Text>
         </Button>
-      </View>
+      </Box>
       <View style={styles.separator} />
       <Text style={styles.emptyText}>
         Nuk keni asnjë listim të krijuar. Shtoni një listim të ri duke klikuar në butonin "Krijo" në skedën e sipërme.
@@ -61,26 +61,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 24,
   },
-  title: {
-    fontSize: 16,
-  },
   separator: {
     marginBottom: 12,
     height: 1,
     width: "100%",
     backgroundColor: Colors.light.gray,
-  },
-  primaryButton: {
-    backgroundColor: Colors.light.yellow,
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 3.84,
   },
 });

@@ -10,10 +10,13 @@ export const SliderComponent = () => {
   const max = useSharedValue(100);
   return (
     <Slider
-      snapThreshold={1}
       style={styles.slider}
+      snapThreshold={1}
       steps={4}
       forceSnapToStep={true}
+      progress={progress}
+      minimumValue={min}
+      maximumValue={max}
       stepTimingOptions={{
         duration: 200,
       }}
@@ -28,9 +31,6 @@ export const SliderComponent = () => {
           <Text>{index * 10}€</Text>
         </View>
       )}
-      progress={progress}
-      minimumValue={min}
-      maximumValue={max}
     />
   );
 };

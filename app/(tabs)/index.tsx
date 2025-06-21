@@ -1,5 +1,4 @@
 import { FlatList, StyleSheet } from "react-native";
-import { View } from "@/components/View/View";
 import SelectDropdown from "react-native-select-dropdown";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
@@ -17,12 +16,12 @@ interface SelectButtonProps {
 }
 
 const SelectButton = ({ title, isOpened, placeholder }: SelectButtonProps) => (
-  <View style={[styles.dropdownButtonStyle]}>
+  <Box style={[styles.dropdownButtonStyle]}>
     <Text style={[styles.dropdownButtonTxtStyle]}>{title || placeholder}</Text>
     <Text>
       <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
     </Text>
-  </View>
+  </Box>
 );
 
 interface SelectItemProps {
@@ -32,9 +31,9 @@ interface SelectItemProps {
 
 const SelectItem = ({ isSelected, item }: SelectItemProps) => {
   return (
-    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+    <Box style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
       <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-    </View>
+    </Box>
   );
 };
 
@@ -60,22 +59,17 @@ export default function TabOneScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <Box style={styles.container}>
       <FlatList
         contentContainerStyle={styles.contentContainerStyle}
         ListEmptyComponent={() => (
-          <View>
+          <Box>
             <Text>Asnjë rezultat</Text>
-          </View>
+          </Box>
         )}
         ListHeaderComponent={() => (
           <>
-            <Box
-              flex={1}
-              flexDirection="row"
-              style={{
-                gap: 12,
-              }}>
+            <Box flex={1} flexDirection="row" gap={12}>
               <Box flex={1}>
                 <Label>Qyteti</Label>
                 <SelectDropdown
@@ -129,7 +123,7 @@ export default function TabOneScreen() {
                   }}
                   renderButton={(_, isOpened) => {
                     return (
-                      <View style={[styles.dropdownButtonStyle, disabled ? styles.dropdownButtonDisabledStyle : null]}>
+                      <Box style={[styles.dropdownButtonStyle, disabled ? styles.dropdownButtonDisabledStyle : null]}>
                         <Text
                           style={[
                             styles.dropdownButtonTxtStyle,
@@ -140,7 +134,7 @@ export default function TabOneScreen() {
                         <Text>
                           <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
                         </Text>
-                      </View>
+                      </Box>
                     );
                   }}
                   renderItem={(item, index, isSelected) => {
@@ -171,12 +165,12 @@ export default function TabOneScreen() {
                   renderButton={(_, isOpened) => {
                     // Apply a different style if disabled
                     return (
-                      <View style={[styles.dropdownButtonStyle]}>
+                      <Box style={[styles.dropdownButtonStyle]}>
                         <Text style={[styles.dropdownButtonTxtStyle]}>{selectedRooms || "Zgjedh"}</Text>
                         <Text>
                           <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
                         </Text>
-                      </View>
+                      </Box>
                     );
                   }}
                   renderItem={(item, index, isSelected) => {
@@ -200,12 +194,12 @@ export default function TabOneScreen() {
                   renderButton={(_, isOpened) => {
                     // Apply a different style if disabled
                     return (
-                      <View style={[styles.dropdownButtonStyle]}>
+                      <Box style={[styles.dropdownButtonStyle]}>
                         <Text style={[styles.dropdownButtonTxtStyle]}>{selectedCimer || "Zgjedh"}</Text>
                         <Text>
                           <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
                         </Text>
-                      </View>
+                      </Box>
                     );
                   }}
                   renderItem={(item, index, isSelected) => {
@@ -220,14 +214,9 @@ export default function TabOneScreen() {
                 />
               </Box>
             </Box>
-            <View>
+            <Box>
               <Label>Çmimi</Label>
-              <Box
-                flex={1}
-                flexDirection="row"
-                style={{
-                  gap: 12,
-                }}>
+              <Box flex={1} flexDirection="row" gap={12}>
                 <SelectDropdown
                   data={cmimi}
                   onSelect={(selectedItem, index) => {
@@ -240,14 +229,14 @@ export default function TabOneScreen() {
                   renderButton={(_, isOpened) => {
                     // Apply a different style if disabled
                     return (
-                      <View style={[styles.dropdownButtonStyle]}>
+                      <Box style={[styles.dropdownButtonStyle]}>
                         <Text style={[styles.dropdownButtonTxtStyle]}>
                           {(selectedPriceFrom && selectedPriceFrom + "€") || "Nga"}
                         </Text>
                         <Text>
                           <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
                         </Text>
-                      </View>
+                      </Box>
                     );
                   }}
                   renderItem={(item, _, isSelected) => {
@@ -270,14 +259,14 @@ export default function TabOneScreen() {
                   renderButton={(_, isOpened) => {
                     // Apply a different style if disabled
                     return (
-                      <View style={[styles.dropdownButtonStyle]}>
+                      <Box style={[styles.dropdownButtonStyle]}>
                         <Text style={[styles.dropdownButtonTxtStyle]}>
                           {(selectedPriceTo && selectedPriceTo + "€") || "Deri në"}
                         </Text>
                         <Text>
                           <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
                         </Text>
-                      </View>
+                      </Box>
                     );
                   }}
                   renderItem={(item, index, isSelected) => {
@@ -291,7 +280,7 @@ export default function TabOneScreen() {
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
               </Box>
-            </View>
+            </Box>
           </>
         )}
         data={DATA}
@@ -307,7 +296,7 @@ export default function TabOneScreen() {
         )}
         keyExtractor={(item) => item.id}
       />
-    </View>
+    </Box>
   );
 }
 

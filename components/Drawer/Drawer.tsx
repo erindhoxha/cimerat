@@ -10,12 +10,17 @@ import { Text } from "../Text";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-type DrawerProps = {
+interface DrawerProps {
   open: boolean;
   onClose: () => void;
-};
+}
 
-const TextLink = ({ label, onPress }: { label: string; onPress: () => void }) => {
+interface TextLinkProps {
+  label: string;
+  onPress: () => void;
+}
+
+const TextLink = ({ label, onPress }: TextLinkProps) => {
   return (
     <Text style={styles.drawerText} onPress={onPress}>
       {label}
@@ -27,6 +32,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
   const animation = useRef(new Animated.Value(-SCREEN_WIDTH * 0.7)).current;
   const [visible, setVisible] = useState(open);
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   useEffect(() => {
     if (open) {
@@ -46,8 +52,6 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
   }, [open]);
 
   if (!visible) return null;
-
-  const router = useRouter();
 
   return (
     <>

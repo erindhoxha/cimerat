@@ -2,8 +2,6 @@ import { Box } from "@/components/Box";
 import { Button } from "@/components/Button/Button";
 import Input from "@/components/Input/Input";
 import { Text } from "@/components/Text";
-import Colors from "@/constants/Colors";
-import { StyleSheet } from "react-native";
 
 export default function ProfileScreen() {
   return (
@@ -23,13 +21,3 @@ export default function ProfileScreen() {
     </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  primaryButton: {
-    backgroundColor: Colors.light.yellow,
-    padding: 12,
-    borderRadius: 12,
-    marginTop: 12,
-    alignItems: "center",
-  },
-});
