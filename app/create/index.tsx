@@ -1,9 +1,9 @@
 import { Box } from "@/components/Box";
 import { Button } from "@/components/Button/Button";
 import Input from "@/components/Input/Input";
-import { SelectDropdownComponent } from "@/components/SelectDropdown/SelectDropdown";
+import Label from "@/components/Label";
 import { Text } from "@/components/Text";
-import { View } from "@/components/View/View";
+import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { ScrollView, StyleSheet } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
@@ -16,25 +16,15 @@ export default function CreateScreen() {
           Krijo një listim të ri
         </Text>
       </Box>
-      <SelectDropdownComponent
-        label="Lloji i Listimit"
-        options={["Apartament", "Shtëpi", "Zyrë"]}
-        placeholder="Zgjedh Llojin e Listimit"
-        onSelect={() => {}}
-      />
-      <View
+      <Box
+        flex={1}
         style={{
-          flex: 1,
           width: "100%",
           backgroundColor: "transparent",
         }}>
-        <Text
-          style={{
-            marginBottom: 6,
-            width: "100%",
-          }}>
+        <Label>
           Qyteti<Text style={{ color: "red" }}>*</Text>
-        </Text>
+        </Label>
         <SelectDropdown
           searchInputStyle={{
             backgroundColor: "#E9ECEF",
@@ -70,41 +60,36 @@ export default function CreateScreen() {
             return undefined;
           }}
           renderButton={(_, isOpened) => {
-            // Apply a different style if disabled
             return (
-              <View style={[styles.dropdownButtonStyle]}>
+              <Box style={[styles.dropdownButtonStyle]}>
                 <Text style={[styles.dropdownButtonTxtStyle]}>{"Zgjedh Qytetin"}</Text>
                 <Text>
                   <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
                 </Text>
-              </View>
+              </Box>
             );
           }}
           renderItem={(item, index, isSelected) => {
             return (
-              <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+              <Box style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
                 <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-              </View>
+              </Box>
             );
           }}
           showsVerticalScrollIndicator={false}
           dropdownStyle={styles.dropdownMenuStyle}
         />
-      </View>
+      </Box>
 
-      <View
+      <Box
+        flex={1}
         style={{
-          flex: 1,
           width: "100%",
           backgroundColor: "transparent",
         }}>
-        <Text
-          style={{
-            marginBottom: 6,
-            width: "100%",
-          }}>
+        <Label>
           Lagja<Text style={{ color: "red" }}>*</Text>
-        </Text>
+        </Label>
         <SelectDropdown
           searchInputStyle={{
             backgroundColor: "#E9ECEF",
@@ -140,36 +125,31 @@ export default function CreateScreen() {
             return undefined;
           }}
           renderButton={(_, isOpened) => {
-            // Apply a different style if disabled
             return (
-              <View style={[styles.dropdownButtonStyle]}>
+              <Box style={[styles.dropdownButtonStyle]}>
                 <Text style={[styles.dropdownButtonTxtStyle]}>{"Zgjedh Lagjën"}</Text>
                 <Text>
                   <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
                 </Text>
-              </View>
+              </Box>
             );
           }}
-          renderItem={(item, index, isSelected) => {
+          renderItem={(item, _, isSelected) => {
             return (
-              <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+              <Box style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
                 <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-              </View>
+              </Box>
             );
           }}
           showsVerticalScrollIndicator={false}
           dropdownStyle={styles.dropdownMenuStyle}
         />
-      </View>
-
+      </Box>
       <Input label="Titulli" placeholder="Titulli i listimit" required />
-
       <Input label="Përshkrimi" placeholder="Përshkrimi" multiline numberOfLines={10} required />
-
-      <Input label="Çmimi" placeholder="Çmimi" required />
-
-      <View>
-        <Text>Numri i Dhomave</Text>
+      <Input label="Çmimi në euro (€)" placeholder="300" required keyboardType="number-pad" />
+      <Box>
+        <Label>Numri i dhomave në total (Opsional)</Label>
         <SelectDropdown
           data={[
             "Prishtina",
@@ -197,28 +177,27 @@ export default function CreateScreen() {
           }}
           renderButton={(_, isOpened) => {
             return (
-              <View style={[styles.dropdownButtonStyle]}>
-                <Text style={[styles.dropdownButtonTxtStyle]}>{"Numri i Dhomave"}</Text>
+              <Box style={[styles.dropdownButtonStyle]}>
+                <Text style={[styles.dropdownButtonTxtStyle]}>Zgjedh</Text>
                 <Text>
                   <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
                 </Text>
-              </View>
+              </Box>
             );
           }}
           renderItem={(item, index, isSelected) => {
             return (
-              <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+              <Box style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
                 <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-              </View>
+              </Box>
             );
           }}
           showsVerticalScrollIndicator={false}
           dropdownStyle={styles.dropdownMenuStyle}
         />
-      </View>
-
-      <View>
-        <Text>Numri i Cimerave</Text>
+      </Box>
+      <Box>
+        <Label>Sa cimera do ti ketë shtepia/apartmenti? (Opsional)</Label>
         <SelectDropdown
           searchInputStyle={{
             backgroundColor: "#E9ECEF",
@@ -255,32 +234,95 @@ export default function CreateScreen() {
           }}
           renderButton={(_, isOpened) => {
             return (
-              <View style={[styles.dropdownButtonStyle]}>
-                <Text style={[styles.dropdownButtonTxtStyle]}>{"Numri i Cimerave"}</Text>
+              <Box style={[styles.dropdownButtonStyle]}>
+                <Text style={[styles.dropdownButtonTxtStyle]}>Zgjedh</Text>
                 <Text>
                   <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
                 </Text>
-              </View>
+              </Box>
             );
           }}
           renderItem={(item, index, isSelected) => {
             return (
-              <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+              <Box style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
                 <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-              </View>
+              </Box>
             );
           }}
           showsVerticalScrollIndicator={false}
           dropdownStyle={styles.dropdownMenuStyle}
         />
-      </View>
-      <Button variant="primary">Krijo Listimin</Button>
+      </Box>
+      <Box>
+        <Label>Sa cimera janë tani? (Opsional)</Label>
+        <SelectDropdown
+          searchInputStyle={{
+            backgroundColor: "#E9ECEF",
+            borderRadius: 12,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+          }}
+          searchPlaceHolder="Kërko lagjën..."
+          searchPlaceHolderColor="#6c757d"
+          search={true}
+          data={[
+            "Prishtina",
+            "Peja",
+            "Mitrovica",
+            "Ferizaj",
+            "Gjakova",
+            "Gjilan",
+            "Vushtrri",
+            "Shtime",
+            "Obiliq",
+            "Lipjan",
+            "Fushë Kosovë",
+            "Drenas",
+            "Kaçanik",
+            "Dragash",
+            "Klinë",
+            "Deçan",
+            "Istog",
+            "Rahovec",
+            "Suhareke",
+          ]}
+          onSelect={(selectedItem, index) => {
+            return undefined;
+          }}
+          renderButton={(_, isOpened) => {
+            return (
+              <Box style={[styles.dropdownButtonStyle]}>
+                <Text style={[styles.dropdownButtonTxtStyle]}>Zgjedh</Text>
+                <Text>
+                  <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
+                </Text>
+              </Box>
+            );
+          }}
+          renderItem={(item, index, isSelected) => {
+            return (
+              <Box style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+                <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+              </Box>
+            );
+          }}
+          showsVerticalScrollIndicator={false}
+          dropdownStyle={styles.dropdownMenuStyle}
+        />
+      </Box>
+      <Button
+        variant="primary"
+        style={{
+          marginBottom: 48,
+        }}>
+        Krijo Listimin
+      </Button>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, backgroundColor: "white", gap: 12 },
+  container: { flex: 1, padding: 24, backgroundColor: "white", gap: 12, paddingBottom: 64 },
   dropdownButtonStyle: {
     width: "100%",
     height: 50,
@@ -298,7 +340,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: "500",
-    color: "#151E26",
+    color: Colors.light.gray,
   },
   dropdownMenuStyle: {
     borderRadius: 8,

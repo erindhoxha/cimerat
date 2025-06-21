@@ -1,5 +1,3 @@
-import React from "react";
-
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Tabs } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";

@@ -8,7 +8,6 @@ import { useRouter } from "expo-router";
 import { Box } from "@/components/Box";
 import Label from "@/components/Label/Label";
 import { Text } from "@/components/Text";
-import { SelectDropdownComponent } from "@/components/SelectDropdown";
 
 interface SelectButtonProps {
   title: string | null;

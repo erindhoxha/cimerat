@@ -9,8 +9,8 @@ export const Button = (
 ) => {
   return (
     <TouchableOpacity
-      style={[props.variant === "primary" ? style.primaryButton : style.secondaryButton, props.style]}
-      {...props}>
+      {...props}
+      style={[props.variant === "primary" ? style.primaryButton : style.secondaryButton, props.style]}>
       <Text fontWeight="medium">{props.children}</Text>
     </TouchableOpacity>
   );
