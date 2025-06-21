@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { TouchableOpacity, TouchableWithoutFeedback, StyleSheet, Animated, Dimensions, Touchable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "@/components/View/View";
-import Box from "../Box/Box";
+import { Box } from "../Box";
 import { Text } from "../Text";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;

@@ -1,4 +1,4 @@
-import Box from "@/components/Box/Box";
+import { Box } from "@/components/Box";
 import Input from "@/components/Input/Input";
 import { SelectDropdownComponent } from "@/components/SelectDropdown/SelectDropdown";
 import { Text } from "@/components/Text";

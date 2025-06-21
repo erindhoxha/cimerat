@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
 import { View } from "@/components/View/View";
-import Box from "@/components/Box/Box";
+import { Box } from "@/components/Box";
 import { Text } from "@/components/Text";
 import Input from "@/components/Input/Input";
 

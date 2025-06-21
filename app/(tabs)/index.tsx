@@ -6,7 +6,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { CardItem } from "@/components/CardItem/CardItem";
 import { cimerat, cities, cmimi, DATA, neighborhoods, numriIDhomave } from "@/mocks/mocks";
 import { useRouter } from "expo-router";
-import Box from "@/components/Box/Box";
+import { Box } from "@/components/Box";
 import Label from "@/components/Label/Label";
 import { Text } from "@/components/Text";
 
