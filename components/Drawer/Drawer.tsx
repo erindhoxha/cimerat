@@ -15,6 +15,14 @@ type DrawerProps = {
   onClose: () => void;
 };
 
+const TextLink = ({ label, onPress }: { label: string; onPress: () => void }) => {
+  return (
+    <Text style={styles.drawerText} onPress={onPress}>
+      {label}
+    </Text>
+  );
+};
+
 const DrawerExample = ({ open, onClose }: DrawerProps) => {
   const animation = useRef(new Animated.Value(-SCREEN_WIDTH * 0.7)).current;
   const [visible, setVisible] = useState(open);
@@ -48,32 +56,29 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
       </TouchableWithoutFeedback>
       <Animated.View style={[styles.drawer, { transform: [{ translateX: animation }], paddingTop: insets.top + 20 }]}>
         <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
-          <FontAwesome name="close" size={24} color="#000" style={{ height: 24, width: 24, textAlign: "center" }} />
+          <FontAwesome name="close" size={24} style={{ height: 24, width: 24, textAlign: "center" }} />
         </TouchableOpacity>
-        <Text
-          style={styles.drawerText}
+        <TextLink
+          label="Faqja kryesore"
           onPress={() => {
             onClose();
             router.push("/");
-          }}>
-          Faqja kryesore
-        </Text>
-        <Text
-          style={styles.drawerText}
+          }}
+        />
+        <TextLink
+          label="Listimet e mia"
           onPress={() => {
             onClose();
             router.push("/(tabs)/your-listings");
-          }}>
-          Listimet e mia
-        </Text>
-        <Text
-          style={styles.drawerText}
+          }}
+        />
+        <TextLink
+          label="Profili"
           onPress={() => {
             onClose();
             router.push("/profile");
-          }}>
-          Profili
-        </Text>
+          }}
+        />
         <Box marginBottom={48} marginTop="auto">
           <TouchableOpacity
             style={styles.linkButton}
@@ -81,8 +86,8 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
               onClose();
               router.push("/register");
             }}>
-            <FontAwesome name="user-plus" size={16} color="#000" />
-            <Text fontWeight="bold">Regjistrohu</Text>
+            <FontAwesome name="user-plus" size={16} />
+            <Text fontWeight="medium">Regjistrohu</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.linkButton}
@@ -91,7 +96,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
               router.push("/login");
             }}>
             <FontAwesome name="sign-in" size={16} />
-            <Text fontWeight="bold">Kyçu</Text>
+            <Text fontWeight="medium">Kyçu</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.linkButton}
@@ -100,17 +105,17 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
               router.push("/logout");
             }}>
             <FontAwesome name="sign-out" size={16} />
-            <Text fontWeight="bold">Dil</Text>
+            <Text fontWeight="medium">Dil</Text>
           </TouchableOpacity>
           {true && (
             <TouchableOpacity
               style={styles.linkButton}
               onPress={() => {
                 onClose();
-                router.push("/login");
+                router.push("/profile");
               }}>
               <FontAwesome name="user" size={16} />
-              <Text fontWeight="bold">Profili</Text>
+              <Text fontWeight="medium">Profili</Text>
             </TouchableOpacity>
           )}
         </Box>
@@ -126,14 +131,15 @@ const styles = StyleSheet.create({
     zIndex: 99,
   },
   linkButton: {
-    padding: 10,
+    padding: 12,
     backgroundColor: "white",
-    borderRadius: 8,
+    borderRadius: 12,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 2,
-    gap: 8,
+    borderWidth: 1,
+    gap: 6,
+    borderColor: "white",
     marginBottom: 12,
   },
   closeIcon: {

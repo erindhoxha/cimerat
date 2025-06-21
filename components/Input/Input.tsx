@@ -17,7 +17,17 @@ const Input = (
           gap: 6,
         }}>
         <Text>
-          {props.label} {props.required ? "*" : ""}
+          {props.label}
+          {props.required ? (
+            <Text
+              style={{
+                color: Colors.light.danger,
+              }}>
+              *
+            </Text>
+          ) : (
+            ""
+          )}
         </Text>
         <TextInput
           style={[

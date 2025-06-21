@@ -1,4 +1,5 @@
 import { Box } from "@/components/Box";
+import { Button } from "@/components/Button/Button";
 import Input from "@/components/Input/Input";
 import { Text } from "@/components/Text";
 import { View } from "@/components/View/View";
@@ -14,20 +15,20 @@ export default function ForgotPasswordScreen() {
         Harruar Fjalëkalimin
       </Text>
       <Input placeholder="Email adresa" autoCapitalize="none" />
-      <TouchableOpacity style={styles.primaryButton}>
+      <Button variant="primary">
         <Text>Dërgo Emailin e Rindërtimit</Text>
-      </TouchableOpacity>
+      </Button>
       <Box marginTop={16}>
         <Text>Do të marrësh një email me udhëzime për të rindërtuar fjalëkalimin tënd.</Text>
       </Box>
       <Box marginTop={20} alignItems="center">
-        <TouchableOpacity
-          style={styles.primaryButton}
+        <Button
+          variant="primary"
           onPress={() => {
             router.push("/login");
           }}>
           <Text>Kthehu në Kyçje</Text>
-        </TouchableOpacity>
+        </Button>
       </Box>
     </View>
   );

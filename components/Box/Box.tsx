@@ -22,6 +22,7 @@ type BoxProps = ViewProps & {
   backgroundColor?: string;
   borderRadius?: number;
   style?: StyleProp<ViewStyle>;
+  gap?: number;
   children?: React.ReactNode;
 };
 
@@ -47,6 +48,7 @@ export default function Box({
   flex,
   backgroundColor,
   borderRadius,
+  gap,
   ...rest
 }: BoxProps) {
   return (
@@ -72,6 +74,7 @@ export default function Box({
           flex,
           backgroundColor,
           borderRadius,
+          gap,
         },
         style,
       ]}

@@ -3,16 +3,11 @@ import { Button } from "@/components/Button/Button";
 import Input from "@/components/Input/Input";
 import { Text } from "@/components/Text";
 import Colors from "@/constants/Colors";
-import { StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
 
 export default function ProfileScreen() {
   return (
-    <Box
-      flex={1}
-      padding={24}
-      style={{
-        gap: 12,
-      }}>
+    <Box flex={1} padding={24} gap={12}>
       <Text fontSize="xl" fontWeight="bold">
         Profili
       </Text>

@@ -6,6 +6,7 @@ import { View } from "@/components/View/View";
 import { Box } from "@/components/Box";
 import { Text } from "@/components/Text";
 import Input from "@/components/Input/Input";
+import { Button } from "@/components/Button/Button";
 
 export default function LoginScreen() {
   const {
@@ -23,36 +24,36 @@ export default function LoginScreen() {
           Kyçu
         </Text>
       </Box>
-      <Input placeholder="Email adresa" autoCapitalize="none" onChangeText={(text) => setValue("email", text)} />
-      {errors.email && <Text style={{ color: "red", marginTop: 4 }}>Email është i detyrueshëm</Text>}
-      <Input placeholder="Fjalëkalimi" secureTextEntry onChangeText={(text) => setValue("password", text)} />
-      {errors.password && <Text style={{ color: "red", marginTop: 4 }}>Fjalëkalimi është i detyrueshëm</Text>}
-      <TouchableOpacity
-        style={{
-          backgroundColor: Colors.light.yellow,
-          padding: 12,
-          borderRadius: 12,
-          marginTop: 20,
-          alignItems: "center",
-        }}
-        onPress={handleSubmit((data) => {
-          reset();
-        })}>
-        <Text>Kyçu</Text>
-      </TouchableOpacity>
-      <Box marginTop={20}>
-        <Text
-          style={styles.linkText}
-          onPress={() => {
-            router.push("/forgot-password");
-          }}>
-          Harrove fjalëkalimin?
-        </Text>
-      </Box>
-      <Box marginTop={20}>
-        <Link href="/register" style={styles.linkText}>
-          Regjistrohu
-        </Link>
+      <Box gap={12}>
+        <Box>
+          <Input placeholder="Email adresa" autoCapitalize="none" onChangeText={(text) => setValue("email", text)} />
+          {errors.email && <Text style={{ color: "red", marginTop: 4 }}>Email është i detyrueshëm</Text>}
+        </Box>
+        <Box>
+          <Input placeholder="Fjalëkalimi" secureTextEntry onChangeText={(text) => setValue("password", text)} />
+          {errors.password && <Text style={{ color: "red", marginTop: 4 }}>Fjalëkalimi është i detyrueshëm</Text>}
+        </Box>
+        <Button
+          variant="primary"
+          onPress={handleSubmit((data) => {
+            reset();
+          })}>
+          <Text>Kyçu</Text>
+        </Button>
+        <Box>
+          <Text
+            style={styles.linkText}
+            onPress={() => {
+              router.push("/forgot-password");
+            }}>
+            Harrove fjalëkalimin?
+          </Text>
+        </Box>
+        <Box>
+          <Link href="/register" style={styles.linkText}>
+            Regjistrohu
+          </Link>
+        </Box>
       </Box>
     </View>
   );
