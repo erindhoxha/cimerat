@@ -41,13 +41,9 @@ export default function LoginScreen() {
           <Text>Kyçu</Text>
         </Button>
         <Box>
-          <Text
-            style={styles.linkText}
-            onPress={() => {
-              router.push("/forgot-password");
-            }}>
-            Harrove fjalëkalimin?
-          </Text>
+          <Link href="/forgot-password" asChild>
+            <Text style={styles.linkText}>Harrove fjalëkalimin?</Text>
+          </Link>
         </Box>
         <Box>
           <Link href="/register" style={styles.linkText}>

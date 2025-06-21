@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet } from "react-native";
 import { View } from "@/components/View/View";
 import Colors from "@/constants/Colors";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { HorizontalCardItem } from "@/components/HorizontalCardItem/HorizontalCardItem";
 import { Text } from "@/components/Text";
 import { Button } from "@/components/Button/Button";
@@ -33,13 +33,11 @@ export default function TabTwoScreen() {
         <Text fontSize="xl" fontWeight="bold">
           Listimet tua
         </Text>
-        <Button
-          variant="primary"
-          onPress={() => {
-            router.push("/create");
-          }}>
-          <Text>Krijo një listim të ri</Text>
-        </Button>
+        <Link href="/create" asChild>
+          <Button variant="primary">
+            <Text>Krijo një listim të ri</Text>
+          </Button>
+        </Link>
       </Box>
       <View style={styles.separator} />
       <Text style={styles.emptyText}>
