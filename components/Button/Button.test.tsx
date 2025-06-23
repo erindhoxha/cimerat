@@ -7,4 +7,20 @@ describe("Button", () => {
 
     getByText("Welcome!");
   });
+  test("Button renders with correct variant styles", () => {
+    const { getByTestId } = render(
+      <Button variant="primary" testID="primary-button">
+        Click Me
+      </Button>,
+    );
+    const button = getByTestId("primary-button");
+
+    expect(button.props.style).toEqual({
+      alignItems: "center",
+      backgroundColor: "#FFB700",
+      borderRadius: 12,
+      opacity: 1,
+      padding: 12,
+    });
+  });
 });

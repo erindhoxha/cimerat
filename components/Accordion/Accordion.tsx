@@ -33,18 +33,7 @@ export class AccordionView extends Component {
 
   _renderHeader = (section: Section) => {
     return (
-      <Box
-        style={{
-          paddingVertical: 16,
-          paddingHorizontal: 12,
-          backgroundColor: "white",
-          borderBottomWidth: 1,
-          borderColor: "#e4e4e4",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 12,
-        }}>
+      <Box style={styles.accordionHeader}>
         <Text
           style={{
             fontWeight: "500",
@@ -116,6 +105,17 @@ export class AccordionView extends Component {
 }
 
 const styles = StyleSheet.create({
+  accordionHeader: {
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    backgroundColor: "white",
+    borderBottomWidth: 1,
+    borderColor: "#e4e4e4",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
   dropdownButtonStyle: {
     width: "100%",
     height: 50,
