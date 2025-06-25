@@ -2,6 +2,7 @@ const express = require("express");
 const { default: mongoose } = require("mongoose");
 const bodyParser = require("body-parser");
 const app = express();
+const requireAuth = require("./middlewares/requireAuthentication");
 
 const port = 3000;
 
@@ -23,7 +24,7 @@ mongoose.connection.on("error", (err) => {
   console.error("Error connecting to MongoDB:", err);
 });
 
-app.get("/", (req, res) => {
+app.get("/", requireAuth, (req, res) => {
   res.send("Hello from Express!123444");
   res.status(200);
 });
