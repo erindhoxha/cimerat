@@ -1,5 +1,5 @@
-import { StyleSheet, TouchableOpacity } from "react-native";
-import { useForm } from "react-hook-form";
+import { StyleSheet } from "react-native";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
 import { View } from "@/components/View/View";
@@ -7,15 +7,20 @@ import { Box } from "@/components/Box";
 import { Text } from "@/components/Text";
 import Input from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
+import { useEffect } from "react";
 
 export default function LoginScreen() {
   const {
     handleSubmit,
     reset,
-    setValue,
+    control,
     formState: { errors },
   } = useForm();
-  const router = useRouter();
+
+  const onSubmitHandler = (data: FieldValues) => {
+    console.log(data);
+    reset();
+  };
 
   return (
     <View style={styles.container}>
@@ -26,17 +31,43 @@ export default function LoginScreen() {
       </Box>
       <Box gap={12}>
         <Box>
-          <Input placeholder="Email adresa" autoCapitalize="none" onChangeText={(text) => setValue("email", text)} />
+          <Controller
+            control={control}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                placeholder="Email adresa"
+                onBlur={onBlur}
+                onChangeText={(value) => onChange(value)}
+                value={value}
+              />
+            )}
+            name="email"
+            rules={{ required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ }}
+          />
           {errors.email && <Text style={{ color: "red", marginTop: 4 }}>Email është i detyrueshëm</Text>}
         </Box>
         <Box>
-          <Input placeholder="Fjalëkalimi" secureTextEntry onChangeText={(text) => setValue("password", text)} />
+          <Controller
+            control={control}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                placeholder="Fjalëkalimi"
+                onBlur={onBlur}
+                required
+                secureTextEntry
+                value={value}
+                onChangeText={(value) => onChange(value)}
+              />
+            )}
+            name="password"
+            rules={{ required: true, minLength: 6 }}
+          />
           {errors.password && <Text style={{ color: "red", marginTop: 4 }}>Fjalëkalimi është i detyrueshëm</Text>}
         </Box>
         <Button
           variant="primary"
           onPress={handleSubmit((data) => {
-            reset();
+            onSubmitHandler(data);
           })}>
           <Text>Kyçu</Text>
         </Button>
