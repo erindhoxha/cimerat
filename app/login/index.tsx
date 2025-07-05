@@ -1,25 +1,52 @@
 import { StyleSheet } from "react-native";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { View } from "@/components/View/View";
 import { Box } from "@/components/Box";
 import { Text } from "@/components/Text";
 import Input from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
 import Label from "@/components/Label";
+import { useMutation } from "@tanstack/react-query";
+import { useAuth } from "@/components/context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen() {
   const {
     handleSubmit,
     reset,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
+  const { setToken } = useAuth();
 
-  const onSubmitHandler = (data: FieldValues) => {
-    console.log(data);
-    reset();
+  const router = useRouter();
+
+  const {
+    mutateAsync: loginMutation,
+    status,
+    isError,
+    error,
+  } = useMutation({
+    mutationFn: async (data: { email: string; password: string }) => {
+      const res = await fetch("http://localhost:3000/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Login failed");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      setToken(data.token);
+      router.push("/");
+      reset();
+    },
+  });
+
+  const onSubmitHandler = async (data: FieldValues) => {
+    await loginMutation({ email: data.email, password: data.password });
   };
 
   return (
@@ -41,6 +68,7 @@ export default function LoginScreen() {
                 keyboardType="email-address"
                 onChangeText={(value) => onChange(value)}
                 value={value}
+                autoCapitalize="none"
               />
             )}
             name="email"
@@ -60,6 +88,7 @@ export default function LoginScreen() {
                 secureTextEntry
                 value={value}
                 onChangeText={(value) => onChange(value)}
+                autoCapitalize="none"
               />
             )}
             name="password"
@@ -71,11 +100,15 @@ export default function LoginScreen() {
         </Box>
         <Button
           variant="primary"
-          onPress={handleSubmit((data) => {
-            onSubmitHandler(data);
-          })}>
+          onPress={handleSubmit(onSubmitHandler)}
+          disabled={status === "pending" || isSubmitting}>
           <Text>Kyçu</Text>
         </Button>
+        {isError && (
+          <Text style={{ color: Colors.light.danger, marginTop: 4 }}>
+            {error instanceof Error ? error.message : "Gabim gjatë kyçjes"}
+          </Text>
+        )}
         <Box>
           <Link href="/forgot-password" asChild>
             <Text style={styles.linkText}>Harrove fjalëkalimin?</Text>

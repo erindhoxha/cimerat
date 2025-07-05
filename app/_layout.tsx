@@ -13,6 +13,7 @@ import "react-native-reanimated";
 import { Text } from "@/components/Text";
 import { Box } from "@/components/Box";
 import Toast from "react-native-toast-message";
+import { AuthProvider } from "@/components/context/AuthContext";
 
 export const unstable_settings = {
   initialRouteName: "(tabs)",
@@ -44,12 +45,14 @@ export default function RootLayout() {
 
   return (
     <Box flex={1}>
-      <QueryClientProvider client={queryClient}>
-        <DrawerProvider>
-          <RootLayoutNav />
-        </DrawerProvider>
-      </QueryClientProvider>
-      <Toast position="bottom" bottomOffset={40} type="info" autoHide swipeable />
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <DrawerProvider>
+            <RootLayoutNav />
+          </DrawerProvider>
+        </QueryClientProvider>
+        <Toast position="bottom" bottomOffset={40} type="info" autoHide swipeable />
+      </AuthProvider>
     </Box>
   );
 }

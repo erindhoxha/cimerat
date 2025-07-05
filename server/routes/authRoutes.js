@@ -47,6 +47,7 @@ router.post("/signin", async (req, res) => {
       },
       "MY_SECRET_KEY",
     );
+    console.log("User signed in:", user.email, token);
     return res.status(200).json({ token });
   } catch (error) {
     return res.status(500).json({ error: "Internal server error" });

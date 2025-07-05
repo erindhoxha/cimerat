@@ -2,19 +2,12 @@ import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  StyleSheet,
-  Animated,
-  Dimensions,
-  Touchable,
-  Keyboard,
-} from "react-native";
+import { TouchableOpacity, TouchableWithoutFeedback, StyleSheet, Animated, Dimensions, Keyboard } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "@/components/View/View";
 import { Box } from "../Box";
 import { Text } from "../Text";
+import { useAuth } from "../context/AuthContext";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -41,6 +34,10 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
   const [visible, setVisible] = useState(open);
   const insets = useSafeAreaInsets();
   const router = useRouter();
+
+  const { token, setToken } = useAuth();
+
+  const isLoggedIn = !!token;
 
   useEffect(() => {
     Keyboard.dismiss();
@@ -85,50 +82,49 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
             router.push("/(tabs)/your-listings");
           }}
         />
-        <TextLink
-          label="Profili"
-          onPress={() => {
-            onClose();
-            router.push("/profile");
-          }}
-        />
+        {isLoggedIn && (
+          <TextLink
+            label="Profili"
+            onPress={() => {
+              onClose();
+              router.push("/profile");
+            }}
+          />
+        )}
+
         <Box marginBottom={48} marginTop="auto">
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => {
-              onClose();
-              router.push("/register");
-            }}>
-            <FontAwesome name="user-plus" size={16} />
-            <Text fontWeight="medium">Regjistrohu</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => {
-              onClose();
-              router.push("/login");
-            }}>
-            <FontAwesome name="sign-in" size={16} />
-            <Text fontWeight="medium">Kyçu</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => {
-              onClose();
-              router.push("/logout");
-            }}>
-            <FontAwesome name="sign-out" size={16} />
-            <Text fontWeight="medium">Dil</Text>
-          </TouchableOpacity>
-          {true && (
+          {!isLoggedIn && (
             <TouchableOpacity
               style={styles.linkButton}
               onPress={() => {
                 onClose();
-                router.push("/profile");
+                router.push("/register");
               }}>
-              <FontAwesome name="user" size={16} />
-              <Text fontWeight="medium">Profili</Text>
+              <FontAwesome name="user-plus" size={16} />
+              <Text fontWeight="medium">Regjistrohu</Text>
+            </TouchableOpacity>
+          )}
+          {!isLoggedIn && (
+            <TouchableOpacity
+              style={styles.linkButton}
+              onPress={() => {
+                onClose();
+                router.push("/login");
+              }}>
+              <FontAwesome name="sign-in" size={16} />
+              <Text fontWeight="medium">Kyçu</Text>
+            </TouchableOpacity>
+          )}
+          {isLoggedIn && (
+            <TouchableOpacity
+              style={styles.linkButton}
+              onPress={() => {
+                onClose();
+                setToken(null);
+                router.replace("/");
+              }}>
+              <FontAwesome name="sign-out" size={16} />
+              <Text fontWeight="medium">Dil</Text>
             </TouchableOpacity>
           )}
         </Box>
