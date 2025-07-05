@@ -50,6 +50,7 @@ const Input = (
         },
       ]}
       {...props}
+      keyboardAppearance="light"
     />
   );
 };

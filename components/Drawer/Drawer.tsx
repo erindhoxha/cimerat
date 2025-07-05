@@ -2,7 +2,15 @@ import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { TouchableOpacity, TouchableWithoutFeedback, StyleSheet, Animated, Dimensions, Touchable } from "react-native";
+import {
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  StyleSheet,
+  Animated,
+  Dimensions,
+  Touchable,
+  Keyboard,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "@/components/View/View";
 import { Box } from "../Box";
@@ -35,6 +43,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
   const router = useRouter();
 
   useEffect(() => {
+    Keyboard.dismiss();
     if (open) {
       setVisible(true);
       Animated.timing(animation, {

@@ -1,13 +1,13 @@
 import { StyleSheet } from "react-native";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
-import { Link, useRouter } from "expo-router";
+import { Link } from "expo-router";
 import { View } from "@/components/View/View";
 import { Box } from "@/components/Box";
 import { Text } from "@/components/Text";
 import Input from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
-import { useEffect } from "react";
+import Label from "@/components/Label";
 
 export default function LoginScreen() {
   const {
@@ -31,12 +31,14 @@ export default function LoginScreen() {
       </Box>
       <Box gap={12}>
         <Box>
+          <Label>Email adresa</Label>
           <Controller
             control={control}
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
                 placeholder="Email adresa"
                 onBlur={onBlur}
+                keyboardType="email-address"
                 onChangeText={(value) => onChange(value)}
                 value={value}
               />
@@ -44,9 +46,10 @@ export default function LoginScreen() {
             name="email"
             rules={{ required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ }}
           />
-          {errors.email && <Text style={{ color: "red", marginTop: 4 }}>Email është i detyrueshëm</Text>}
+          {errors.email && <Text style={{ color: Colors.light.danger, marginTop: 4 }}>Email është i detyrueshëm</Text>}
         </Box>
         <Box>
+          <Label>Fjalëkalimi</Label>
           <Controller
             control={control}
             render={({ field: { onChange, onBlur, value } }) => (
@@ -62,7 +65,9 @@ export default function LoginScreen() {
             name="password"
             rules={{ required: true, minLength: 6 }}
           />
-          {errors.password && <Text style={{ color: "red", marginTop: 4 }}>Fjalëkalimi është i detyrueshëm</Text>}
+          {errors.password && (
+            <Text style={{ color: Colors.light.danger, marginTop: 4 }}>Fjalëkalimi është i detyrueshëm</Text>
+          )}
         </Box>
         <Button
           variant="primary"
