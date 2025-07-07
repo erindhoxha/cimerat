@@ -5,7 +5,7 @@ import { Text } from "@/components/Text";
 
 export default function ProfileScreen() {
   return (
-    <Box flex={1} padding={24} gap={12}>
+    <Box flex={1} padding={20} gap={12}>
       <Text fontSize="xl" fontWeight="bold">
         Profili
       </Text>

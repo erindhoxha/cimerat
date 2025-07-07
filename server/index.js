@@ -24,7 +24,7 @@ mongoose.connection.on("error", (err) => {
   console.error("Error connecting to MongoDB:", err);
 });
 
-app.get("/", requireAuth, (req, res) => {
+app.get("/", requireAuth, (_, res) => {
   res.send("Hello from Express!123444");
   res.status(200);
 });

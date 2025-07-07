@@ -2,7 +2,15 @@ import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { TouchableOpacity, TouchableWithoutFeedback, StyleSheet, Animated, Dimensions, Keyboard } from "react-native";
+import {
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  StyleSheet,
+  Animated,
+  Dimensions,
+  Keyboard,
+  Alert,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "@/components/View/View";
 import { Box } from "../Box";
@@ -75,13 +83,15 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
             router.push("/");
           }}
         />
-        <TextLink
-          label="Listimet e mia"
-          onPress={() => {
-            onClose();
-            router.push("/(tabs)/your-listings");
-          }}
-        />
+        {isLoggedIn && (
+          <TextLink
+            label="Listimet e mia"
+            onPress={() => {
+              onClose();
+              router.push("/(tabs)/your-listings");
+            }}
+          />
+        )}
         {isLoggedIn && (
           <TextLink
             label="Profili"
@@ -119,9 +129,21 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
             <TouchableOpacity
               style={styles.linkButton}
               onPress={() => {
-                onClose();
-                setToken(null);
-                router.replace("/");
+                Alert.alert("Dilja", "A jeni i sigurt që doni të dilni?", [
+                  {
+                    text: "Anulo",
+                    style: "cancel",
+                  },
+                  {
+                    text: "Dil",
+                    style: "destructive",
+                    onPress: () => {
+                      onClose();
+                      setToken(null);
+                      router.replace("/");
+                    },
+                  },
+                ]);
               }}>
               <FontAwesome name="sign-out" size={16} />
               <Text fontWeight="medium">Dil</Text>

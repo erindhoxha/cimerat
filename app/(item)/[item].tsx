@@ -23,7 +23,7 @@ export default function ItemDetailScreen() {
         }}
         transition={1000}
       />
-      <Box flex={1} paddingHorizontal={24}>
+      <Box flex={1} paddingHorizontal={20}>
         <Box flexDirection="row" justifyContent="space-between" alignItems="flex-start">
           <Text fontSize="xl" fontWeight="bold" style={{ flexShrink: 1 }}>
             Titulli {item}

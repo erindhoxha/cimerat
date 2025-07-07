@@ -13,7 +13,7 @@ import "react-native-reanimated";
 import { Text } from "@/components/Text";
 import { Box } from "@/components/Box";
 import Toast from "react-native-toast-message";
-import { AuthProvider } from "@/components/context/AuthContext";
+import { AuthProvider, useAuth } from "@/components/context/AuthContext";
 
 export const unstable_settings = {
   initialRouteName: "(tabs)",
@@ -61,6 +61,10 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const { openDrawer, closeDrawer, isOpen } = useDrawer();
 
+  const { token } = useAuth();
+
+  const isLoggedIn = !!token;
+
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack
@@ -77,24 +81,42 @@ function RootLayoutNav() {
             return <Text style={styles.logo}>cimerat.com</Text>;
           },
           headerRight: () => (
-            <>
-              <Link href="/profile" style={styles.sideIcon}>
-                <FontAwesome name="user-circle-o" size={24} color={Colors[colorScheme ?? "light"].text} />
-              </Link>
-              <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={styles.sideIcon}>
+            <Box
+              style={{
+                width: "auto",
+              }}
+              flexDirection="row"
+              gap={12}
+              alignItems="flex-end"
+              justifyContent="flex-end">
+              <Box>
+                {isLoggedIn && (
+                  <Link href="/profile" style={styles.sideIcon}>
+                    <FontAwesome name="user-circle-o" size={24} color={Colors[colorScheme ?? "light"].text} />
+                  </Link>
+                )}
+              </Box>
+              <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={styles.hamburgerMenu}>
                 <FontAwesome
                   name={isOpen ? "close" : "navicon"}
                   size={24}
                   color={Colors[colorScheme ?? "light"].text}
                 />
               </Pressable>
-            </>
+            </Box>
           ),
         }}>
         <Stack.Screen name="(item)/[item]" />
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="login/index" />
-        <Stack.Screen name="register/index" />
+        <Stack.Protected guard={!isLoggedIn}>
+          <Stack.Screen name="login/index" />
+        </Stack.Protected>
+        <Stack.Protected guard={!isLoggedIn}>
+          <Stack.Screen name="register/index" />
+        </Stack.Protected>
+        <Stack.Protected guard={isLoggedIn}>
+          <Stack.Screen name="profile/index" />
+        </Stack.Protected>
       </Stack>
     </ThemeProvider>
   );
@@ -105,7 +127,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  sideIcon: {
-    marginRight: 16,
+  sideIcon: {},
+  hamburgerMenu: {
+    display: "flex",
+    alignContent: "center",
+    justifyContent: "center",
   },
 });

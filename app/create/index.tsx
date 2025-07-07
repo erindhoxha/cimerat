@@ -340,7 +340,7 @@ export default function CreateScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, backgroundColor: "white", gap: 12, paddingBottom: 64 },
+  container: { flex: 1, padding: 20, backgroundColor: "white", gap: 12, paddingBottom: 64 },
   dropdownButtonStyle: {
     width: "100%",
     height: 50,

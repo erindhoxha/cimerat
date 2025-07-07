@@ -26,6 +26,8 @@ router.post("/signup", async (req, res) => {
 router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
 
+  console.log("POSTING!");
+
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
   }
@@ -35,10 +37,13 @@ router.post("/signin", async (req, res) => {
       email,
     });
     if (!user) {
+      console.log("NO USER");
       return res.status(401).json({ error: "Invalid email or password" });
     }
+    console.log("FINDING USER...", user);
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
+      console.log("NO MATCH");
       return res.status(401).json({ error: "Invalid email or password" });
     }
     const token = jwt.sign(
@@ -50,6 +55,7 @@ router.post("/signin", async (req, res) => {
     console.log("User signed in:", user.email, token);
     return res.status(200).json({ token });
   } catch (error) {
+    console.log("ERROR");
     return res.status(500).json({ error: "Internal server error" });
   }
 });

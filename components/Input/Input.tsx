@@ -2,58 +2,63 @@ import Colors from "@/constants/Colors";
 import { StyleSheet, TextInput, TextInputProps } from "react-native";
 import { Box } from "../Box";
 import { Text } from "../Text";
+import { forwardRef } from "react";
 
-const Input = (
-  props: TextInputProps & {
-    label?: string;
-    required?: boolean;
-  },
-) => {
-  if (props.label) {
+const Input = forwardRef(
+  (
+    props: TextInputProps & {
+      label?: string;
+      required?: boolean;
+    },
+    ref: React.ForwardedRef<TextInput>,
+  ) => {
+    if (props.label) {
+      return (
+        <Box
+          marginBottom={12}
+          style={{
+            gap: 6,
+          }}>
+          <Text>
+            {props.label}
+            {props.required ? (
+              <Text
+                style={{
+                  color: Colors.light.danger,
+                }}>
+                *
+              </Text>
+            ) : (
+              ""
+            )}
+          </Text>
+          <TextInput
+            ref={ref}
+            style={[
+              styles.input,
+              {
+                height: props.multiline ? 100 : "auto",
+              },
+            ]}
+            {...props}
+          />
+        </Box>
+      );
+    }
     return (
-      <Box
-        marginBottom={12}
-        style={{
-          gap: 6,
-        }}>
-        <Text>
-          {props.label}
-          {props.required ? (
-            <Text
-              style={{
-                color: Colors.light.danger,
-              }}>
-              *
-            </Text>
-          ) : (
-            ""
-          )}
-        </Text>
-        <TextInput
-          style={[
-            styles.input,
-            {
-              height: props.multiline ? 100 : "auto",
-            },
-          ]}
-          {...props}
-        />
-      </Box>
+      <TextInput
+        style={[
+          styles.input,
+          {
+            height: props.multiline ? 100 : "auto",
+          },
+        ]}
+        {...props}
+        keyboardAppearance="light"
+      />
     );
-  }
-  return (
-    <TextInput
-      style={[
-        styles.input,
-        {
-          height: props.multiline ? 100 : "auto",
-        },
-      ]}
-      {...props}
-      keyboardAppearance="light"
-    />
-  );
-};
+  },
+);
 
 const styles = StyleSheet.create({
   input: {

@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, TextInput, ActivityIndicator } from "react-native";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
@@ -11,6 +11,7 @@ import Label from "@/components/Label";
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/components/context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRef } from "react";
 
 export default function LoginScreen() {
   const {
@@ -23,10 +24,13 @@ export default function LoginScreen() {
 
   const router = useRouter();
 
+  const passwordRef = useRef<TextInput>(null);
+
   const {
     mutateAsync: loginMutation,
     status,
     isError,
+    isPending,
     error,
   } = useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
@@ -49,6 +53,8 @@ export default function LoginScreen() {
     await loginMutation({ email: data.email, password: data.password });
   };
 
+  console.log(status, isSubmitting);
+
   return (
     <View style={styles.container}>
       <Box marginBottom={12}>
@@ -69,6 +75,8 @@ export default function LoginScreen() {
                 onChangeText={(value) => onChange(value)}
                 value={value}
                 autoCapitalize="none"
+                returnKeyType="next"
+                onSubmitEditing={() => passwordRef.current?.focus()}
               />
             )}
             name="email"
@@ -82,6 +90,7 @@ export default function LoginScreen() {
             control={control}
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
+                ref={passwordRef}
                 placeholder="Fjalëkalimi"
                 onBlur={onBlur}
                 required
@@ -89,6 +98,8 @@ export default function LoginScreen() {
                 value={value}
                 onChangeText={(value) => onChange(value)}
                 autoCapitalize="none"
+                returnKeyType="done"
+                onSubmitEditing={handleSubmit(onSubmitHandler)}
               />
             )}
             name="password"
@@ -98,11 +109,9 @@ export default function LoginScreen() {
             <Text style={{ color: Colors.light.danger, marginTop: 4 }}>Fjalëkalimi është i detyrueshëm</Text>
           )}
         </Box>
-        <Button
-          variant="primary"
-          onPress={handleSubmit(onSubmitHandler)}
-          disabled={status === "pending" || isSubmitting}>
-          <Text>Kyçu</Text>
+
+        <Button variant="primary" onPress={handleSubmit(onSubmitHandler)} disabled={isPending || isSubmitting}>
+          {isPending && isSubmitting ? <ActivityIndicator color="#fff" /> : <Text>Kyçu</Text>}
         </Button>
         {isError && (
           <Text style={{ color: Colors.light.danger, marginTop: 4 }}>
@@ -127,7 +136,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
+    padding: 20,
   },
   linkText: {
     color: Colors.light.tint,

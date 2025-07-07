@@ -6,7 +6,6 @@ import { HorizontalCardItem } from "@/components/HorizontalCardItem/HorizontalCa
 import { Text } from "@/components/Text";
 import { Button } from "@/components/Button/Button";
 import { Box } from "@/components/Box";
-import Toast from "react-native-toast-message";
 
 const cardItems = [
   {
@@ -53,7 +52,7 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
+    padding: 20,
     backgroundColor: "#fff",
   },
   emptyText: {

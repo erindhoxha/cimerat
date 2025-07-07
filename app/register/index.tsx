@@ -17,7 +17,7 @@ export default function RegisterScreen() {
   } = useForm();
 
   return (
-    <Box padding={24} flex={1}>
+    <Box padding={20} flex={1}>
       <Box marginBottom={12}>
         <Text fontSize="xl" fontWeight="bold">
           Regjistrohu
