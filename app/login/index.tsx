@@ -39,8 +39,11 @@ export default function LoginScreen() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("Login failed");
-      return res.json();
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error || "Gabim gjatë kyçjes. Ju lutemi provoni përsëri.");
+      }
+      return json;
     },
     onSuccess: (data) => {
       setToken(data.token);
@@ -52,8 +55,6 @@ export default function LoginScreen() {
   const onSubmitHandler = async (data: FieldValues) => {
     await loginMutation({ email: data.email, password: data.password });
   };
-
-  console.log(status, isSubmitting);
 
   return (
     <View style={styles.container}>

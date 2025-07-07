@@ -3,7 +3,7 @@ import Colors from "@/constants/Colors";
 import * as SplashScreen from "expo-splash-screen";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Link, Stack } from "expo-router";
+import { Link, Redirect, Stack } from "expo-router";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, useColorScheme } from "react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

@@ -37,14 +37,11 @@ router.post("/signin", async (req, res) => {
       email,
     });
     if (!user) {
-      console.log("NO USER");
-      return res.status(401).json({ error: "Invalid email or password" });
+      return res.status(401).json({ error: "Gabim i email-it ose fjalëkalimit. Ju lutemi provoni përsëri." });
     }
-    console.log("FINDING USER...", user);
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      console.log("NO MATCH");
-      return res.status(401).json({ error: "Invalid email or password" });
+      return res.status(401).json({ error: "Gabim i email-it ose fjalëkalimit. Ju lutemi provoni përsëri." });
     }
     const token = jwt.sign(
       {
@@ -55,8 +52,8 @@ router.post("/signin", async (req, res) => {
     console.log("User signed in:", user.email, token);
     return res.status(200).json({ token });
   } catch (error) {
-    console.log("ERROR");
-    return res.status(500).json({ error: "Internal server error" });
+    console.log("ERROR", error);
+    return res.status(500).json({ error: "Error i serverit. Te lutem provoni perseri." });
   }
 });
 
