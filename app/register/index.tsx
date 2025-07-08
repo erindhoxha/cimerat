@@ -6,6 +6,7 @@ import { Text } from "@/components/Text";
 import Input from "@/components/Input/Input";
 import { Box } from "@/components/Box";
 import { Button } from "@/components/Button/Button";
+import { Link } from "expo-router";
 
 export default function RegisterScreen() {
   const [submitted, setSubmitted] = useState(false);
@@ -52,6 +53,20 @@ export default function RegisterScreen() {
       </Box>
       <Box marginTop={24} gap={12}>
         <Text>
+          Keni një llogari?{" "}
+          <Link href="/login" asChild>
+            <Text
+              style={{
+                color: Colors.light.tint,
+                textDecorationLine: "underline",
+              }}>
+              Kyçuni këtu
+            </Text>
+          </Link>
+        </Text>
+      </Box>
+      {/* <Box marginTop={24} gap={12}> */}
+      {/* <Text>
           Keni pranuar nje email me udhëzimet për regjistrim. Ju lutemi kontrolloni kutinë tuaj të postës elektronike
           për të vazhduar.
         </Text>
@@ -64,8 +79,8 @@ export default function RegisterScreen() {
             // Handle forgot password action
           }}>
           Nese nuk keni marrë emailin, provojeni përsëri
-        </Text>
-      </Box>
+        </Text> */}
+      {/* </Box> */}
     </Box>
   );
 }

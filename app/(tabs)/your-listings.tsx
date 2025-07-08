@@ -6,6 +6,8 @@ import { HorizontalCardItem } from "@/components/HorizontalCardItem/HorizontalCa
 import { Text } from "@/components/Text";
 import { Button } from "@/components/Button/Button";
 import { Box } from "@/components/Box";
+import { useAuth } from "@/components/context/AuthContext";
+import { FontAwesome } from "@expo/vector-icons";
 
 const cardItems = [
   {
@@ -25,26 +27,67 @@ const cardItems = [
 ];
 
 export default function TabTwoScreen() {
+  const { token } = useAuth();
+
   const router = useRouter();
+
+  const isLoggedIn = !!token;
+
   return (
     <ScrollView style={styles.container}>
-      <Box gap={12}>
-        <Text fontSize="xl" fontWeight="bold">
-          Listimet tua
-        </Text>
-        <Link href="/create" asChild>
-          <Button variant="primary">
-            <Text>Krijo një listim të ri</Text>
-          </Button>
-        </Link>
-      </Box>
-      <View style={styles.separator} />
-      <Text style={styles.emptyText}>
-        Nuk keni asnjë listim të krijuar. Shtoni një listim të ri duke klikuar në butonin "Krijo" në skedën e sipërme.
-      </Text>
-      {cardItems.map((item) => (
-        <HorizontalCardItem item={item} router={router} key={item.id} />
-      ))}
+      {isLoggedIn && (
+        <Box gap={12}>
+          <Text fontSize="xl" fontWeight="bold">
+            Listimet tua
+          </Text>
+          <Link href="/create" asChild>
+            <Button variant="primary">
+              <Text>Krijo një listim të ri</Text>
+            </Button>
+          </Link>
+        </Box>
+      )}
+      {!isLoggedIn && (
+        <Box
+          marginTop={24}
+          gap={12}
+          style={{
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            flex: 1,
+          }}>
+          <Box>
+            <FontAwesome name="exclamation" size={48} color={Colors.light.danger} />
+          </Box>
+          <Text fontSize="xl" fontWeight="bold">
+            Oh, jo! Nuk jeni të kyçur
+          </Text>
+          <Text>Ju lutemi, kyçuni për të parë listimet tuaja.</Text>
+          <Link href="/login" asChild>
+            <Button
+              variant="primary"
+              style={{
+                width: "100%",
+              }}>
+              <Text>Kyçu</Text>
+            </Button>
+          </Link>
+        </Box>
+      )}
+      {isLoggedIn && (
+        <>
+          <View style={styles.separator} />
+          <Text style={styles.emptyText}>
+            Nuk keni asnjë listim të krijuar. Shtoni një listim të ri duke klikuar në butonin "Krijo" në skedën e
+            sipërme.
+          </Text>
+          {cardItems.map((item) => (
+            <HorizontalCardItem item={item} router={router} key={item.id} />
+          ))}
+        </>
+      )}
     </ScrollView>
   );
 }
