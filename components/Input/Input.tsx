@@ -33,7 +33,6 @@ const Input = forwardRef(
             )}
           </Text>
           <TextInput
-            ref={ref}
             style={[
               styles.input,
               {
@@ -41,12 +40,14 @@ const Input = forwardRef(
               },
             ]}
             {...props}
+            ref={ref}
           />
         </Box>
       );
     }
     return (
       <TextInput
+        ref={ref}
         style={[
           styles.input,
           {
@@ -55,6 +56,7 @@ const Input = forwardRef(
         ]}
         {...props}
         keyboardAppearance="light"
+        placeholderTextColor={Colors.light.gray}
       />
     );
   },

@@ -8,8 +8,10 @@ router.post("/signup", async (req, res) => {
   if (!email || !password) {
     return res.status(400).json({ error: "Username and password are required" });
   }
+
   try {
     const user = new User({ email, password });
+
     const token = jwt.sign(
       {
         userId: user._id,
@@ -19,14 +21,12 @@ router.post("/signup", async (req, res) => {
     await user.save();
     return res.status(201).json({ token });
   } catch (error) {
-    return res.status(422).json({ error });
+    return res.status(422).json({ error: "Gabim gjatë regjistrimit. Ju lutemi provoni përsëri ose na kontaktoni." });
   }
 });
 
 router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
-
-  console.log("POSTING!");
 
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });

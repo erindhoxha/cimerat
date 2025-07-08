@@ -13,7 +13,7 @@ export default function ItemDetailScreen() {
   const { item } = useLocalSearchParams();
 
   return (
-    <Box flex={1}>
+    <Box flex={1} style={styles.container}>
       <Image
         style={styles.cardImage}
         source={require("../../assets/images/apt.jpg")}
@@ -79,5 +79,11 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 200,
     marginBottom: 20,
+  },
+  container: {
+    flex: 1,
+    borderRadius: 32, // or any value you want
+    backgroundColor: "#fff",
+    overflow: "hidden",
   },
 });

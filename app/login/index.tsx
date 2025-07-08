@@ -28,7 +28,6 @@ export default function LoginScreen() {
 
   const {
     mutateAsync: loginMutation,
-    status,
     isError,
     isPending,
     error,
@@ -58,6 +57,11 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Add a line at the top that indicates that it can be draggable */}
+      <Box alignItems="center" marginBottom={16}>
+        <Box style={{ height: 3, backgroundColor: Colors.light.gray, borderRadius: 32, width: 50 }} />
+      </Box>
+
       <Box marginBottom={12}>
         <Text fontSize="xl" fontWeight="bold">
           Kyçu
@@ -77,7 +81,9 @@ export default function LoginScreen() {
                 value={value}
                 autoCapitalize="none"
                 returnKeyType="next"
-                onSubmitEditing={() => passwordRef.current?.focus()}
+                onSubmitEditing={() => {
+                  passwordRef.current?.focus();
+                }}
               />
             )}
             name="email"
@@ -130,6 +136,9 @@ export default function LoginScreen() {
           </Link>
         </Box>
       </Box>
+      <Button variant="secondary" style={{ marginTop: 24 }} onPress={() => router.back()}>
+        <Text style={{ color: Colors.light.text }}>Kthehu</Text>
+      </Button>
     </View>
   );
 }
@@ -138,6 +147,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    paddingTop: 24,
+    borderRadius: 32, // or any value you want
+    backgroundColor: "#fff",
+    overflow: "hidden",
   },
   linkText: {
     color: Colors.light.tint,
