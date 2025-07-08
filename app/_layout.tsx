@@ -113,32 +113,32 @@ function RootLayoutNav() {
         }}>
         <Stack.Screen
           name="(item)/[item]"
-          options={{
-            presentation: "modal",
-            headerBackButtonMenuEnabled: true,
-            headerRight: undefined,
-            headerLeft: () => (
-              <Box
-                style={{
-                  width: "auto",
-                }}
-                flexDirection="row"
-                gap={12}
-                alignItems="flex-end"
-                justifyContent="flex-end">
-                <Text
-                  fontSize="md"
-                  onPress={() => {
-                    router.back();
-                  }}>
-                  Back
-                </Text>
-              </Box>
-            ),
-            contentStyle: {
-              backgroundColor: "transparent",
-            },
-          }}
+          // options={{
+          //   presentation: "modal",
+          //   headerBackButtonMenuEnabled: true,
+          //   headerRight: undefined,
+          //   headerLeft: () => (
+          //     <Box
+          //       style={{
+          //         width: "auto",
+          //       }}
+          //       flexDirection="row"
+          //       gap={12}
+          //       alignItems="flex-end"
+          //       justifyContent="flex-end">
+          //       <Text
+          //         fontSize="md"
+          //         onPress={() => {
+          //           router.back();
+          //         }}>
+          //         Back
+          //       </Text>
+          //     </Box>
+          //   ),
+          //   contentStyle: {
+          //     backgroundColor: "transparent",
+          //   },
+          // }}
         />
         <Stack.Screen name="(tabs)" />
         <Stack.Protected guard={!isLoggedIn}>
