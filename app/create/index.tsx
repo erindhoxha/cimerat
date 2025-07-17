@@ -48,7 +48,7 @@ interface FormData {
 
 export default function CreateScreen() {
   const router = useRouter();
-  const { control, handleSubmit, watch, reset } = useForm({
+  const { control, handleSubmit, watch, reset } = useForm<FormData>({
     defaultValues: {
       city: "",
       neighborhood: "",
@@ -61,7 +61,7 @@ export default function CreateScreen() {
     },
   });
 
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<{ base64: string; uri: string }[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [mediaLibraryPermission, requestMediaLibraryPermission] = ImagePicker.useMediaLibraryPermissions();
 
@@ -83,36 +83,27 @@ export default function CreateScreen() {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: true,
       quality: 1,
+      base64: true,
     });
     if (!result.canceled) {
-      setImages(result.assets.map((asset) => asset.uri));
+      setImages(
+        result.assets.map(({ base64, uri }) => ({
+          base64: base64 || "",
+          uri: uri || "",
+        })),
+      );
     }
   };
 
   const selectedCity = watch("city");
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
+    const payload = {
+      ...data,
+      images,
+    };
 
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    images.forEach((uri, idx) => {
-      formData.append("images", {
-        uri,
-        name: `photo_${idx}.jpg`,
-        type: "image/jpeg",
-      } as any);
-    });
-
-    await fetch("http://localhost:3000/listings", {
-      method: "POST",
-      body: formData,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    console.log("submit!", payload);
 
     // TODO: send data to backend
     router.replace("/your-listings");
@@ -139,17 +130,10 @@ export default function CreateScreen() {
         <Button variant="tertiary" onPress={pickImage}>
           Zgjidh foto
         </Button>
-        <Box
-          flexDirection="row"
-          gap={8}
-          marginTop={8}
-          flex={1}
-          style={{
-            flexShrink: 1,
-            flexWrap: "wrap",
-          }}>
-          {images.map((uri, idx) => (
+        <Box flexDirection="row" gap={8} marginTop={8} flex={1}>
+          {images.map(({ uri }, idx) => (
             <Pressable key={idx} onPress={() => setPreviewImage(uri)}>
+              {/* TODO: Add Icon to delete image */}
               <Box style={{ borderRadius: 8, overflow: "hidden" }}>
                 <Image source={{ uri }} style={{ width: 64, height: 64 }} />
               </Box>
@@ -364,7 +348,9 @@ export default function CreateScreen() {
             justifyContent: "center",
             alignItems: "center",
           }}
-          onPress={() => setPreviewImage(null)}>
+          onPress={() => {
+            setPreviewImage(null);
+          }}>
           {previewImage && (
             <Image
               source={{ uri: previewImage }}

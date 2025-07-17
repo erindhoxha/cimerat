@@ -49,6 +49,8 @@ export default function LoginScreen() {
     },
   });
 
+  console.log(errors);
+
   const onSubmitHandler = async (data: FieldValues) => {
     await loginMutation({ username: data.username, password: data.password });
   };
@@ -84,7 +86,7 @@ export default function LoginScreen() {
               />
             )}
             name="username"
-            rules={{ required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ }}
+            rules={{ required: true }}
           />
           {errors.username && (
             <Text style={{ color: Colors.light.danger, marginTop: 4 }}>username është i detyrueshëm</Text>
