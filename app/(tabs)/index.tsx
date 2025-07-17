@@ -3,11 +3,16 @@ import SelectDropdown from "react-native-select-dropdown";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { CardItem } from "@/components/CardItem/CardItem";
-import { cimerat, cities, cmimi, DATA, neighborhoods, numriIDhomave } from "@/mocks/mocks";
+import { DATA } from "@/mocks/mocks";
 import { useRouter } from "expo-router";
 import { Box } from "@/components/Box";
 import Label from "@/components/Label/Label";
 import { Text } from "@/components/Text";
+import { cimerat } from "@/constants/NumberOfCimera";
+import { cmimi } from "@/constants/Price";
+import { cities } from "@/constants/Cities";
+import { neighborhoods } from "@/constants/Neighborhoods";
+import { numriIDhomave } from "@/constants/NumberOfRooms";
 
 interface SelectButtonProps {
   title: string | null;

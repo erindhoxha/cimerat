@@ -2,16 +2,36 @@ import { StyleSheet, TouchableOpacity, TouchableOpacityProps } from "react-nativ
 import { Text } from "../Text";
 import Colors from "@/constants/Colors";
 
+type Variant = "primary" | "secondary" | "tertiary";
+
 export const Button = (
   props: TouchableOpacityProps & {
-    variant?: "primary" | "secondary";
+    variant?: Variant;
   },
 ) => {
+  const THEME: Record<
+    Variant,
+    {
+      backgroundColor: string;
+      borderRadius: number;
+      alignItems: "center";
+      color?: string;
+    }
+  > = {
+    primary: style.primaryButton,
+    secondary: style.secondaryButton,
+    tertiary: style.tertiaryButton,
+  };
+
   return (
-    <TouchableOpacity
-      {...props}
-      style={[props.variant === "primary" ? style.primaryButton : style.secondaryButton, props.style]}>
-      <Text fontWeight="medium">{props.children}</Text>
+    <TouchableOpacity {...props} style={[THEME[props.variant || "primary"], props.style]}>
+      <Text
+        fontWeight="medium"
+        style={{
+          color: THEME[props.variant || "primary"].color,
+        }}>
+        {props.children}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -25,6 +45,15 @@ const style = StyleSheet.create({
   },
   secondaryButton: {
     backgroundColor: Colors.light.gray,
+    padding: 12,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  tertiaryButton: {
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: Colors.light.tint,
+    color: Colors.light.tint,
     padding: 12,
     borderRadius: 12,
     alignItems: "center",

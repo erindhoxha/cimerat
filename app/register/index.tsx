@@ -5,7 +5,7 @@ import { Text } from "@/components/Text";
 import Input from "@/components/Input/Input";
 import { Box } from "@/components/Box";
 import { Button } from "@/components/Button/Button";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/components/context/AuthContext";
 import { TextInput } from "react-native-gesture-handler/lib/typescript/components/GestureComponents";
@@ -31,7 +31,7 @@ export default function RegisterScreen() {
     isPending,
     error,
   } = useMutation({
-    mutationFn: async (data: { email: string; password: string }) => {
+    mutationFn: async (data: { username: string; password: string }) => {
       const res = await fetch("http://localhost:3000/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -51,7 +51,7 @@ export default function RegisterScreen() {
   });
 
   const onSubmitHandler = async (data: FieldValues) => {
-    await registerMutation({ email: data.email, password: data.password });
+    await registerMutation({ username: data.username, password: data.password });
   };
 
   return (
@@ -70,7 +70,7 @@ export default function RegisterScreen() {
             control={control}
             render={({ field: { onChange, onBlur, value, ref } }) => (
               <Input
-                placeholder="Email adresa"
+                placeholder="Emri i përdoruesit"
                 autoCapitalize="none"
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -81,10 +81,10 @@ export default function RegisterScreen() {
                 value={value}
               />
             )}
-            name="email"
-            rules={{ required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ }}
+            name="username"
+            rules={{ required: true }}
           />
-          {errors.email && <Text style={{ color: "red", marginTop: 4 }}>Email është i detyrueshëm</Text>}
+          {errors.username && <Text style={{ color: "red", marginTop: 4 }}>Emri është i detyrueshëm</Text>}
         </Box>
         <Box>
           <Controller
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     paddingTop: 24,
-    borderRadius: 32, // or any value you want
+    borderRadius: 32,
     backgroundColor: "#fff",
     overflow: "hidden",
   },

@@ -82,7 +82,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    borderRadius: 32, // or any value you want
     backgroundColor: "#fff",
     overflow: "hidden",
   },

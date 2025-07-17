@@ -10,7 +10,6 @@ import { Button } from "@/components/Button/Button";
 import Label from "@/components/Label";
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/components/context/AuthContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRef } from "react";
 
 export default function LoginScreen() {
@@ -32,7 +31,7 @@ export default function LoginScreen() {
     isPending,
     error,
   } = useMutation({
-    mutationFn: async (data: { email: string; password: string }) => {
+    mutationFn: async (data: { username: string; password: string }) => {
       const res = await fetch("http://localhost:3000/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -46,13 +45,12 @@ export default function LoginScreen() {
     },
     onSuccess: (data) => {
       setToken(data.token);
-      router.push("/");
       reset();
     },
   });
 
   const onSubmitHandler = async (data: FieldValues) => {
-    await loginMutation({ email: data.email, password: data.password });
+    await loginMutation({ username: data.username, password: data.password });
   };
 
   return (
@@ -69,14 +67,13 @@ export default function LoginScreen() {
       </Box>
       <Box gap={12}>
         <Box>
-          <Label>Email adresa</Label>
+          <Label>Emri i përdoruesit</Label>
           <Controller
             control={control}
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
-                placeholder="Email adresa"
+                placeholder="Emri i përdoruesit"
                 onBlur={onBlur}
-                keyboardType="email-address"
                 onChangeText={(value) => onChange(value)}
                 value={value}
                 autoCapitalize="none"
@@ -86,10 +83,12 @@ export default function LoginScreen() {
                 }}
               />
             )}
-            name="email"
+            name="username"
             rules={{ required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ }}
           />
-          {errors.email && <Text style={{ color: Colors.light.danger, marginTop: 4 }}>Email është i detyrueshëm</Text>}
+          {errors.username && (
+            <Text style={{ color: Colors.light.danger, marginTop: 4 }}>username është i detyrueshëm</Text>
+          )}
         </Box>
         <Box>
           <Label>Fjalëkalimi</Label>
@@ -126,17 +125,12 @@ export default function LoginScreen() {
           </Text>
         )}
         <Box>
-          <Link href="/forgot-password" asChild>
-            <Text style={styles.linkText}>Harrove fjalëkalimin?</Text>
-          </Link>
-        </Box>
-        <Box>
           <Link href="/register" style={styles.linkText}>
             Regjistrohu
           </Link>
         </Box>
       </Box>
-      <Button variant="secondary" style={{ marginTop: 24 }} onPress={() => router.back()}>
+      <Button variant="secondary" style={{ marginTop: 12 }} onPress={() => router.back()}>
         <Text style={{ color: Colors.light.text }}>Kthehu</Text>
       </Button>
     </View>

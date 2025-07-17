@@ -29,7 +29,13 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them to list your properties."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

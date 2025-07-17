@@ -29,6 +29,11 @@ app.get("/", requireAuth, (_, res) => {
   res.status(200);
 });
 
+app.get("/user", requireAuth, (req, res) => {
+  console.log("Getting user!");
+  res.status(200).json({ user: req.user });
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

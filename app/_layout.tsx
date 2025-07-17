@@ -3,7 +3,7 @@ import Colors from "@/constants/Colors";
 import * as SplashScreen from "expo-splash-screen";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Link, Redirect, Stack, useRouter } from "expo-router";
+import { Link, Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, useColorScheme } from "react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -166,16 +166,7 @@ function RootLayoutNav() {
           />
         </Stack.Protected>
         <Stack.Protected guard={isLoggedIn}>
-          <Stack.Screen
-            name="profile/index"
-            options={{
-              presentation: "modal",
-              headerShown: false,
-              contentStyle: {
-                backgroundColor: "transparent",
-              },
-            }}
-          />
+          <Stack.Screen name="profile/index" />
         </Stack.Protected>
       </Stack>
     </ThemeProvider>
