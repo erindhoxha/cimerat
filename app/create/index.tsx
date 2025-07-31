@@ -6,14 +6,13 @@ import { cities } from "@/constants/Cities";
 import { neighborhoods } from "@/constants/Neighborhoods";
 import { useRouter } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
-import { Modal, Pressable, ScrollView } from "react-native";
+import { Modal, Pressable, ScrollView, StyleSheet } from "react-native";
 import Toast from "react-native-toast-message";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Image } from "expo-image";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formSchema } from "./schema";
-import { styles } from "./styles";
+import formSchema from "./schema";
 import { ImagePickerGrid } from "@/components/ImagePickerGrid/ImagePickerGrid";
 import { DropdownField } from "@/components/DropdownController/DropdownController";
 
@@ -51,7 +50,6 @@ export default function CreateScreen() {
   });
 
   const pickImage = async () => {
-    // Request permission if not granted
     if (!mediaLibraryPermission?.granted) {
       const permission = await requestMediaLibraryPermission();
       if (!permission.granted) {
@@ -96,13 +94,11 @@ export default function CreateScreen() {
       type: "success",
       text1: "Keni krijuar një listim të ri",
       text2: "Shikoni listimet tuaja për të parë ndryshimet.",
-      text1Style: { fontSize: 14, fontWeight: "bold" },
-      text2Style: { fontSize: 12 },
+      text1Style: styles.toastTitle,
+      text2Style: styles.toastSubtitle,
     });
     reset();
   };
-
-  console.log(errors);
 
   return (
     <ScrollView style={styles.container}>
@@ -196,29 +192,47 @@ export default function CreateScreen() {
           />
         )}
       />
-      <Button variant="primary" style={{ marginBottom: 48 }} onPress={handleSubmit(onSubmit)}>
+      <Button variant="primary" style={styles.submitButton} onPress={handleSubmit(onSubmit)}>
         Krijo Listimin
       </Button>
       <Modal visible={!!previewImage} transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>
         <Pressable
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+          style={styles.previewOverlay}
           onPress={() => {
             setPreviewImage(null);
           }}>
-          {previewImage && (
-            <Image
-              source={{ uri: previewImage }}
-              style={{ width: "90%", height: "80%", borderRadius: 32 }}
-              contentFit="contain"
-            />
-          )}
+          {previewImage && <Image source={{ uri: previewImage }} style={styles.previewImage} contentFit="contain" />}
         </Pressable>
       </Modal>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 20,
+  },
+  submitButton: {
+    marginBottom: 48,
+  },
+  previewOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previewImage: {
+    width: "90%",
+    height: "80%",
+    borderRadius: 32,
+  },
+  toastTitle: {
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  toastSubtitle: {
+    fontSize: 12,
+  },
+});

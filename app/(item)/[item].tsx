@@ -27,13 +27,8 @@ export default function ItemDetailScreen() {
             Titulli {item}
           </Text>
         </Box>
-        <Text
-          style={{
-            marginTop: 12,
-          }}>
-          Item ID: {item}
-        </Text>
-        <Text style={{ marginTop: 10 }}>
+        <Text>Item ID: {item}</Text>
+        <Text>
           This is a detailed view of item {item}. Here you can add more information about the item, including
           descriptions, features, and other relevant details.
         </Text>

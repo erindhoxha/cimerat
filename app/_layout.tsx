@@ -7,13 +7,13 @@ import { Link, Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, useColorScheme } from "react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import DrawerProvider, { useDrawer } from "../context/DrawerProvider";
 export { ErrorBoundary } from "expo-router";
 import "react-native-reanimated";
 import { Text } from "@/components/Text";
 import { Box } from "@/components/Box";
 import Toast from "react-native-toast-message";
-import { AuthProvider, useAuth } from "@/components/context/AuthContext";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
+import DrawerProvider, { useDrawer } from "@/context/DrawerProvider";
 
 export const unstable_settings = {
   initialRouteName: "(tabs)",
@@ -70,22 +70,14 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack
         screenOptions={{
-          headerStyle: {
-            backgroundColor: Colors["light"].yellow,
-          },
+          headerStyle: styles.headerStyle,
           headerTintColor: Colors["light"].text,
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
+          headerTitleStyle: styles.headerTitleStyle,
           headerBackTitle: "Back",
-          headerTitle: () => {
-            return <Text style={styles.logo}>cimerat.com</Text>;
-          },
+          headerTitle: () => <Text style={styles.logo}>Cimerat.com</Text>,
           headerRight: () => (
             <Box
-              style={{
-                width: "auto",
-              }}
+              style={styles.headerRightBox}
               flexDirection="row"
               gap={12}
               alignItems="flex-end"
@@ -111,35 +103,7 @@ function RootLayoutNav() {
             </Box>
           ),
         }}>
-        <Stack.Screen
-          name="(item)/[item]"
-          // options={{
-          //   presentation: "modal",
-          //   headerBackButtonMenuEnabled: true,
-          //   headerRight: undefined,
-          //   headerLeft: () => (
-          //     <Box
-          //       style={{
-          //         width: "auto",
-          //       }}
-          //       flexDirection="row"
-          //       gap={12}
-          //       alignItems="flex-end"
-          //       justifyContent="flex-end">
-          //       <Text
-          //         fontSize="md"
-          //         onPress={() => {
-          //           router.back();
-          //         }}>
-          //         Back
-          //       </Text>
-          //     </Box>
-          //   ),
-          //   contentStyle: {
-          //     backgroundColor: "transparent",
-          //   },
-          // }}
-        />
+        <Stack.Screen name="(item)/[item]" />
         <Stack.Screen name="(tabs)" />
         <Stack.Protected guard={!isLoggedIn}>
           <Stack.Screen
@@ -177,6 +141,15 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  headerStyle: {
+    backgroundColor: Colors["light"].yellow,
+  },
+  headerTitleStyle: {
+    fontWeight: "bold",
+  },
+  headerRightBox: {
+    width: "auto",
   },
   sideIcon: {},
   hamburgerMenu: {

@@ -1,9 +1,8 @@
 import { Component } from "react";
-import { View } from "../View/View";
+import { View, StyleSheet } from "react-native";
 import Accordion from "react-native-collapsible/Accordion";
 import { FontAwesome } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
-import { StyleSheet } from "react-native";
 import { Text } from "../Text";
 import { Box } from "../Box";
 
@@ -18,73 +17,52 @@ interface Section {
   title: string;
   content: string;
 }
+
 export class AccordionView extends Component {
   state = {
     activeSections: [],
   };
 
-  _renderSectionTitle = (section: Section) => {
-    return (
-      <View>
-        <Text>{section.content}</Text>
-      </View>
-    );
-  };
+  _renderSectionTitle = (section: Section) => (
+    <View>
+      <Text>{section.content}</Text>
+    </View>
+  );
 
-  _renderHeader = (section: Section) => {
-    return (
-      <Box style={styles.accordionHeader}>
-        <Text
-          style={{
-            fontWeight: "500",
-          }}>
-          Filtro më shumë
-        </Text>
-        <FontAwesome name="chevron-down" size={12} color="#333" />
-      </Box>
-    );
-  };
+  _renderHeader = (section: Section) => (
+    <Box style={styles.accordionHeader}>
+      <Text style={styles.headerText}>Filtro më shumë</Text>
+      <FontAwesome name="chevron-down" size={12} color="#333" />
+    </Box>
+  );
 
-  _renderContent = (section: Section) => {
-    return (
-      <View>
-        <SelectDropdown
-          searchInputStyle={{
-            backgroundColor: "#E9ECEF",
-            borderRadius: 12,
-            paddingHorizontal: 12,
-            paddingVertical: 8,
-          }}
-          searchPlaceHolder="Kërko qytetin..."
-          searchPlaceHolderColor="#6c757d"
-          search={true}
-          data={["City"]}
-          onSelect={(selectedItem, index) => {
-            return undefined;
-          }}
-          renderButton={(_, isOpened) => {
-            return (
-              <View style={[styles.dropdownButtonStyle]}>
-                <Text style={[styles.dropdownButtonTxtStyle]}>{"Zgjedh Qytetin"}</Text>
-                <Text>
-                  <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
-                </Text>
-              </View>
-            );
-          }}
-          renderItem={(item, index, isSelected) => {
-            return (
-              <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
-                <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-              </View>
-            );
-          }}
-          showsVerticalScrollIndicator={false}
-          dropdownStyle={styles.dropdownMenuStyle}
-        />
-      </View>
-    );
-  };
+  _renderContent = (section: Section) => (
+    <View>
+      <SelectDropdown
+        searchInputStyle={styles.searchInputStyle}
+        searchPlaceHolder="Kërko qytetin..."
+        searchPlaceHolderColor="#6c757d"
+        search={true}
+        data={["City"]}
+        onSelect={() => undefined}
+        renderButton={(_, isOpened) => (
+          <View style={styles.dropdownButtonStyle}>
+            <Text style={styles.dropdownButtonTxtStyle}>Zgjedh Qytetin</Text>
+            <Text>
+              <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
+            </Text>
+          </View>
+        )}
+        renderItem={(item, index, isSelected) => (
+          <View style={[styles.dropdownItemStyle, isSelected && styles.dropdownItemSelected]}>
+            <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+          </View>
+        )}
+        showsVerticalScrollIndicator={false}
+        dropdownStyle={styles.dropdownMenuStyle}
+      />
+    </View>
+  );
 
   _updateSections = (activeSections: number[]) => {
     this.setState({ activeSections });
@@ -116,19 +94,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
-  dropdownButtonStyle: {
-    width: "100%",
-    height: 50,
-    marginBottom: 12,
+  headerText: {
+    fontWeight: "500",
+  },
+  searchInputStyle: {
     backgroundColor: "#E9ECEF",
     borderRadius: 12,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
     paddingHorizontal: 12,
-    flexShrink: 1,
+    paddingVertical: 8,
   },
-  dropdownButtonStyleFull: {
+  dropdownButtonStyle: {
     width: "100%",
     height: 50,
     marginBottom: 12,
@@ -146,20 +121,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#151E26",
   },
-  dropdownButtonDisabledStyle: {
-    backgroundColor: "#e0e0e0",
-    opacity: 0.6,
-  },
-  dropdownButtonTxtDisabledStyle: {
-    color: "#aaa",
-  },
-  dropdownButtonArrowStyle: {
-    fontSize: 28,
-  },
-  dropdownButtonIconStyle: {
-    fontSize: 28,
-    marginRight: 8,
-  },
   dropdownMenuStyle: {
     backgroundColor: "#E9ECEF",
     borderRadius: 8,
@@ -171,13 +132,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 8,
   },
+  dropdownItemSelected: {
+    backgroundColor: "#D2D9DF",
+  },
   dropdownItemTxtStyle: {
     flex: 1,
     fontSize: 18,
     fontWeight: "500",
     color: "#151E26",
-  },
-  dropdownItemIconStyle: {
-    fontSize: 28,
   },
 });

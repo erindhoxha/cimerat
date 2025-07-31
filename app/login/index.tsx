@@ -9,7 +9,7 @@ import Input from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
 import Label from "@/components/Label";
 import { useMutation } from "@tanstack/react-query";
-import { useAuth } from "@/components/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { useRef } from "react";
 
 export default function LoginScreen() {
@@ -49,20 +49,16 @@ export default function LoginScreen() {
     },
   });
 
-  console.log(errors);
-
   const onSubmitHandler = async (data: FieldValues) => {
     await loginMutation({ username: data.username, password: data.password });
   };
 
   return (
     <View style={styles.container}>
-      {/* Add a line at the top that indicates that it can be draggable */}
       <Box alignItems="center" marginBottom={16}>
-        <Box style={{ height: 3, backgroundColor: Colors.light.gray, borderRadius: 32, width: 50 }} />
+        <Box style={styles.dragLine} />
       </Box>
-
-      <Box marginBottom={12}>
+      <Box style={styles.header}>
         <Text fontSize="xl" fontWeight="bold">
           Kyçu
         </Text>
@@ -76,7 +72,7 @@ export default function LoginScreen() {
               <Input
                 placeholder="Emri i përdoruesit"
                 onBlur={onBlur}
-                onChangeText={(value) => onChange(value)}
+                onChangeText={onChange}
                 value={value}
                 autoCapitalize="none"
                 returnKeyType="next"
@@ -88,9 +84,7 @@ export default function LoginScreen() {
             name="username"
             rules={{ required: true }}
           />
-          {errors.username && (
-            <Text style={{ color: Colors.light.danger, marginTop: 4 }}>username është i detyrueshëm</Text>
-          )}
+          {errors.username && <Text style={styles.errorText}>username është i detyrueshëm</Text>}
         </Box>
         <Box>
           <Label>Fjalëkalimi</Label>
@@ -104,7 +98,7 @@ export default function LoginScreen() {
                 required
                 secureTextEntry
                 value={value}
-                onChangeText={(value) => onChange(value)}
+                onChangeText={onChange}
                 autoCapitalize="none"
                 returnKeyType="done"
                 onSubmitEditing={handleSubmit(onSubmitHandler)}
@@ -113,18 +107,14 @@ export default function LoginScreen() {
             name="password"
             rules={{ required: true, minLength: 6 }}
           />
-          {errors.password && (
-            <Text style={{ color: Colors.light.danger, marginTop: 4 }}>Fjalëkalimi është i detyrueshëm</Text>
-          )}
+          {errors.password && <Text style={styles.errorText}>Fjalëkalimi është i detyrueshëm</Text>}
         </Box>
 
         <Button variant="primary" onPress={handleSubmit(onSubmitHandler)} disabled={isPending || isSubmitting}>
           {isPending && isSubmitting ? <ActivityIndicator color="#fff" /> : <Text>Kyçu</Text>}
         </Button>
         {isError && (
-          <Text style={{ color: Colors.light.danger, marginTop: 4 }}>
-            {error instanceof Error ? error.message : "Gabim gjatë kyçjes"}
-          </Text>
+          <Text style={styles.errorText}>{error instanceof Error ? error.message : "Gabim gjatë kyçjes"}</Text>
         )}
         <Box>
           <Link href="/register" style={styles.linkText}>
@@ -132,8 +122,8 @@ export default function LoginScreen() {
           </Link>
         </Box>
       </Box>
-      <Button variant="secondary" style={{ marginTop: 12 }} onPress={() => router.back()}>
-        <Text style={{ color: Colors.light.text }}>Kthehu</Text>
+      <Button variant="secondary" style={styles.backButton} onPress={() => router.back()}>
+        <Text style={styles.backButtonText}>Kthehu</Text>
       </Button>
     </View>
   );
@@ -144,15 +134,31 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     paddingTop: 24,
-    borderRadius: 32, // or any value you want
+    borderRadius: 32,
     backgroundColor: "#fff",
     overflow: "hidden",
+  },
+  dragLine: {
+    height: 3,
+    backgroundColor: Colors.light.gray,
+    borderRadius: 32,
+    width: 50,
+  },
+  header: {
+    marginBottom: 12,
   },
   linkText: {
     color: Colors.light.tint,
     textDecorationLine: "underline",
   },
-  header: {
-    marginBottom: 16,
+  errorText: {
+    color: Colors.light.danger,
+    marginTop: 4,
+  },
+  backButton: {
+    marginTop: 12,
+  },
+  backButtonText: {
+    color: Colors.light.text,
   },
 });

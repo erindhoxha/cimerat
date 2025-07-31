@@ -5,6 +5,9 @@ export const styles = StyleSheet.create({
   dropdownContainerStyle: {
     marginBottom: 12,
   },
+  asterisk: {
+    color: "red",
+  },
   dropdownButtonStyle: {
     width: "100%",
     height: 50,

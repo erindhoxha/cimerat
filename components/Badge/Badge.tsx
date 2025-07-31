@@ -2,6 +2,7 @@ import Colors from "@/constants/Colors";
 import { Box } from "../Box";
 import { Text } from "../Text";
 import { FontAwesome } from "@expo/vector-icons";
+import { StyleSheet } from "react-native";
 
 export const Badge = () => {
   return (
@@ -12,20 +13,12 @@ export const Badge = () => {
       paddingVertical={4}
       borderRadius={24}
       gap={12}
-      style={{
-        borderWidth: 1,
-        borderColor: Colors.light.gray,
-      }}>
+      style={styles.badge}>
       <Box flexDirection="row" alignItems="center" gap={4}>
         <Text>4</Text>
         <FontAwesome name="bed" size={12} />
       </Box>
-      <Box
-        flexDirection="row"
-        alignItems="center"
-        style={{
-          gap: 4,
-        }}>
+      <Box flexDirection="row" alignItems="center" gap={4}>
         <FontAwesome name="user-o" size={10} />
         <FontAwesome name="user-o" size={10} />
         <FontAwesome name="user" size={12} />
@@ -37,3 +30,10 @@ export const Badge = () => {
     </Box>
   );
 };
+
+const styles = StyleSheet.create({
+  badge: {
+    borderWidth: 1,
+    borderColor: Colors.light.gray,
+  },
+});

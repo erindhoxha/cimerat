@@ -7,7 +7,7 @@ import { Box } from "@/components/Box";
 import { Button } from "@/components/Button/Button";
 import { useRouter } from "expo-router";
 import { useMutation } from "@tanstack/react-query";
-import { useAuth } from "@/components/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { TextInput } from "react-native-gesture-handler/lib/typescript/components/GestureComponents";
 import { ActivityIndicator, StyleSheet } from "react-native";
 
@@ -58,7 +58,7 @@ export default function RegisterScreen() {
   return (
     <Box padding={20} flex={1} style={styles.container}>
       <Box alignItems="center" marginBottom={16}>
-        <Box style={{ height: 3, backgroundColor: Colors.light.gray, borderRadius: 32, width: 50 }} />
+        <Box style={styles.dragLine} />
       </Box>
       <Box marginBottom={12}>
         <Text fontSize="xl" fontWeight="bold">
@@ -85,7 +85,7 @@ export default function RegisterScreen() {
             name="username"
             rules={{ required: true }}
           />
-          {errors.username && <Text style={{ color: "red", marginTop: 4 }}>Emri është i detyrueshëm</Text>}
+          {errors.username && <Text style={styles.errorText}>Emri është i detyrueshëm</Text>}
         </Box>
         <Box>
           <Controller
@@ -106,15 +106,13 @@ export default function RegisterScreen() {
               />
             )}
           />
-          {errors.password && <Text style={{ color: "red", marginTop: 4 }}>Fjalëkalimi është i detyrueshëm</Text>}
+          {errors.password && <Text style={styles.errorText}>Fjalëkalimi është i detyrueshëm</Text>}
         </Box>
         <Button variant="primary" onPress={handleSubmit(onSubmitHandler)} disabled={isPending || isSubmitting}>
           {isPending && isSubmitting ? <ActivityIndicator color="#fff" /> : <Text>Regjistrohu</Text>}
         </Button>
         {isError && (
-          <Text style={{ color: Colors.light.danger, marginTop: 4 }}>
-            {error instanceof Error ? error.message : "Gabim gjatë kyçjes"}
-          </Text>
+          <Text style={styles.errorText}>{error instanceof Error ? error.message : "Gabim gjatë kyçjes"}</Text>
         )}
       </Box>
       <Box marginTop={24} gap={12}>
@@ -124,16 +122,13 @@ export default function RegisterScreen() {
             onPress={() => {
               router.push("/login");
             }}
-            style={{
-              color: Colors.light.tint,
-              textDecorationLine: "underline",
-            }}>
+            style={styles.linkText}>
             Kyçuni këtu
           </Text>
         </Text>
       </Box>
-      <Button variant="secondary" style={{ marginTop: 24 }} onPress={() => router.back()}>
-        <Text style={{ color: Colors.light.text }}>Kthehu</Text>
+      <Button variant="secondary" style={styles.backButton} onPress={() => router.back()}>
+        <Text style={styles.backButtonText}>Kthehu</Text>
       </Button>
     </Box>
   );
@@ -147,5 +142,25 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     backgroundColor: "#fff",
     overflow: "hidden",
+  },
+  dragLine: {
+    height: 3,
+    backgroundColor: Colors.light.gray,
+    borderRadius: 32,
+    width: 50,
+  },
+  errorText: {
+    color: "red",
+    marginTop: 4,
+  },
+  linkText: {
+    color: Colors.light.tint,
+    textDecorationLine: "underline",
+  },
+  backButton: {
+    marginTop: 24,
+  },
+  backButtonText: {
+    color: Colors.light.text,
   },
 });

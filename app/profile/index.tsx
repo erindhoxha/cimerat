@@ -1,6 +1,6 @@
 import { Box } from "@/components/Box";
 import { Button } from "@/components/Button";
-import { useAuth } from "@/components/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { Text } from "@/components/Text";
 import { useQuery } from "@tanstack/react-query";
 import { Link, router } from "expo-router";

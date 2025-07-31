@@ -38,7 +38,7 @@ interface SelectItemProps {
 
 const SelectItem = ({ isSelected, item }: SelectItemProps) => {
   return (
-    <Box style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: "#D2D9DF" }) }}>
+    <Box style={[styles.dropdownItemStyle, isSelected && styles.dropdownItemSelected]}>
       <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
     </Box>
   );
@@ -108,11 +108,7 @@ export default function TabOneScreen() {
                       <SelectButton title={selectedCity} isOpened={isOpened} placeholder="Zgjedh Qytetin" />
                     </>
                   )}
-                  renderItem={(item, index, isSelected) => (
-                    <>
-                      <SelectItem item={item} isSelected={isSelected} />
-                    </>
-                  )}
+                  renderItem={(item, index, isSelected) => <SelectItem item={item} isSelected={isSelected} />}
                   showsVerticalScrollIndicator={false}
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
@@ -130,25 +126,17 @@ export default function TabOneScreen() {
                   onSelect={(selectedItem, index) => {
                     setSelectedNeighborhood(selectedItem);
                   }}
-                  renderButton={(_, isOpened) => {
-                    return (
-                      <>
-                        <SelectButton
-                          title={selectedNeighborhood}
-                          isOpened={isOpened}
-                          placeholder="Zgjedh Lagjen"
-                          disabled={disabled}
-                        />
-                      </>
-                    );
-                  }}
-                  renderItem={(item, index, isSelected) => {
-                    return (
-                      <>
-                        <SelectItem item={item} isSelected={isSelected} />
-                      </>
-                    );
-                  }}
+                  renderButton={(_, isOpened) => (
+                    <>
+                      <SelectButton
+                        title={selectedNeighborhood}
+                        isOpened={isOpened}
+                        placeholder="Zgjedh Lagjen"
+                        disabled={disabled}
+                      />
+                    </>
+                  )}
+                  renderItem={(item, index, isSelected) => <SelectItem item={item} isSelected={isSelected} />}
                   showsVerticalScrollIndicator={false}
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
@@ -157,73 +145,51 @@ export default function TabOneScreen() {
             <Box>
               <Label>Çmimi për muaj</Label>
               <Box flex={1} flexDirection="row" gap={12}>
-                <SelectDropdown
-                  data={cmimi}
-                  onSelect={(selectedItem, index) => {
-                    setSelectedPriceFrom(selectedItem);
-                    if (selectedPriceTo && selectedItem > selectedPriceTo) {
-                      setSelectedPriceTo(null);
-                    }
-                  }}
-                  defaultValue={selectedPriceFrom}
-                  renderButton={(_, isOpened) => {
-                    // Apply a different style if disabled
-                    return (
-                      <Box
-                        flex={1}
-                        style={{
-                          flexShrink: 1,
-                        }}>
+                <Box flex={1} style={styles.flexShrink}>
+                  <SelectDropdown
+                    data={cmimi}
+                    onSelect={(selectedItem, index) => {
+                      setSelectedPriceFrom(selectedItem);
+                      if (selectedPriceTo && selectedItem > selectedPriceTo) {
+                        setSelectedPriceTo(null);
+                      }
+                    }}
+                    defaultValue={selectedPriceFrom}
+                    renderButton={(_, isOpened) => (
+                      <>
                         <SelectButton
                           title={(selectedPriceFrom && "Nga " + selectedPriceFrom + "€") || "Nga"}
                           isOpened={isOpened}
                           placeholder="Zgjedh"
                         />
-                      </Box>
-                    );
-                  }}
-                  renderItem={(item, _, isSelected) => {
-                    return (
-                      <>
-                        <SelectItem item={item} isSelected={isSelected} />
                       </>
-                    );
-                  }}
-                  showsVerticalScrollIndicator={false}
-                  dropdownStyle={styles.dropdownMenuStyle}
-                />
-
-                <SelectDropdown
-                  data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
-                  onSelect={(selectedItem) => {
-                    setSelectedPriceTo(selectedItem);
-                  }}
-                  defaultValue={selectedPriceTo}
-                  renderButton={(_, isOpened) => {
-                    return (
-                      <Box
-                        flex={1}
-                        style={{
-                          flexShrink: 1,
-                        }}>
+                    )}
+                    renderItem={(item, _, isSelected) => <SelectItem item={item} isSelected={isSelected} />}
+                    showsVerticalScrollIndicator={false}
+                    dropdownStyle={styles.dropdownMenuStyle}
+                  />
+                </Box>
+                <Box flex={1} style={styles.flexShrink}>
+                  <SelectDropdown
+                    data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
+                    onSelect={(selectedItem) => {
+                      setSelectedPriceTo(selectedItem);
+                    }}
+                    defaultValue={selectedPriceTo}
+                    renderButton={(_, isOpened) => (
+                      <>
                         <SelectButton
                           title={(selectedPriceTo && "Deri në " + selectedPriceTo + "€") || "Deri në"}
                           isOpened={isOpened}
                           placeholder="Zgjedh"
                         />
-                      </Box>
-                    );
-                  }}
-                  renderItem={(item, index, isSelected) => {
-                    return (
-                      <>
-                        <SelectItem item={item} isSelected={isSelected} />
                       </>
-                    );
-                  }}
-                  showsVerticalScrollIndicator={false}
-                  dropdownStyle={styles.dropdownMenuStyle}
-                />
+                    )}
+                    renderItem={(item, index, isSelected) => <SelectItem item={item} isSelected={isSelected} />}
+                    showsVerticalScrollIndicator={false}
+                    dropdownStyle={styles.dropdownMenuStyle}
+                  />
+                </Box>
               </Box>
             </Box>
           </>
@@ -283,6 +249,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 8,
   },
+  dropdownItemSelected: {
+    backgroundColor: "#D2D9DF",
+  },
   dropdownItemTxtStyle: {
     flex: 1,
     fontSize: 18,
@@ -294,5 +263,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 8,
+  },
+  flexShrink: {
+    flexShrink: 1,
   },
 });

@@ -58,7 +58,7 @@ export function DropdownField({
     <Box flex={1} style={styles.dropdownContainerStyle}>
       <Label>
         {label}
-        <Text style={{ color: "red" }}>*</Text>
+        <Text style={styles.asterisk}>*</Text>
       </Label>
       <Controller
         control={control}

@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "@/components/View/View";
 import { Box } from "../Box";
 import { Text } from "../Text";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
