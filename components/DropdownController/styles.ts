@@ -20,6 +20,10 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
   },
+  dropdownButtonErrorStyle: {
+    borderColor: Colors.light.danger,
+    borderWidth: 1,
+  },
   dropdownButtonTxtStyle: {
     flex: 1,
     fontSize: 14,
@@ -56,5 +60,6 @@ export const styles = StyleSheet.create({
   error: {
     color: Colors.light.danger,
     fontSize: 12,
+    marginTop: 10,
   },
 });

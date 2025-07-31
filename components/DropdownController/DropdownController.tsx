@@ -6,7 +6,6 @@ import { Text } from "@/components/Text";
 import React from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { SelectValueProps } from "@/app/create/types";
 import { styles } from "./styles";
 
 interface DropdownFieldProps {
@@ -24,8 +23,22 @@ interface DropdownFieldProps {
   searchPlaceHolderColor?: string;
 }
 
-const SelectValue = ({ value, title, isOpened, placeholder, disabled }: SelectValueProps) => (
-  <Box style={[styles.dropdownButtonStyle, disabled ? styles.dropdownButtonDisabledStyle : null]}>
+interface SelectValueProps {
+  value: string | undefined;
+  title: string | undefined;
+  isOpened: boolean;
+  placeholder: string;
+  disabled?: boolean;
+  error?: string;
+}
+
+const SelectValue = ({ value, title, isOpened, placeholder, disabled, error }: SelectValueProps) => (
+  <Box
+    style={[
+      styles.dropdownButtonStyle,
+      disabled ? styles.dropdownButtonDisabledStyle : null,
+      error && !disabled ? styles.dropdownButtonErrorStyle : null,
+    ]}>
     <Text
       style={[
         styles.dropdownButtonTxtStyle,
@@ -78,6 +91,7 @@ export function DropdownField({
                   isOpened={isOpened}
                   placeholder={placeholder}
                   disabled={disabled}
+                  error={error}
                 />
               </>
             )}
@@ -90,7 +104,7 @@ export function DropdownField({
           />
         )}
       />
-      {error && <Text style={styles.error}>{error}</Text>}
+      {error && !disabled && <Text style={styles.error}>{error}</Text>}
     </Box>
   );
 }

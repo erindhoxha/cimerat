@@ -9,7 +9,7 @@ export default {
   light: {
     text: "#000",
     background: "#fff",
-    tint: tintColorLight,
+    tint: "#000000ff",
     tabIconDefault: "#ccc",
     tabIconSelected: tintColorLight,
     yellow,

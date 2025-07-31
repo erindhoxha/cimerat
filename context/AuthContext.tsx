@@ -21,7 +21,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const setToken = async (t: string | null) => {
     setTokenState(t);
     if (t) {
-      console.log("Setting token:", t);
       await AsyncStorage.setItem("token", t);
     } else await AsyncStorage.removeItem("token");
   };

@@ -23,7 +23,11 @@ const Input = forwardRef(
           <TextInput
             collapsable
             multiline={props.multiline}
-            style={[styles.input, props.multiline ? styles.inputMultiline : null]}
+            style={[
+              styles.input,
+              props.multiline ? styles.inputMultiline : null,
+              props.error ? styles.inputError : null,
+            ]}
             {...props}
             ref={ref}
           />
@@ -35,7 +39,11 @@ const Input = forwardRef(
       <>
         <TextInput
           ref={ref}
-          style={[styles.input, props.multiline ? styles.inputMultilineSmall : null]}
+          style={[
+            styles.input,
+            props.multiline ? styles.inputMultilineSmall : null,
+            props.error ? styles.inputError : null,
+          ]}
           {...props}
           keyboardAppearance="light"
           placeholderTextColor={Colors.light.gray}
@@ -50,6 +58,9 @@ const styles = StyleSheet.create({
   labeledBox: {
     gap: 6,
     marginBottom: 12,
+  },
+  inputError: {
+    borderColor: Colors.light.danger,
   },
   required: {
     color: Colors.light.danger,

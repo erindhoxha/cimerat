@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import formSchema from "./schema";
 import { ImagePickerGrid } from "@/components/ImagePickerGrid/ImagePickerGrid";
 import { DropdownField } from "@/components/DropdownController/DropdownController";
+import { set } from "zod";
 
 interface FormData {
   city: string;
@@ -22,20 +23,19 @@ interface FormData {
   title: string;
   description: string;
   price: string;
-  numberOfRooms?: string;
-  numberOfCimera?: string;
-  numberOfCurrentCimera?: string;
 }
 
 export default function CreateScreen() {
   const [images, setImages] = useState<{ base64: string; uri: string }[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [mediaLibraryPermission, requestMediaLibraryPermission] = ImagePicker.useMediaLibraryPermissions();
+  const [imageError, setImageError] = useState<string | null>(null);
   const router = useRouter();
   const {
     control,
     handleSubmit,
     watch,
+    setValue,
     reset,
     formState: { errors },
   } = useForm({
@@ -46,6 +46,7 @@ export default function CreateScreen() {
       title: "",
       description: "",
       price: "",
+      images: [],
     },
   });
 
@@ -69,25 +70,22 @@ export default function CreateScreen() {
       base64: true,
     });
     if (!result.canceled) {
-      setImages((prev) => [
-        ...prev,
+      const newImages = [
+        ...images,
         ...result.assets.map((asset) => ({
           base64: asset.base64 || "",
           uri: asset.uri,
         })),
-      ]);
+      ];
+      setImages(newImages);
+      setValue("images", newImages); // <-- update form value
+      setImageError(null);
     }
   };
 
   const selectedCity = watch("city");
 
   const onSubmit = async (data: FormData) => {
-    const payload = {
-      ...data,
-      images,
-    };
-
-    // TODO: send data to backend
     router.replace("/your-listings");
     router.dismissAll();
     Toast.show({
@@ -98,6 +96,14 @@ export default function CreateScreen() {
       text2Style: styles.toastSubtitle,
     });
     reset();
+  };
+
+  const onFormError = () => {
+    if (images.length === 0) {
+      setImageError("Duhet të ngarkoni së paku një foto");
+    } else {
+      setImageError(null);
+    }
   };
 
   return (
@@ -111,7 +117,12 @@ export default function CreateScreen() {
         images={images}
         onPick={pickImage}
         onPreview={setPreviewImage}
-        onRemove={(idx) => setImages(images.filter((_, i) => i !== idx))}
+        onRemove={(idx) => {
+          const newImages = images.filter((_, i) => i !== idx);
+          setImages(newImages);
+          setValue("images", newImages); // <-- update form value
+        }}
+        error={imageError}
       />
       <DropdownField
         control={control}
@@ -192,7 +203,7 @@ export default function CreateScreen() {
           />
         )}
       />
-      <Button variant="primary" style={styles.submitButton} onPress={handleSubmit(onSubmit)}>
+      <Button variant="primary" style={styles.submitButton} onPress={handleSubmit(onSubmit, onFormError)}>
         Krijo Listimin
       </Button>
       <Modal visible={!!previewImage} transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>
