@@ -1,7 +1,9 @@
 import { Box } from "@/components/Box";
+import { Button } from "@/components/Button";
 import { useAuth } from "@/components/context/AuthContext";
 import { Text } from "@/components/Text";
 import { useQuery } from "@tanstack/react-query";
+import { Link, router } from "expo-router";
 import { StyleSheet } from "react-native";
 
 export default function ProfileScreen() {
@@ -48,12 +50,22 @@ export default function ProfileScreen() {
         <Box gap={8}>
           <Text>Emri i përdoruesit:</Text>
           <Text fontWeight="bold" fontSize="md">
-            {" "}
             {data.user.username}
           </Text>
-        </Box>
-        <Box marginTop={24}>
-          <Text>Dërgoni një mesazh nëse keni nevojë për ndihmë ose keni pyetje.</Text>
+          <Button
+            onPress={() => {
+              router.push("/your-listings");
+            }}
+            variant="primary">
+            Shiko listimet e mia
+          </Button>
+          <Button
+            onPress={() => {
+              router.push("/");
+            }}
+            variant="secondary">
+            Kthehu në faqen kryesore
+          </Button>
         </Box>
       </Box>
     </Box>

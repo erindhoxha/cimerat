@@ -9,65 +9,67 @@ const Input = forwardRef(
     props: TextInputProps & {
       label?: string;
       required?: boolean;
+      error?: string;
     },
     ref: React.ForwardedRef<TextInput>,
   ) => {
     if (props.label) {
       return (
-        <Box
-          marginBottom={12}
-          style={{
-            gap: 6,
-          }}>
+        <Box style={styles.labeledBox}>
           <Text>
             {props.label}
-            {props.required ? (
-              <Text
-                style={{
-                  color: Colors.light.danger,
-                }}>
-                *
-              </Text>
-            ) : (
-              ""
-            )}
+            {props.required ? <Text style={styles.required}>*</Text> : ""}
           </Text>
           <TextInput
-            style={[
-              styles.input,
-              {
-                height: props.multiline ? 100 : "auto",
-              },
-            ]}
+            collapsable
+            multiline={props.multiline}
+            style={[styles.input, props.multiline ? styles.inputMultiline : null]}
             {...props}
             ref={ref}
           />
+          {props.error && <Text style={styles.error}>{props.error}</Text>}
         </Box>
       );
     }
     return (
-      <TextInput
-        ref={ref}
-        style={[
-          styles.input,
-          {
-            height: props.multiline ? 100 : "auto",
-          },
-        ]}
-        {...props}
-        keyboardAppearance="light"
-        placeholderTextColor={Colors.light.gray}
-      />
+      <>
+        <TextInput
+          ref={ref}
+          style={[styles.input, props.multiline ? styles.inputMultilineSmall : null]}
+          {...props}
+          keyboardAppearance="light"
+          placeholderTextColor={Colors.light.gray}
+        />
+        {props.error && <Text style={styles.error}>{props.error}</Text>}
+      </>
     );
   },
 );
 
 const styles = StyleSheet.create({
+  labeledBox: {
+    gap: 6,
+    marginBottom: 12,
+  },
+  required: {
+    color: Colors.light.danger,
+  },
   input: {
     padding: 12,
     borderWidth: 1,
     borderColor: Colors.light.gray,
     borderRadius: 12,
+  },
+  inputMultiline: {
+    height: 200,
+  },
+  inputMultilineSmall: {
+    height: 100,
+  },
+  error: {
+    color: Colors.light.danger,
+    fontSize: 12,
+    marginTop: 4,
   },
 });
 

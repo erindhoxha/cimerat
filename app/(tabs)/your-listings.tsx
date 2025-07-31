@@ -38,7 +38,7 @@ export default function TabTwoScreen() {
       {isLoggedIn && (
         <Box gap={12}>
           <Text fontSize="xl" fontWeight="bold">
-            Listimet tua
+            Listimet e mia
           </Text>
           <Link href="/create" asChild>
             <Button variant="primary">

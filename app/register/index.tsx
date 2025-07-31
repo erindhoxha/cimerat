@@ -37,6 +37,7 @@ export default function RegisterScreen() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      console.log("SENDING", data);
       const json = await res.json();
       if (!res.ok) {
         throw new Error(json.error || "Gabim gjatë regjistrimit. Ju lutemi provoni përsëri.");

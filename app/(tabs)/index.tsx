@@ -8,11 +8,9 @@ import { useRouter } from "expo-router";
 import { Box } from "@/components/Box";
 import Label from "@/components/Label/Label";
 import { Text } from "@/components/Text";
-import { cimerat } from "@/constants/NumberOfCimera";
 import { cmimi } from "@/constants/Price";
 import { cities } from "@/constants/Cities";
 import { neighborhoods } from "@/constants/Neighborhoods";
-import { numriIDhomave } from "@/constants/NumberOfRooms";
 
 interface SelectButtonProps {
   title: string | null;
@@ -49,8 +47,6 @@ export default function TabOneScreen() {
   const [disabled, setDisabled] = useState(true);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string | null>(null);
-  const [selectedRooms, setSelectedRooms] = useState<string | null>(null);
-  const [selectedCimer, setSelectedCimer] = useState<string | null>(null);
   const [selectedPriceFrom, setSelectedPriceFrom] = useState<number | null>(null);
   const [selectedPriceTo, setSelectedPriceTo] = useState<number | null>(null);
 
@@ -148,64 +144,6 @@ export default function TabOneScreen() {
                 />
               </Box>
             </Box>
-            <Box
-              flex={1}
-              flexDirection="row"
-              style={{
-                gap: 12,
-              }}>
-              <Box flex={1} flexDirection="column">
-                <Label>Numri i dhomave</Label>
-                <SelectDropdown
-                  data={numriIDhomave}
-                  onSelect={(selectedItem, index) => {
-                    setSelectedRooms(selectedItem);
-                  }}
-                  renderButton={(_, isOpened) => {
-                    return (
-                      <>
-                        <SelectButton title={selectedRooms} isOpened={isOpened} placeholder="Zgjedh" />
-                      </>
-                    );
-                  }}
-                  renderItem={(item, index, isSelected) => {
-                    return (
-                      <>
-                        <SelectItem item={item} isSelected={isSelected} />
-                      </>
-                    );
-                  }}
-                  showsVerticalScrollIndicator={false}
-                  dropdownStyle={styles.dropdownMenuStyle}
-                />
-              </Box>
-              <Box flex={1}>
-                <Label>Numri i Cimerave</Label>
-                <SelectDropdown
-                  data={cimerat}
-                  onSelect={(selectedItem, index) => {
-                    setSelectedCimer(selectedItem);
-                  }}
-                  renderButton={(_, isOpened) => {
-                    // Apply a different style if disabled
-                    return (
-                      <>
-                        <SelectButton title={selectedCimer} isOpened={isOpened} placeholder="Zgjedh" />
-                      </>
-                    );
-                  }}
-                  renderItem={(item, index, isSelected) => {
-                    return (
-                      <>
-                        <SelectItem item={item} isSelected={isSelected} />
-                      </>
-                    );
-                  }}
-                  showsVerticalScrollIndicator={false}
-                  dropdownStyle={styles.dropdownMenuStyle}
-                />
-              </Box>
-            </Box>
             <Box>
               <Label>Çmimi</Label>
               <Box flex={1} flexDirection="row" gap={12}>
@@ -227,7 +165,7 @@ export default function TabOneScreen() {
                           flexShrink: 1,
                         }}>
                         <SelectButton
-                          title={(selectedPriceFrom && selectedPriceFrom + "€") || "Nga"}
+                          title={(selectedPriceFrom && "Nga " + selectedPriceFrom + "€") || "Nga"}
                           isOpened={isOpened}
                           placeholder="Zgjedh"
                         />
@@ -259,7 +197,7 @@ export default function TabOneScreen() {
                           flexShrink: 1,
                         }}>
                         <SelectButton
-                          title={(selectedPriceTo && selectedPriceTo + "€") || "Deri në"}
+                          title={(selectedPriceTo && "Deri në " + selectedPriceTo + "€") || "Deri në"}
                           isOpened={isOpened}
                           placeholder="Zgjedh"
                         />
@@ -310,7 +248,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 50,
     marginBottom: 12,
-    backgroundColor: "#E9ECEF",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#ccc",
     borderRadius: 12,
     flexDirection: "row",
     justifyContent: "center",
