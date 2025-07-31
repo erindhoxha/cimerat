@@ -15,7 +15,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import formSchema from "./schema";
 import { ImagePickerGrid } from "@/components/ImagePickerGrid/ImagePickerGrid";
 import { DropdownField } from "@/components/DropdownController/DropdownController";
-import { set } from "zod";
 
 interface FormData {
   city: string;
