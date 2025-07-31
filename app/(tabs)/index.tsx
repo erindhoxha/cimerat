@@ -11,6 +11,7 @@ import { Text } from "@/components/Text";
 import { cmimi } from "@/constants/Price";
 import { cities } from "@/constants/Cities";
 import { neighborhoods } from "@/constants/Neighborhoods";
+import Input from "@/components/Input";
 
 interface SelectButtonProps {
   title: string | null;
@@ -73,6 +74,15 @@ export default function TabOneScreen() {
         )}
         ListHeaderComponent={() => (
           <>
+            <Box>
+              <Input
+                label="Kërko"
+                placeholder="Kërko..."
+                onChangeText={(text) => {
+                  // Implement search functionality here
+                }}
+              />
+            </Box>
             <Box flex={1} flexDirection="row" gap={12}>
               <Box flex={1}>
                 <Label>Qyteti</Label>
@@ -145,7 +155,7 @@ export default function TabOneScreen() {
               </Box>
             </Box>
             <Box>
-              <Label>Çmimi</Label>
+              <Label>Çmimi për muaj</Label>
               <Box flex={1} flexDirection="row" gap={12}>
                 <SelectDropdown
                   data={cmimi}
@@ -219,16 +229,7 @@ export default function TabOneScreen() {
           </>
         )}
         data={DATA}
-        renderItem={({ item }) => (
-          <CardItem
-            id={item.id}
-            title={item.title}
-            image={item.image}
-            description={item.description}
-            price={item.price}
-            date={item.date}
-          />
-        )}
+        renderItem={({ item }) => <CardItem {...item} />}
         keyExtractor={(item) => item.id}
       />
     </Box>

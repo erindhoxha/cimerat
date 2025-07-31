@@ -31,18 +31,13 @@ export const CardItem = ({ title, image, description, price, id, date }: ItemPro
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
             <Text style={styles.cardTitle}>{title}</Text>
-            <Text ellipsizeMode="tail" numberOfLines={2}>
+            <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
               {description}
             </Text>
-            <Text style={styles.cardPrice}>{price}</Text>
+            <Text style={styles.cardPrice}>{price}€ për muaj</Text>
           </View>
           <View style={styles.cardInnerContent}>
-            <Text
-              ellipsizeMode="tail"
-              numberOfLines={1}
-              style={{
-                marginBottom: 6,
-              }}>
+            <Text ellipsizeMode="tail" numberOfLines={1} style={styles.cardDate}>
               {date}
             </Text>
           </View>
@@ -56,6 +51,11 @@ const styles = StyleSheet.create({
   card: {
     marginVertical: 16,
     width: "100%",
+  },
+  cardDate: {
+    marginBottom: 6,
+    fontSize: 14,
+    fontWeight: "400",
   },
   cardLink: {
     marginBottom: 20,
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: "light",
+    fontWeight: "500",
     marginBottom: 4,
   },
   cardPrice: {
@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
   },
   cardSubtitle: {
     fontSize: 14,
-    fontWeight: "light",
-    color: "#666",
+    fontWeight: "400",
   },
 });
