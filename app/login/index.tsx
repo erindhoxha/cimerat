@@ -32,7 +32,7 @@ export default function LoginScreen() {
     error,
   } = useMutation({
     mutationFn: async (data: { username: string; password: string }) => {
-      const res = await fetch("http://localhost:3000/signin", {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

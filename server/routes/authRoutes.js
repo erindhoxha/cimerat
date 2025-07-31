@@ -25,9 +25,8 @@ router.post("/signup", async (req, res) => {
     await user.save();
     return res.status(201).json({ token });
   } catch (error) {
-    return res
-      .status(422)
-      .json({ error: "Gabim gjatë regjistrimit. Ju lutemi provoni përsëri ose na kontaktoni.", error });
+    console.log("CATCH!", error);
+    return res.status(422).json({ error: "Gabim gjatë regjistrimit. Ju lutemi provoni përsëri ose na kontaktoni." });
   }
 });
 

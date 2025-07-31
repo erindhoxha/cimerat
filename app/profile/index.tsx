@@ -3,7 +3,7 @@ import { Button } from "@/components/Button";
 import { useAuth } from "@/context/AuthContext";
 import { Text } from "@/components/Text";
 import { useQuery } from "@tanstack/react-query";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { StyleSheet } from "react-native";
 
 export default function ProfileScreen() {
@@ -13,7 +13,7 @@ export default function ProfileScreen() {
     queryKey: ["user"],
     enabled: !!token,
     queryFn: async () => {
-      const res = await fetch("http://localhost:3000/user", {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
