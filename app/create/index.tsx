@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import formSchema from "./schema";
 import { ImagePickerGrid } from "@/components/ImagePickerGrid/ImagePickerGrid";
 import { DropdownField } from "@/components/DropdownController/DropdownController";
+import { useMutation } from "@tanstack/react-query";
 
 interface FormData {
   city: string;
@@ -84,17 +85,62 @@ export default function CreateScreen() {
 
   const selectedCity = watch("city");
 
+  const {
+    mutateAsync: createListingMutation,
+    isError,
+    isPending,
+    error,
+  } = useMutation({
+    mutationFn: async (
+      data: FormData & {
+        images: string[];
+      },
+    ) => {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error || "Gabim gjatë krijimit. Ju lutemi provoni përsëri.");
+      }
+      return json;
+    },
+    onSuccess: (data) => {
+      reset();
+    },
+  });
+
   const onSubmit = async (data: FormData) => {
-    router.replace("/your-listings");
-    router.dismissAll();
-    Toast.show({
-      type: "success",
-      text1: "Keni krijuar një listim të ri",
-      text2: "Shikoni listimet tuaja për të parë ndryshimet.",
-      text1Style: styles.toastTitle,
-      text2Style: styles.toastSubtitle,
-    });
-    reset();
+    try {
+      await createListingMutation(
+        {
+          ...data,
+          images: images.map((img) => img.base64),
+        },
+        {
+          onSuccess: () => {
+            router.replace("/your-listings");
+            router.dismissAll();
+            Toast.show({
+              type: "success",
+              text1: "Keni krijuar një listim të ri",
+              text2: "Shikoni listimet tuaja për të parë ndryshimet.",
+              text1Style: styles.toastTitle,
+              text2Style: styles.toastSubtitle,
+            });
+          },
+        },
+      );
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Gabim gjatë krijimit të listimit",
+        text2: "Ju lutemi provoni përsëri, ose na kontaktoni.",
+      });
+      onFormError();
+    }
   };
 
   const onFormError = () => {

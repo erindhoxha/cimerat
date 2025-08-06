@@ -22,7 +22,14 @@ interface SelectButtonProps {
 
 const SelectButton = ({ title, isOpened, placeholder, disabled }: SelectButtonProps) => (
   <Box style={[styles.dropdownButtonStyle, disabled ? styles.dropdownButtonDisabledStyle : null]}>
-    <Text style={[styles.dropdownButtonTxtStyle, disabled ? styles.dropdownButtonTxtDisabledStyle : null]}>
+    <Text
+      style={[
+        styles.dropdownButtonTxtStyle,
+        disabled ? styles.dropdownButtonTxtDisabledStyle : null,
+        {
+          color: title ? "#000" : "#ccc",
+        },
+      ]}>
       {title || placeholder}
     </Text>
     <Text>
@@ -108,7 +115,11 @@ export default function TabOneScreen() {
                       <SelectButton title={selectedCity} isOpened={isOpened} placeholder="Zgjedh Qytetin" />
                     </>
                   )}
-                  renderItem={(item, index, isSelected) => <SelectItem item={item} isSelected={isSelected} />}
+                  renderItem={(item, index, isSelected) => (
+                    <>
+                      <SelectItem item={item} isSelected={isSelected} />
+                    </>
+                  )}
                   showsVerticalScrollIndicator={false}
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
@@ -136,7 +147,11 @@ export default function TabOneScreen() {
                       />
                     </>
                   )}
-                  renderItem={(item, index, isSelected) => <SelectItem item={item} isSelected={isSelected} />}
+                  renderItem={(item, index, isSelected) => (
+                    <>
+                      <SelectItem item={item} isSelected={isSelected} />
+                    </>
+                  )}
                   showsVerticalScrollIndicator={false}
                   dropdownStyle={styles.dropdownMenuStyle}
                 />
@@ -158,13 +173,17 @@ export default function TabOneScreen() {
                     renderButton={(_, isOpened) => (
                       <>
                         <SelectButton
-                          title={(selectedPriceFrom && "Nga " + selectedPriceFrom + "€") || "Nga"}
+                          title={(selectedPriceFrom && "Nga " + selectedPriceFrom + "€") || ""}
                           isOpened={isOpened}
-                          placeholder="Zgjedh"
+                          placeholder="Nga"
                         />
                       </>
                     )}
-                    renderItem={(item, _, isSelected) => <SelectItem item={item} isSelected={isSelected} />}
+                    renderItem={(item, _, isSelected) => (
+                      <>
+                        <SelectItem item={item} isSelected={isSelected} />
+                      </>
+                    )}
                     showsVerticalScrollIndicator={false}
                     dropdownStyle={styles.dropdownMenuStyle}
                   />
@@ -179,13 +198,17 @@ export default function TabOneScreen() {
                     renderButton={(_, isOpened) => (
                       <>
                         <SelectButton
-                          title={(selectedPriceTo && "Deri në " + selectedPriceTo + "€") || "Deri në"}
+                          title={(selectedPriceTo && "Deri në " + selectedPriceTo + "€") || ""}
                           isOpened={isOpened}
-                          placeholder="Zgjedh"
+                          placeholder="Deri në"
                         />
                       </>
                     )}
-                    renderItem={(item, index, isSelected) => <SelectItem item={item} isSelected={isSelected} />}
+                    renderItem={(item, index, isSelected) => (
+                      <>
+                        <SelectItem item={item} isSelected={isSelected} />
+                      </>
+                    )}
                     showsVerticalScrollIndicator={false}
                     dropdownStyle={styles.dropdownMenuStyle}
                   />
