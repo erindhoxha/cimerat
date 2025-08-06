@@ -12,6 +12,7 @@ import { cmimi } from "@/constants/Price";
 import { cities } from "@/constants/Cities";
 import { neighborhoods } from "@/constants/Neighborhoods";
 import Input from "@/components/Input";
+import { useQuery } from "@tanstack/react-query";
 
 interface SelectButtonProps {
   title: string | null;
@@ -69,6 +70,24 @@ export default function TabOneScreen() {
       router.replace("/");
     }
   }, []);
+
+  const listings = useQuery({
+    staleTime: 0,
+    queryKey: ["listings", selectedCity, selectedNeighborhood, selectedPriceFrom, selectedPriceTo],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (selectedCity) params.append("city", selectedCity);
+      if (selectedNeighborhood) params.append("neighborhood", selectedNeighborhood);
+      if (selectedPriceFrom) params.append("priceFrom", String(selectedPriceFrom));
+      if (selectedPriceTo) params.append("priceTo", String(selectedPriceTo));
+
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings?${params.toString()}`);
+      if (!res.ok) {
+        throw new Error("Failed to fetch listings");
+      }
+      return res.json();
+    },
+  });
 
   return (
     <Box style={styles.container}>
@@ -217,7 +236,7 @@ export default function TabOneScreen() {
             </Box>
           </>
         )}
-        data={DATA}
+        data={listings.data}
         renderItem={({ item }) => <CardItem {...item} />}
         keyExtractor={(item) => item.id}
       />

@@ -6,7 +6,7 @@ import { Text } from "../Text";
 
 interface ItemProps {
   title: string;
-  image: string;
+  images: string;
   description?: string;
   price?: string;
   id: string;
@@ -16,14 +16,17 @@ interface ItemProps {
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
-export const CardItem = ({ title, image, description, price, id, date }: ItemProps) => {
+export const CardItem = ({ title, images, description, price, id, date }: ItemProps) => {
   const router = useRouter();
+  console.log(images);
   return (
     <TouchableOpacity style={styles.cardLink} onPress={() => router.push(`/${id}`)}>
       <View style={styles.card}>
         <Image
           style={styles.cardImage}
-          source={image}
+          source={{
+            uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
+          }}
           placeholder={{ blurhash }}
           contentFit="cover"
           transition={1000}

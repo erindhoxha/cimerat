@@ -16,6 +16,7 @@ import formSchema from "./schema";
 import { ImagePickerGrid } from "@/components/ImagePickerGrid/ImagePickerGrid";
 import { DropdownField } from "@/components/DropdownController/DropdownController";
 import { useMutation } from "@tanstack/react-query";
+import { useAuth } from "@/context/AuthContext";
 
 interface FormData {
   city: string;
@@ -112,7 +113,7 @@ export default function CreateScreen() {
     },
   });
 
-  console.log("Errors", errors);
+  const { token } = useAuth();
 
   const onSubmit = async (data: FormData) => {
     // Build FormData for file upload
@@ -137,6 +138,7 @@ export default function CreateScreen() {
         body: formData,
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       });
       const json = await res.json();
@@ -151,7 +153,7 @@ export default function CreateScreen() {
         text1Style: styles.toastTitle,
         text2Style: styles.toastSubtitle,
       });
-      reset();
+      // reset();
     } catch (error) {
       Toast.show({
         type: "error",
