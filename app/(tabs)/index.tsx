@@ -3,7 +3,6 @@ import SelectDropdown from "react-native-select-dropdown";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { CardItem } from "@/components/CardItem/CardItem";
-import { DATA } from "@/mocks/mocks";
 import { useRouter } from "expo-router";
 import { Box } from "@/components/Box";
 import Label from "@/components/Label/Label";

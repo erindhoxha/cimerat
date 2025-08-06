@@ -24,6 +24,7 @@ router.post("/listings", requireAuth, upload.array("images"), async (req, res) =
       description,
       price,
       images: imagePaths,
+      user: req.user._id,
     });
 
     await listing.save();
@@ -40,6 +41,16 @@ router.get("/listings", async (req, res) => {
     return res.status(200).json(listings);
   } catch (error) {
     console.error("Error fetching listings:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/my-listings", requireAuth, async (req, res) => {
+  try {
+    const listings = await Listing.find({ user: req.user._id });
+    return res.status(200).json(listings);
+  } catch (error) {
+    console.error("Error fetching user listings:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
