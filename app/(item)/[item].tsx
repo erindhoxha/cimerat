@@ -14,7 +14,9 @@ export default function ItemDetailScreen() {
     <Box flex={1} style={styles.container}>
       <Image
         style={styles.cardImage}
-        source={require("../../assets/images/apt.jpg")}
+        source={{
+          uri: `${process.env.EXPO_PUBLIC_API_URL}/uploads/87d1ce538b289332d56de223aa4d2227`,
+        }}
         contentFit="cover"
         placeholder={{
           blurhash,

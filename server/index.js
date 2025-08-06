@@ -8,9 +8,12 @@ const requireAuth = require("./middlewares/requireAuthentication");
 const port = process.env.PORT || 3000;
 
 const authRoutes = require("./routes/authRoutes");
+const listingRoutes = require("./routes/listingRoutes");
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(authRoutes);
+app.use(listingRoutes);
 
 const mongoUri = process.env.MONGO_URI;
 
@@ -37,3 +40,5 @@ app.get("/user", requireAuth, (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+app.use("/uploads", express.static("uploads"));

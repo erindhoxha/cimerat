@@ -6,8 +6,9 @@ import { Image } from "expo-image";
 import Colors from "@/constants/Colors";
 
 interface ImageData {
-  base64: string;
+  type?: string;
   uri: string;
+  name: string;
 }
 
 interface ImagePickerGridProps {

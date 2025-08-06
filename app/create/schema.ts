@@ -9,8 +9,9 @@ const formSchema = z.object({
   images: z
     .array(
       z.object({
-        base64: z.string().min(1, "Fotoja është e detyrueshme"),
+        type: z.string().optional(),
         uri: z.string().min(1, "Fotoja është e detyrueshme"),
+        name: z.string().min(1, "Emri i fotos është i detyrueshëm"),
       }),
     )
     .min(1, "Duhet të ngarkoni së paku një foto"),

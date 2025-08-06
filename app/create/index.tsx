@@ -26,7 +26,7 @@ interface FormData {
 }
 
 export default function CreateScreen() {
-  const [images, setImages] = useState<{ base64: string; uri: string }[]>([]);
+  const [images, setImages] = useState<{ uri: string; type?: string; name: string }[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [mediaLibraryPermission, requestMediaLibraryPermission] = ImagePicker.useMediaLibraryPermissions();
   const [imageError, setImageError] = useState<string | null>(null);
@@ -67,13 +67,13 @@ export default function CreateScreen() {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: true,
       quality: 1,
-      base64: true,
     });
     if (!result.canceled) {
       const newImages = [
         ...images,
-        ...result.assets.map((asset) => ({
-          base64: asset.base64 || "",
+        ...result.assets.map((asset, index) => ({
+          type: asset.type,
+          name: `photo_${index}.jpg`,
           uri: asset.uri,
         })),
       ];
@@ -108,38 +108,56 @@ export default function CreateScreen() {
       return json;
     },
     onSuccess: (data) => {
-      reset();
+      // reset();
     },
   });
 
+  console.log("Errors", errors);
+
   const onSubmit = async (data: FormData) => {
+    // Build FormData for file upload
+    const formData = new FormData();
+    formData.append("city", data.city);
+    formData.append("neighborhood", data.neighborhood);
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("price", data.price);
+
+    images.forEach((img, idx) => {
+      formData.append("images", {
+        uri: img.uri,
+        type: img.type || "image/jpeg",
+        name: img.name || `photo_${idx}.jpg`,
+      } as unknown as File);
+    });
+
     try {
-      await createListingMutation(
-        {
-          ...data,
-          images: images.map((img) => img.base64),
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-        {
-          onSuccess: () => {
-            router.replace("/your-listings");
-            router.dismissAll();
-            Toast.show({
-              type: "success",
-              text1: "Keni krijuar një listim të ri",
-              text2: "Shikoni listimet tuaja për të parë ndryshimet.",
-              text1Style: styles.toastTitle,
-              text2Style: styles.toastSubtitle,
-            });
-          },
-        },
-      );
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error || "Gabim gjatë krijimit. Ju lutemi provoni përsëri.");
+      }
+      // Success logic here
+      Toast.show({
+        type: "success",
+        text1: "Keni krijuar një listim të ri",
+        text2: "Shikoni listimet tuaja për të parë ndryshimet.",
+        text1Style: styles.toastTitle,
+        text2Style: styles.toastSubtitle,
+      });
+      reset();
     } catch (error) {
       Toast.show({
         type: "error",
         text1: "Gabim gjatë krijimit të listimit",
         text2: "Ju lutemi provoni përsëri, ose na kontaktoni.",
       });
-      onFormError();
     }
   };
 
@@ -194,7 +212,6 @@ export default function CreateScreen() {
         searchPlaceHolder="Kërko lagjën..."
         searchPlaceHolderColor="#6c757d"
       />
-      {/* Title */}
       <Controller
         control={control}
         name="title"

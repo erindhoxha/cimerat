@@ -1,6 +1,16 @@
 const mongoose = require("mongoose");
 
-const apartmentSchema = new mongoose.Schema({
+const listingSchema = new mongoose.Schema({
+  city: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  neighborhood: {
+    type: String,
+    required: true,
+    trim: true,
+  },
   title: {
     type: String,
     required: true,
@@ -20,3 +30,7 @@ const apartmentSchema = new mongoose.Schema({
     required: true,
   },
 });
+
+const Listing = mongoose.model("Listing", listingSchema);
+
+module.exports = Listing;
