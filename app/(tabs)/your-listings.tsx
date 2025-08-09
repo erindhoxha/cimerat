@@ -1,32 +1,15 @@
-import { ScrollView, StyleSheet } from "react-native";
-import { View } from "@/components/View/View";
-import Colors from "@/constants/Colors";
-import { Link, useRouter } from "expo-router";
-import { HorizontalCardItem } from "@/components/HorizontalCardItem/HorizontalCardItem";
-import { Text } from "@/components/Text";
-import { Button } from "@/components/Button/Button";
-import { Box } from "@/components/Box";
-import { useAuth } from "@/context/AuthContext";
-import { FontAwesome } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
-import { Listing } from "@/types";
-
-const cardItems = [
-  {
-    id: "1",
-    title: "Listimi 1",
-    description:
-      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Labore cum esse itaque veritatis asperiores, voluptates non dolorum voluptatibus, nostrum aperiam illum sed laborum, repellendus nesciunt sequi. At corrupti quaerat sapiente eius nam reprehenderit consequuntur quibusdam consequatur quae fugiat? Ad a sunt quas! Atque nam minima totam laborum beatae placeat possimus!",
-    image: require("../../assets/images/apt.jpg"),
-  },
-  {
-    id: "2",
-    title: "Listimi 2",
-    description:
-      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Labore cum esse itaque veritatis asperiores, voluptates non dolorum voluptatibus, nostrum aperiam illum sed laborum, repellendus nesciunt sequi. At corrupti quaerat sapiente eius nam reprehenderit consequuntur quibusdam consequatur quae fugiat? Ad a sunt quas! Atque nam minima totam laborum beatae placeat possimus!",
-    image: require("../../assets/images/apt.jpg"),
-  },
-];
+import { ScrollView, StyleSheet } from 'react-native';
+import { View } from '@/components/View/View';
+import Colors from '@/constants/Colors';
+import { Link, useRouter } from 'expo-router';
+import { HorizontalCardItem } from '@/components/HorizontalCardItem/HorizontalCardItem';
+import { Text } from '@/components/Text';
+import { Button } from '@/components/Button/Button';
+import { Box } from '@/components/Box';
+import { useAuth } from '@/context/AuthContext';
+import { FontAwesome } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
+import { Listing } from '@/types';
 
 export default function TabTwoScreen() {
   const { token } = useAuth();
@@ -35,12 +18,12 @@ export default function TabTwoScreen() {
 
   const listings = useQuery<Listing[]>({
     staleTime: 0,
-    queryKey: ["my-listings"],
+    queryKey: ['my-listings'],
     queryFn: async () => {
       const params = new URLSearchParams();
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/my-listings?${params.toString()}`);
       if (!res.ok) {
-        throw new Error("Failed to fetch listings");
+        throw new Error('Failed to fetch listings');
       }
       return res.json();
     },
@@ -65,7 +48,7 @@ export default function TabTwoScreen() {
       {!isLoggedIn && (
         <Box marginTop={24} gap={12} style={styles.centeredBox}>
           <Box>
-            <FontAwesome name="exclamation" size={48} color={Colors.light.danger} />
+            <FontAwesome name="exclamation" size={48} color={Colors.danger} />
           </Box>
           <Text fontSize="xl" fontWeight="bold">
             Oh, jo! Nuk jeni të kyçur
@@ -99,7 +82,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   emptyText: {
     marginTop: 10,
@@ -109,17 +92,17 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginTop: 24,
     height: 1,
-    width: "100%",
-    backgroundColor: Colors.light.gray,
+    width: '100%',
+    backgroundColor: Colors.gray,
   },
   centeredBox: {
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
     flex: 1,
   },
   fullWidthButton: {
-    width: "100%",
+    width: '100%',
   },
 });

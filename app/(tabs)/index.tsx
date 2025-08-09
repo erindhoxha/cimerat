@@ -1,18 +1,21 @@
-import { FlatList, StyleSheet } from "react-native";
-import SelectDropdown from "react-native-select-dropdown";
-import { useEffect, useRef, useState } from "react";
-import { FontAwesome } from "@expo/vector-icons";
-import { CardItem } from "@/components/CardItem/CardItem";
-import { useRouter } from "expo-router";
-import { Box } from "@/components/Box";
-import Label from "@/components/Label/Label";
-import { Text } from "@/components/Text";
-import { cmimi } from "@/constants/Price";
-import { cities } from "@/constants/Cities";
-import { neighborhoods } from "@/constants/Neighborhoods";
-import Input from "@/components/Input";
-import { useQuery } from "@tanstack/react-query";
+import { FlatList, StyleSheet } from 'react-native';
+import SelectDropdown from 'react-native-select-dropdown';
+import { useEffect, useRef, useState } from 'react';
+import { FontAwesome } from '@expo/vector-icons';
+import { CardItem } from '@/components/CardItem/CardItem';
+import { useRouter } from 'expo-router';
+import { Box } from '@/components/Box';
+import Label from '@/components/Label/Label';
+import { Text } from '@/components/Text';
+import { cmimi } from '@/constants/Price';
+import { cities } from '@/constants/Cities';
+import { neighborhoods } from '@/constants/Neighborhoods';
+import Input from '@/components/Input';
+import { useQuery } from '@tanstack/react-query';
+import { styles as dropdownStyles } from '@/components/DropdownController/styles';
+import Colors from '@/constants/Colors';
 
+// TOOD: Install ESLint
 interface SelectButtonProps {
   title: string | null;
   isOpened?: boolean;
@@ -21,19 +24,20 @@ interface SelectButtonProps {
 }
 
 const SelectButton = ({ title, isOpened, placeholder, disabled }: SelectButtonProps) => (
-  <Box style={[styles.dropdownButtonStyle, disabled ? styles.dropdownButtonDisabledStyle : null]}>
+  <Box style={[dropdownStyles.dropdownButtonStyle, disabled ? dropdownStyles.dropdownButtonDisabledStyle : null]}>
     <Text
       style={[
-        styles.dropdownButtonTxtStyle,
-        disabled ? styles.dropdownButtonTxtDisabledStyle : null,
+        dropdownStyles.dropdownButtonTxtStyle,
+        disabled ? dropdownStyles.dropdownButtonTxtDisabledStyle : null,
         {
-          color: title ? "#000" : "#ccc",
+          color: title ? '#000' : Colors.gray,
         },
-      ]}>
+      ]}
+    >
       {title || placeholder}
     </Text>
     <Text>
-      <FontAwesome name={isOpened ? "chevron-up" : "chevron-down"} />
+      <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} />
     </Text>
   </Box>
 );
@@ -45,8 +49,8 @@ interface SelectItemProps {
 
 const SelectItem = ({ isSelected, item }: SelectItemProps) => {
   return (
-    <Box style={[styles.dropdownItemStyle, isSelected && styles.dropdownItemSelected]}>
-      <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+    <Box style={[dropdownStyles.dropdownItemStyle, isSelected && dropdownStyles.dropdownItemSelected]}>
+      <Text style={dropdownStyles.dropdownItemTxtStyle}>{item}</Text>
     </Box>
   );
 };
@@ -66,23 +70,23 @@ export default function TabOneScreen() {
   useEffect(() => {
     if (router.canGoBack()) {
       router.dismissAll();
-      router.replace("/");
+      router.replace('/');
     }
   }, []);
 
   const listings = useQuery({
     staleTime: 0,
-    queryKey: ["listings", selectedCity, selectedNeighborhood, selectedPriceFrom, selectedPriceTo],
+    queryKey: ['listings', selectedCity, selectedNeighborhood, selectedPriceFrom, selectedPriceTo],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (selectedCity) params.append("city", selectedCity);
-      if (selectedNeighborhood) params.append("neighborhood", selectedNeighborhood);
-      if (selectedPriceFrom) params.append("priceFrom", String(selectedPriceFrom));
-      if (selectedPriceTo) params.append("priceTo", String(selectedPriceTo));
+      if (selectedCity) params.append('city', selectedCity);
+      if (selectedNeighborhood) params.append('neighborhood', selectedNeighborhood);
+      if (selectedPriceFrom) params.append('priceFrom', String(selectedPriceFrom));
+      if (selectedPriceTo) params.append('priceTo', String(selectedPriceTo));
 
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings?${params.toString()}`);
       if (!res.ok) {
-        throw new Error("Failed to fetch listings");
+        throw new Error('Failed to fetch listings');
       }
       return res.json();
     },
@@ -93,26 +97,18 @@ export default function TabOneScreen() {
       <FlatList
         contentContainerStyle={styles.contentContainerStyle}
         ListEmptyComponent={() => (
-          <Box>
-            <Text>Asnjë rezultat</Text>
+          <Box marginTop={24}>
+            <Text>Asnjë rezultat.</Text>
           </Box>
         )}
         ListHeaderComponent={() => (
-          <>
-            <Box>
-              <Input
-                label="Kërko"
-                placeholder="Kërko..."
-                onChangeText={(text) => {
-                  // Implement search functionality here
-                }}
-              />
-            </Box>
+          <Box gap={12}>
+            <Input label="Kërko" placeholder="Kërko..." onChangeText={(text) => {}} />
             <Box flex={1} flexDirection="row" gap={12}>
               <Box flex={1}>
                 <Label>Qyteti</Label>
                 <SelectDropdown
-                  searchInputStyle={styles.searchInputStyle}
+                  searchInputStyle={dropdownStyles.searchInputStyle}
                   searchPlaceHolder="Kërko qytetin..."
                   searchPlaceHolderColor="#6c757d"
                   search={true}
@@ -139,14 +135,14 @@ export default function TabOneScreen() {
                     </>
                   )}
                   showsVerticalScrollIndicator={false}
-                  dropdownStyle={styles.dropdownMenuStyle}
+                  dropdownStyle={dropdownStyles.dropdownMenuStyle}
                 />
               </Box>
               <Box flex={1}>
                 <Label>Lagja</Label>
                 <SelectDropdown
                   search={true}
-                  searchInputStyle={styles.searchInputStyle}
+                  searchInputStyle={dropdownStyles.searchInputStyle}
                   searchPlaceHolder="Kërko lagjen..."
                   searchPlaceHolderColor="#6c757d"
                   data={selectedCity ? neighborhoods[selectedCity] : []}
@@ -171,7 +167,7 @@ export default function TabOneScreen() {
                     </>
                   )}
                   showsVerticalScrollIndicator={false}
-                  dropdownStyle={styles.dropdownMenuStyle}
+                  dropdownStyle={dropdownStyles.dropdownMenuStyle}
                 />
               </Box>
             </Box>
@@ -181,7 +177,7 @@ export default function TabOneScreen() {
                 <Box flex={1} style={styles.flexShrink}>
                   <SelectDropdown
                     data={cmimi}
-                    onSelect={(selectedItem, index) => {
+                    onSelect={(selectedItem) => {
                       setSelectedPriceFrom(selectedItem);
                       if (selectedPriceTo && selectedItem > selectedPriceTo) {
                         setSelectedPriceTo(null);
@@ -191,7 +187,7 @@ export default function TabOneScreen() {
                     renderButton={(_, isOpened) => (
                       <>
                         <SelectButton
-                          title={(selectedPriceFrom && "Nga " + selectedPriceFrom + "€") || ""}
+                          title={(selectedPriceFrom && 'Nga ' + selectedPriceFrom + '€') || ''}
                           isOpened={isOpened}
                           placeholder="Nga"
                         />
@@ -203,7 +199,7 @@ export default function TabOneScreen() {
                       </>
                     )}
                     showsVerticalScrollIndicator={false}
-                    dropdownStyle={styles.dropdownMenuStyle}
+                    dropdownStyle={dropdownStyles.dropdownMenuStyle}
                   />
                 </Box>
                 <Box flex={1} style={styles.flexShrink}>
@@ -216,7 +212,7 @@ export default function TabOneScreen() {
                     renderButton={(_, isOpened) => (
                       <>
                         <SelectButton
-                          title={(selectedPriceTo && "Deri në " + selectedPriceTo + "€") || ""}
+                          title={(selectedPriceTo && 'Deri në ' + selectedPriceTo + '€') || ''}
                           isOpened={isOpened}
                           placeholder="Deri në"
                         />
@@ -228,12 +224,12 @@ export default function TabOneScreen() {
                       </>
                     )}
                     showsVerticalScrollIndicator={false}
-                    dropdownStyle={styles.dropdownMenuStyle}
+                    dropdownStyle={dropdownStyles.dropdownMenuStyle}
                   />
                 </Box>
               </Box>
             </Box>
-          </>
+          </Box>
         )}
         data={listings.data}
         renderItem={({ item }) => <CardItem {...item} />}
@@ -246,64 +242,11 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: 'white',
   },
   contentContainerStyle: {
     padding: 20,
     paddingBottom: 80,
-  },
-  dropdownButtonStyle: {
-    width: "100%",
-    height: 50,
-    marginBottom: 12,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 12,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    flexShrink: 1,
-  },
-  dropdownButtonTxtStyle: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#151E26",
-  },
-  dropdownButtonDisabledStyle: {
-    backgroundColor: "#e0e0e0",
-    opacity: 0.6,
-  },
-  dropdownButtonTxtDisabledStyle: {
-    color: "#aaa",
-  },
-  dropdownMenuStyle: {
-    backgroundColor: "#E9ECEF",
-    borderRadius: 8,
-  },
-  dropdownItemStyle: {
-    flexDirection: "row",
-    paddingHorizontal: 12,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 8,
-  },
-  dropdownItemSelected: {
-    backgroundColor: "#D2D9DF",
-  },
-  dropdownItemTxtStyle: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: "500",
-    color: "#151E26",
-  },
-  searchInputStyle: {
-    backgroundColor: "#E9ECEF",
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
   },
   flexShrink: {
     flexShrink: 1,

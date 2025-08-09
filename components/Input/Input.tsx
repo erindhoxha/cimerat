@@ -1,8 +1,8 @@
-import Colors from "@/constants/Colors";
-import { StyleSheet, TextInput, TextInputProps } from "react-native";
-import { Box } from "../Box";
-import { Text } from "../Text";
-import { forwardRef } from "react";
+import Colors from '@/constants/Colors';
+import { StyleSheet, TextInput, TextInputProps } from 'react-native';
+import { Box } from '../Box';
+import { Text } from '../Text';
+import { forwardRef } from 'react';
 
 const Input = forwardRef(
   (
@@ -18,7 +18,7 @@ const Input = forwardRef(
         <Box style={styles.labeledBox}>
           <Text>
             {props.label}
-            {props.required ? <Text style={styles.required}>*</Text> : ""}
+            {props.required ? <Text style={styles.required}>*</Text> : ''}
           </Text>
           <TextInput
             collapsable
@@ -46,7 +46,7 @@ const Input = forwardRef(
           ]}
           {...props}
           keyboardAppearance="light"
-          placeholderTextColor={Colors.light.gray}
+          placeholderTextColor={Colors.gray}
         />
         {props.error && <Text style={styles.error}>{props.error}</Text>}
       </>
@@ -57,18 +57,17 @@ const Input = forwardRef(
 const styles = StyleSheet.create({
   labeledBox: {
     gap: 6,
-    marginBottom: 12,
   },
   inputError: {
-    borderColor: Colors.light.danger,
+    borderColor: Colors.danger,
   },
   required: {
-    color: Colors.light.danger,
+    color: Colors.danger,
   },
   input: {
     padding: 12,
     borderWidth: 1,
-    borderColor: Colors.light.gray,
+    borderColor: Colors.gray,
     borderRadius: 12,
   },
   inputMultiline: {
@@ -78,7 +77,7 @@ const styles = StyleSheet.create({
     height: 100,
   },
   error: {
-    color: Colors.light.danger,
+    color: Colors.danger,
     fontSize: 12,
     marginTop: 4,
   },

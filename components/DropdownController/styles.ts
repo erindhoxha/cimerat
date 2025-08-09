@@ -1,27 +1,27 @@
-import Colors from "@/constants/Colors";
-import { StyleSheet } from "react-native";
+import Colors from '@/constants/Colors';
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  dropdownContainerStyle: {
-    marginBottom: 12,
-  },
   asterisk: {
-    color: "red",
+    color: 'red',
+  },
+  dropdownItemSelected: {
+    backgroundColor: '#D2D9DF',
   },
   dropdownButtonStyle: {
-    width: "100%",
+    width: '100%',
     height: 50,
     borderRadius: 12,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 12,
     flexShrink: 1,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
   },
   dropdownButtonErrorStyle: {
-    borderColor: Colors.light.danger,
+    borderColor: Colors.danger,
     borderWidth: 1,
   },
   dropdownButtonTxtStyle: {
@@ -32,33 +32,33 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
   },
   dropdownItemStyle: {
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingHorizontal: 12,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingVertical: 8,
   },
   dropdownItemTxtStyle: {
     flex: 1,
     fontSize: 16,
-    fontWeight: "500",
-    color: "#151E26",
+    fontWeight: '500',
+    color: '#151E26',
   },
   searchInputStyle: {
-    backgroundColor: "#E9ECEF",
-    borderRadius: 12,
+    backgroundColor: Colors.gray,
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
   dropdownButtonDisabledStyle: {
-    backgroundColor: "#e0e0e0",
-    opacity: 0.6,
+    backgroundColor: '#f3f3f3ff',
+    opacity: 1,
+    borderWidth: 0,
   },
   dropdownButtonTxtDisabledStyle: {
-    color: "#aaa",
+    color: '#aaa',
   },
   error: {
-    color: Colors.light.danger,
+    color: Colors.danger,
     fontSize: 12,
     marginTop: 10,
   },

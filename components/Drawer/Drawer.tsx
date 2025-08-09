@@ -1,7 +1,7 @@
-import Colors from "@/constants/Colors";
-import { FontAwesome } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import Colors from '@/constants/Colors';
+import { FontAwesome } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -10,14 +10,14 @@ import {
   Dimensions,
   Keyboard,
   Alert,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { View } from "@/components/View/View";
-import { Box } from "../Box";
-import { Text } from "../Text";
-import { useAuth } from "../../context/AuthContext";
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View } from '@/components/View/View';
+import { Box } from '../Box';
+import { Text } from '../Text';
+import { useAuth } from '../../context/AuthContext';
 
-const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 interface DrawerProps {
   open: boolean;
@@ -74,13 +74,13 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
       </TouchableWithoutFeedback>
       <Animated.View style={[styles.drawer, { transform: [{ translateX: animation }], paddingTop: insets.top + 20 }]}>
         <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
-          <FontAwesome name="close" size={24} style={{ height: 24, width: 24, textAlign: "center" }} />
+          <FontAwesome name="close" size={24} style={{ height: 24, width: 24, textAlign: 'center' }} />
         </TouchableOpacity>
         <TextLink
           label="Faqja kryesore"
           onPress={() => {
             onClose();
-            router.push("/");
+            router.push('/');
           }}
         />
         {isLoggedIn && (
@@ -88,7 +88,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
             label="Listimet e mia"
             onPress={() => {
               onClose();
-              router.push("/(tabs)/your-listings");
+              router.push('/(tabs)/your-listings');
             }}
           />
         )}
@@ -97,7 +97,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
             label="Profili"
             onPress={() => {
               onClose();
-              router.push("/profile");
+              router.push('/profile');
             }}
           />
         )}
@@ -108,8 +108,9 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
               style={styles.linkButton}
               onPress={() => {
                 onClose();
-                router.push("/register");
-              }}>
+                router.push('/register');
+              }}
+            >
               <FontAwesome name="user-plus" size={16} />
               <Text fontWeight="medium">Regjistrohu</Text>
             </TouchableOpacity>
@@ -119,8 +120,9 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
               style={styles.linkButton}
               onPress={() => {
                 onClose();
-                router.push("/login");
-              }}>
+                router.push('/login');
+              }}
+            >
               <FontAwesome name="sign-in" size={16} />
               <Text fontWeight="medium">Kyçu</Text>
             </TouchableOpacity>
@@ -129,22 +131,23 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
             <TouchableOpacity
               style={styles.linkButton}
               onPress={() => {
-                Alert.alert("Dilja", "A jeni i sigurt që doni të dilni?", [
+                Alert.alert('Dilja', 'A jeni i sigurt që doni të dilni?', [
                   {
-                    text: "Anulo",
-                    style: "cancel",
+                    text: 'Anulo',
+                    style: 'cancel',
                   },
                   {
-                    text: "Dil",
-                    style: "destructive",
+                    text: 'Dil',
+                    style: 'destructive',
                     onPress: () => {
                       onClose();
                       setToken(null);
-                      router.replace("/");
+                      router.replace('/');
                     },
                   },
                 ]);
-              }}>
+              }}
+            >
               <FontAwesome name="sign-out" size={16} />
               <Text fontWeight="medium">Dil</Text>
             </TouchableOpacity>
@@ -158,37 +161,37 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: 'rgba(0,0,0,0.5)',
     zIndex: 99,
   },
   linkButton: {
     padding: 12,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     gap: 6,
-    borderColor: "white",
+    borderColor: 'white',
     marginBottom: 12,
   },
   closeIcon: {
     padding: 4,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 9999,
     marginBottom: 20,
-    alignSelf: "flex-end",
-    alignItems: "center",
-    justifyContent: "center",
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   drawer: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     width: SCREEN_WIDTH * 0.7,
-    height: "100%",
-    backgroundColor: Colors.light.yellow,
+    height: '100%',
+    backgroundColor: Colors.yellow,
     paddingHorizontal: 20,
     zIndex: 100,
     elevation: 12,
@@ -199,11 +202,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     marginBottom: 10,
-    textAlign: "left",
-    color: "black",
+    textAlign: 'left',
+    color: 'black',
     borderBottomWidth: 2,
     fontSize: 20,
-    fontWeight: "500",
+    fontWeight: '500',
   },
 });
 

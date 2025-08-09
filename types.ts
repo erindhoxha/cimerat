@@ -6,7 +6,6 @@ export interface User {
 
 export interface Listing {
   id: string;
-  title: string;
   description: string;
   image: any;
   city: string;

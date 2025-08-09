@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const listingSchema = new mongoose.Schema({
   city: {
@@ -7,11 +7,6 @@ const listingSchema = new mongoose.Schema({
     trim: true,
   },
   neighborhood: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  title: {
     type: String,
     required: true,
     trim: true,
@@ -31,11 +26,11 @@ const listingSchema = new mongoose.Schema({
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
 });
 
-const Listing = mongoose.model("Listing", listingSchema);
+const Listing = mongoose.model('Listing', listingSchema);
 
 module.exports = Listing;

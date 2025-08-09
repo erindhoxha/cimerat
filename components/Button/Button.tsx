@@ -1,8 +1,8 @@
-import { StyleSheet, TouchableOpacity, TouchableOpacityProps } from "react-native";
-import { Text } from "../Text";
-import Colors from "@/constants/Colors";
+import { StyleSheet, TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import { Text } from '../Text';
+import Colors from '@/constants/Colors';
 
-type Variant = "primary" | "secondary" | "tertiary";
+type Variant = 'primary' | 'secondary' | 'tertiary';
 
 export const Button = (
   props: TouchableOpacityProps & {
@@ -14,7 +14,7 @@ export const Button = (
     {
       backgroundColor: string;
       borderRadius: number;
-      alignItems: "center";
+      alignItems: 'center';
       color?: string;
     }
   > = {
@@ -24,12 +24,13 @@ export const Button = (
   };
 
   return (
-    <TouchableOpacity {...props} style={[THEME[props.variant || "primary"], props.style]}>
+    <TouchableOpacity {...props} style={[THEME[props.variant || 'primary'], props.style]}>
       <Text
         fontWeight="medium"
         style={{
-          color: THEME[props.variant || "primary"].color,
-        }}>
+          color: THEME[props.variant || 'primary'].color,
+        }}
+      >
         {props.children}
       </Text>
     </TouchableOpacity>
@@ -38,24 +39,25 @@ export const Button = (
 
 const style = StyleSheet.create({
   primaryButton: {
-    backgroundColor: Colors.light.yellow,
+    backgroundColor: Colors.yellow,
     padding: 12,
     borderRadius: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
   secondaryButton: {
-    backgroundColor: Colors.light.gray,
+    backgroundColor: Colors.gray,
     padding: 12,
     borderRadius: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
   tertiaryButton: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderWidth: 1,
-    borderColor: Colors.light.tint,
-    color: Colors.light.tint,
+    borderColor: Colors.gray,
+    color: Colors.tint,
     padding: 12,
     borderRadius: 12,
-    alignItems: "center",
+    fontWeight: 400,
+    alignItems: 'center',
   },
 });

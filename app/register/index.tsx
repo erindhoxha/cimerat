@@ -1,15 +1,15 @@
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Colors from "@/constants/Colors";
-import { useRef } from "react";
-import { Text } from "@/components/Text";
-import Input from "@/components/Input/Input";
-import { Box } from "@/components/Box";
-import { Button } from "@/components/Button/Button";
-import { useRouter } from "expo-router";
-import { useMutation } from "@tanstack/react-query";
-import { useAuth } from "@/context/AuthContext";
-import { TextInput } from "react-native-gesture-handler/lib/typescript/components/GestureComponents";
-import { ActivityIndicator, StyleSheet } from "react-native";
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Colors from '@/constants/Colors';
+import { useRef } from 'react';
+import { Text } from '@/components/Text';
+import Input from '@/components/Input/Input';
+import { Box } from '@/components/Box';
+import { Button } from '@/components/Button/Button';
+import { useRouter } from 'expo-router';
+import { useMutation } from '@tanstack/react-query';
+import { useAuth } from '@/context/AuthContext';
+import { TextInput } from 'react-native-gesture-handler/lib/typescript/components/GestureComponents';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 
 export default function RegisterScreen() {
   const {
@@ -33,19 +33,19 @@ export default function RegisterScreen() {
   } = useMutation({
     mutationFn: async (data: { username: string; password: string }) => {
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
       const json = await res.json();
       if (!res.ok) {
-        throw new Error(json.error || "Gabim gjatë regjistrimit. Ju lutemi provoni përsëri.");
+        throw new Error(json.error || 'Gabim gjatë regjistrimit. Ju lutemi provoni përsëri.');
       }
       return json;
     },
     onSuccess: (data) => {
       setToken(data.token);
-      router.push("/");
+      router.push('/');
       reset();
     },
   });
@@ -70,6 +70,9 @@ export default function RegisterScreen() {
             control={control}
             render={({ field: { onChange, onBlur, value, ref } }) => (
               <Input
+                ref={ref}
+                label="Emri i përdoruesit"
+                required
                 placeholder="Emri i përdoruesit"
                 autoCapitalize="none"
                 onChangeText={onChange}
@@ -94,6 +97,8 @@ export default function RegisterScreen() {
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
                 placeholder="Fjalëkalimi"
+                label="Fjalëkalimi"
+                required
                 ref={passwordInputRef}
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -111,24 +116,25 @@ export default function RegisterScreen() {
           {isPending && isSubmitting ? <ActivityIndicator color="#fff" /> : <Text>Regjistrohu</Text>}
         </Button>
         {isError && (
-          <Text style={styles.errorText}>{error instanceof Error ? error.message : "Gabim gjatë kyçjes"}</Text>
+          <Text style={styles.errorText}>{error instanceof Error ? error.message : 'Gabim gjatë kyçjes'}</Text>
         )}
+        <Button variant="tertiary" onPress={() => router.back()}>
+          <Text style={styles.backButtonText}>Kthehu</Text>
+        </Button>
       </Box>
-      <Box marginTop={24} gap={12}>
+      <Box marginTop={12} gap={12}>
         <Text>
-          Keni një llogari?{" "}
+          Keni një llogari?{' '}
           <Text
             onPress={() => {
-              router.push("/login");
+              router.replace('/login');
             }}
-            style={styles.linkText}>
+            style={styles.linkText}
+          >
             Kyçuni këtu
           </Text>
         </Text>
       </Box>
-      <Button variant="secondary" style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backButtonText}>Kthehu</Text>
-      </Button>
     </Box>
   );
 }
@@ -139,27 +145,24 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 24,
     borderRadius: 32,
-    backgroundColor: "#fff",
-    overflow: "hidden",
+    backgroundColor: '#fff',
+    overflow: 'hidden',
   },
   dragLine: {
     height: 3,
-    backgroundColor: Colors.light.gray,
+    backgroundColor: Colors.gray,
     borderRadius: 32,
     width: 50,
   },
   errorText: {
-    color: "red",
+    color: 'red',
     marginTop: 4,
   },
   linkText: {
-    color: Colors.light.tint,
-    textDecorationLine: "underline",
-  },
-  backButton: {
-    marginTop: 24,
+    color: Colors.tint,
+    textDecorationLine: 'underline',
   },
   backButtonText: {
-    color: Colors.light.text,
+    color: Colors.text,
   },
 });

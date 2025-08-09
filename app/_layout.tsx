@@ -1,22 +1,22 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Colors from "@/constants/Colors";
-import * as SplashScreen from "expo-splash-screen";
-import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
-import { useFonts } from "expo-font";
-import { Link, Stack, useRouter } from "expo-router";
-import { useEffect } from "react";
-import { Pressable, StyleSheet, useColorScheme } from "react-native";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-export { ErrorBoundary } from "expo-router";
-import "react-native-reanimated";
-import { Text } from "@/components/Text";
-import { Box } from "@/components/Box";
-import Toast from "react-native-toast-message";
-import { AuthProvider, useAuth } from "@/context/AuthContext";
-import DrawerProvider, { useDrawer } from "@/context/DrawerProvider";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Colors from '@/constants/Colors';
+import * as SplashScreen from 'expo-splash-screen';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import { Link, Stack } from 'expo-router';
+import { useEffect } from 'react';
+import { Pressable, StyleSheet, useColorScheme } from 'react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+export { ErrorBoundary } from 'expo-router';
+import 'react-native-reanimated';
+import { Text } from '@/components/Text';
+import { Box } from '@/components/Box';
+import Toast from 'react-native-toast-message';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
+import DrawerProvider, { useDrawer } from '@/context/DrawerProvider';
 
 export const unstable_settings = {
-  initialRouteName: "(tabs)",
+  initialRouteName: '(tabs)',
 };
 
 SplashScreen.preventAutoHideAsync();
@@ -25,7 +25,7 @@ const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
 
@@ -64,55 +64,52 @@ function RootLayoutNav() {
   const { token } = useAuth();
 
   const isLoggedIn = !!token;
-  const router = useRouter();
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack
         screenOptions={{
           headerStyle: styles.headerStyle,
-          headerTintColor: Colors["light"].text,
+          headerTintColor: Colors.text,
           headerTitleStyle: styles.headerTitleStyle,
-          headerBackTitle: "Back",
+          headerBackTitle: 'Back',
           headerTitle: () => <Text style={styles.logo}>Cimerat.com</Text>,
           headerRight: () => (
             <Box
               style={styles.headerRightBox}
-              flexDirection="row"
               gap={12}
+              flexDirection="row"
               alignItems="flex-end"
-              justifyContent="flex-end">
+              justifyContent="flex-end"
+            >
               <Box>
                 {isLoggedIn ? (
                   <Link href="/profile" style={styles.sideIcon}>
-                    <FontAwesome name="user-circle-o" size={24} color={Colors[colorScheme ?? "light"].text} />
+                    <FontAwesome name="user-circle-o" size={24} color={Colors.text} />
                   </Link>
                 ) : (
                   <Link href="/login" style={styles.sideIcon}>
-                    <FontAwesome name="user-circle-o" size={24} color={Colors[colorScheme ?? "light"].text} />
+                    <FontAwesome name="user-circle-o" size={24} color={Colors.text} />
                   </Link>
                 )}
               </Box>
               <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={styles.hamburgerMenu}>
-                <FontAwesome
-                  name={isOpen ? "close" : "navicon"}
-                  size={24}
-                  color={Colors[colorScheme ?? "light"].text}
-                />
+                <FontAwesome name={isOpen ? 'close' : 'navicon'} size={24} color={Colors.text} />
               </Pressable>
             </Box>
           ),
-        }}>
+        }}
+      >
         <Stack.Screen name="(item)/[item]" />
         <Stack.Screen name="(tabs)" />
         <Stack.Protected guard={!isLoggedIn}>
           <Stack.Screen
             name="login/index"
             options={{
-              presentation: "modal",
+              presentation: 'modal',
               headerShown: false,
               contentStyle: {
-                backgroundColor: "transparent",
+                backgroundColor: 'transparent',
               },
             }}
           />
@@ -121,10 +118,10 @@ function RootLayoutNav() {
           <Stack.Screen
             name="register/index"
             options={{
-              presentation: "modal",
+              presentation: 'modal',
               headerShown: false,
               contentStyle: {
-                backgroundColor: "transparent",
+                backgroundColor: 'transparent',
               },
             }}
           />
@@ -140,21 +137,21 @@ function RootLayoutNav() {
 const styles = StyleSheet.create({
   logo: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   headerStyle: {
-    backgroundColor: Colors["light"].yellow,
+    backgroundColor: Colors.yellow,
   },
   headerTitleStyle: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   headerRightBox: {
-    width: "auto",
+    width: 'auto',
   },
   sideIcon: {},
   hamburgerMenu: {
-    display: "flex",
-    alignContent: "center",
-    justifyContent: "center",
+    display: 'flex',
+    alignContent: 'center',
+    justifyContent: 'center',
   },
 });

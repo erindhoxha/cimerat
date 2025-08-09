@@ -1,9 +1,9 @@
-import { Box } from "@/components/Box";
-import { Button } from "@/components/Button/Button";
-import { FontAwesome } from "@expo/vector-icons";
-import { Pressable, StyleSheet, ViewStyle, Text } from "react-native";
-import { Image } from "expo-image";
-import Colors from "@/constants/Colors";
+import { Box } from '@/components/Box';
+import { Button } from '@/components/Button/Button';
+import { FontAwesome } from '@expo/vector-icons';
+import { Pressable, StyleSheet, Text } from 'react-native';
+import { Image } from 'expo-image';
+import Colors from '@/constants/Colors';
 
 interface ImageData {
   type?: string;
@@ -21,15 +21,16 @@ interface ImagePickerGridProps {
 
 export function ImagePickerGrid({ images, onPick, onPreview, onRemove, error }: ImagePickerGridProps) {
   return (
-    <Box style={styles.container}>
+    <Box>
       <Button
         variant="tertiary"
         onPress={onPick}
         style={{
-          ...(error ? { borderColor: Colors.light.danger, borderWidth: 1 } : {}),
-        }}>
-        <Text style={{ color: error ? Colors.light.danger : "#000" }}>
-          Fotografitë e listimit <FontAwesome name="plus" size={14} color={error ? Colors.light.danger : "#000"} />
+          ...(error ? { borderColor: Colors.danger, borderWidth: 1 } : {}),
+        }}
+      >
+        <Text style={{ color: error ? Colors.danger : '#000' }}>
+          Fotografitë e listimit <FontAwesome name="plus" size={12} color={error ? Colors.danger : '#000'} />
         </Text>
       </Button>
       {error && <Text style={styles.errorText}>{error}</Text>}
@@ -56,30 +57,27 @@ export function ImagePickerGrid({ images, onPick, onPreview, onRemove, error }: 
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 12,
-  },
   errorText: {
-    color: "red",
+    color: 'red',
     marginTop: 8,
   },
   gridWrap: {
-    flexWrap: "wrap",
+    flexWrap: 'wrap',
   },
   trashIcon: {
-    position: "absolute",
+    position: 'absolute',
     top: -8,
     right: -8,
     zIndex: 1,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 9999,
     padding: 8,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
   },
   imageBox: {
     borderRadius: 8,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   image: {
     width: 64,
