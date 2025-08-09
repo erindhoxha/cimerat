@@ -8,6 +8,8 @@ import { Button } from "@/components/Button/Button";
 import { Box } from "@/components/Box";
 import { useAuth } from "@/context/AuthContext";
 import { FontAwesome } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
+import { Listing } from "@/types";
 
 const cardItems = [
   {
@@ -30,6 +32,21 @@ export default function TabTwoScreen() {
   const { token } = useAuth();
   const router = useRouter();
   const isLoggedIn = !!token;
+
+  const listings = useQuery<Listing[]>({
+    staleTime: 0,
+    queryKey: ["my-listings"],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/my-listings?${params.toString()}`);
+      if (!res.ok) {
+        throw new Error("Failed to fetch listings");
+      }
+      return res.json();
+    },
+  });
+
+  const { data } = listings;
 
   return (
     <ScrollView style={styles.container}>
@@ -64,13 +81,14 @@ export default function TabTwoScreen() {
       {isLoggedIn && (
         <>
           <View style={styles.separator} />
-          <Text style={styles.emptyText}>
-            Nuk keni asnjë listim të krijuar. Shtoni një listim të ri duke klikuar në butonin "Krijo" në skedën e
-            sipërme.
-          </Text>
-          {cardItems.map((item) => (
-            <HorizontalCardItem item={item} router={router} key={item.id} />
-          ))}
+          {!!data?.length ? (
+            data.map((item) => <HorizontalCardItem item={item} router={router} key={item.id} />)
+          ) : (
+            <Text style={styles.emptyText}>
+              Nuk keni asnjë listim të krijuar. Shtoni një listim të ri duke klikuar në butonin "Krijo" në skedën e
+              sipërme.
+            </Text>
+          )}
         </>
       )}
     </ScrollView>

@@ -17,18 +17,18 @@ app.use(listingRoutes);
 
 const mongoUri = process.env.MONGO_URI;
 
-mongoose.connect(mongoUri, {});
+// mongoose.connect(mongoUri, {});
 
-mongoose.connection.on("connected", () => {
-  console.log("Connected to MongoDB successfully");
-});
+// mongoose.connection.on("connected", () => {
+//   console.log("Connected to MongoDB successfully");
+// });
 
-mongoose.connection.on("error", (err) => {
-  console.error("Error connecting to MongoDB:", err);
-});
+// mongoose.connection.on("error", (err) => {
+//   console.error("Error connecting to MongoDB:", err);
+// });
 
 app.get("/", requireAuth, (_, res) => {
-  res.send("Hello from Express!123444");
+  res.send("Hello from Express!");
   res.status(200);
 });
 
