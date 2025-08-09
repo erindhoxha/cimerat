@@ -23,6 +23,7 @@ const Input = forwardRef(
           <TextInput
             collapsable
             multiline={props.multiline}
+            placeholderTextColor={Colors.gray}
             style={[
               styles.input,
               props.multiline ? styles.inputMultiline : null,

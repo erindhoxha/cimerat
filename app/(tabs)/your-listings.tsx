@@ -51,9 +51,9 @@ export default function TabTwoScreen() {
             <FontAwesome name="exclamation" size={48} color={Colors.danger} />
           </Box>
           <Text fontSize="xl" fontWeight="bold">
-            Oh, jo! Nuk jeni të kyçur
+            Nuk jeni të kyçur
           </Text>
-          <Text>Ju lutemi, kyçuni për të parë listimet tuaja.</Text>
+          <Text style={styles.text}>Ju lutemi, kyçuni për të krijuar listime ose për të parë listimet tuaja.</Text>
           <Link href="/login" asChild>
             <Button variant="primary" style={styles.fullWidthButton}>
               <Text>Kyçu</Text>
@@ -83,6 +83,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
+  },
+  text: {
+    textAlign: 'center',
   },
   emptyText: {
     marginTop: 10,
