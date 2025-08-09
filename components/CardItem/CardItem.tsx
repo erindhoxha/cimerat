@@ -1,24 +1,24 @@
-import { useRouter } from "expo-router";
-import { View } from "../View/View";
-import { Image } from "expo-image";
-import { StyleSheet, TouchableOpacity } from "react-native";
-import { Text } from "../Text";
+import { useRouter } from 'expo-router';
+import { View } from '../View/View';
+import { Image } from 'expo-image';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Text } from '../Text';
 
 interface ItemProps {
-  title: string;
   images: string;
   description?: string;
   price?: string;
   id: string;
   date: string;
+  city: string;
+  neighborhood: string;
 }
 
 const blurhash =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
+  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 
-export const CardItem = ({ title, images, description, price, id, date }: ItemProps) => {
+export const CardItem = ({ city, neighborhood, images, description, price, id, date }: ItemProps) => {
   const router = useRouter();
-  console.log(images);
   return (
     <TouchableOpacity style={styles.cardLink} onPress={() => router.push(`/${id}`)}>
       <View style={styles.card}>
@@ -33,7 +33,7 @@ export const CardItem = ({ title, images, description, price, id, date }: ItemPr
         />
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
-            <Text style={styles.cardTitle}>{title}</Text>
+            <Text style={styles.cardTitle}>{city + ', ' + neighborhood}</Text>
             <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
               {description}
             </Text>
@@ -53,46 +53,46 @@ export const CardItem = ({ title, images, description, price, id, date }: ItemPr
 const styles = StyleSheet.create({
   card: {
     marginVertical: 16,
-    width: "100%",
+    width: '100%',
   },
   cardDate: {
     marginBottom: 6,
     fontSize: 14,
-    fontWeight: "400",
+    fontWeight: '400',
   },
   cardLink: {
     marginBottom: 20,
-    width: "100%",
+    width: '100%',
     flex: 1,
   },
   cardInnerContent: {
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-    flexDirection: "column",
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    flexDirection: 'column',
     flex: 1,
-    height: "auto",
+    height: 'auto',
   },
   cardContent: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
     marginTop: 10,
   },
   cardImage: {
     flex: 1,
-    backgroundColor: "#0553",
+    backgroundColor: '#0553',
     height: 200,
-    width: "100%",
+    width: '100%',
     borderRadius: 10,
   },
   topCardContent: {
-    flexDirection: "column",
-    justifyContent: "space-between",
-    width: "70%",
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    width: '70%',
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
     marginBottom: 4,
   },
   cardPrice: {
@@ -101,6 +101,6 @@ const styles = StyleSheet.create({
   },
   cardSubtitle: {
     fontSize: 14,
-    fontWeight: "400",
+    fontWeight: '400',
   },
 });

@@ -84,34 +84,9 @@ export default function CreateScreen() {
 
   const selectedCity = watch('city');
 
-  const {
-    mutateAsync: createListingMutation,
-    isError,
-    isPending,
-    error,
-  } = useMutation({
-    mutationFn: async (
-      data: FormData & {
-        images: string[];
-      },
-    ) => {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      const json = await res.json();
-      if (!res.ok) {
-        throw new Error(json.error || 'Gabim gjatë krijimit. Ju lutemi provoni përsëri.');
-      }
-      return json;
-    },
-    onSuccess: (data) => {
-      // reset();
-    },
-  });
-
   const { token } = useAuth();
+
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: FormData) => {
     // Build FormData for file upload
@@ -130,6 +105,7 @@ export default function CreateScreen() {
     });
 
     try {
+      setLoading(true);
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings`, {
         method: 'POST',
         body: formData,
@@ -142,7 +118,6 @@ export default function CreateScreen() {
       if (!res.ok) {
         throw new Error(json.error || 'Gabim gjatë krijimit. Ju lutemi provoni përsëri.');
       }
-      // Success logic here
       Toast.show({
         type: 'success',
         text1: 'Keni krijuar një listim të ri',
@@ -150,13 +125,15 @@ export default function CreateScreen() {
         text1Style: styles.toastTitle,
         text2Style: styles.toastSubtitle,
       });
-      // reset();
+      router.push('/');
     } catch (error) {
       Toast.show({
         type: 'error',
         text1: 'Gabim gjatë krijimit të listimit',
         text2: 'Ju lutemi provoni përsëri, ose na kontaktoni.',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -253,7 +230,7 @@ export default function CreateScreen() {
           )}
         />
         <Button variant="primary" style={styles.submitButton} onPress={handleSubmit(onSubmit, onFormError)}>
-          Krijo Listimin
+          {loading ? 'Duke krijuar...' : 'Krijo Listimin'}
         </Button>
       </Box>
       <Modal visible={!!previewImage} transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>

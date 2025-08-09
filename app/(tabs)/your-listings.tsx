@@ -20,8 +20,11 @@ export default function TabTwoScreen() {
     staleTime: 0,
     queryKey: ['my-listings'],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/my-listings?${params.toString()}`);
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/my-listings`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!res.ok) {
         throw new Error('Failed to fetch listings');
       }
@@ -29,7 +32,9 @@ export default function TabTwoScreen() {
     },
   });
 
-  const { data } = listings;
+  const { data, error } = listings;
+
+  console.log(data, error);
 
   return (
     <ScrollView style={styles.container}>

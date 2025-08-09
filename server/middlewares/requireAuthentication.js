@@ -1,30 +1,27 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
   const { authorization } = req.headers;
 
+  console.log(authorization, 'auth');
+
   if (!authorization) {
-    return res.status(401).json({ error: "You must be logged in" });
+    return res.status(401).json({ error: 'You must be logged in' });
   }
 
-  const token = authorization.replace("Bearer ", "");
+  const token = authorization.replace('Bearer ', '');
 
-  jwt.verify(token, "MY_SECRET_KEY", async (err, payload) => {
-    if (err) {
-      return res.status(401).json({ error: "You must be logged in" });
-    }
-
+  try {
+    const payload = jwt.verify(token, 'MY_SECRET_KEY');
     const { userId } = payload;
-    try {
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(401).json({ error: "User not found" });
-      }
-      req.user = user;
-      next();
-    } catch (error) {
-      return res.status(500).json({ error: "Internal server error" });
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
     }
-  });
+    req.user = user;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'You must be logged in' });
+  }
 };
