@@ -3,7 +3,6 @@ import { Button } from '@/components/Button';
 import { useAuth } from '@/context/AuthContext';
 import { Text } from '@/components/Text';
 import { useQuery } from '@tanstack/react-query';
-import { router } from 'expo-router';
 import { ScrollView, StyleSheet } from 'react-native';
 import Input from '@/components/Input';
 import Label from '@/components/Label';
@@ -47,11 +46,15 @@ export default function ProfileScreen() {
     );
   }
 
+  const {
+    user: { username },
+  } = data;
+
   return (
     <ScrollView style={styles.container}>
       <Box marginBottom={12}>
         <Text fontSize="xl" fontWeight="bold">
-          Përshendetje, {data.user.username}
+          Përshendetje, {username}
         </Text>
       </Box>
       <Box>
@@ -61,7 +64,7 @@ export default function ProfileScreen() {
           </Text>
           <Box>
             <Label>Emri</Label>
-            <Input placeholder="Emri juaj" value={name ?? data?.user?.username} onChangeText={setName} />
+            <Input placeholder="Emri juaj" value={name ?? username} onChangeText={setName} />
           </Box>
           <Box>
             <Label>Email</Label>
