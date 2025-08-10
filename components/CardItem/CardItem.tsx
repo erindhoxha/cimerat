@@ -7,24 +7,16 @@ import { Box } from '../Box';
 import { FontAwesome } from '@expo/vector-icons';
 import { Pill } from '../Pill/Pill';
 import Colors from '@/constants/Colors';
-
-interface CardItemProps {
-  images: string;
-  description?: string;
-  price?: string;
-  id: string;
-  date: string;
-  city: string;
-  neighborhood: string;
-}
+import { formatDate } from '@/utils';
+import { Listing } from '@/types';
 
 const blurhash =
   '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 
-export const CardItem = ({ city, neighborhood, images, description, price, id, date }: CardItemProps) => {
+export const CardItem = ({ city, neighborhood, images, description, price, _id, createdAt }: Listing) => {
   const router = useRouter();
   return (
-    <TouchableOpacity style={styles.cardLink} onPress={() => router.push(`/${id}`)}>
+    <TouchableOpacity style={styles.cardLink} onPress={() => router.push(`/${_id}`)}>
       <View style={styles.card}>
         <Image
           style={styles.cardImage}
@@ -43,7 +35,7 @@ export const CardItem = ({ city, neighborhood, images, description, price, id, d
                 <Text style={styles.cardPrice}>{price}€ për muaj</Text>
               </Box>
               <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-end">
-                <Text>21 Qershor, 2025</Text>
+                {createdAt && <Text>{formatDate(createdAt)}</Text>}
               </Box>
             </Box>
             <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>

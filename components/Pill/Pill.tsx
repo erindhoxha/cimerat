@@ -19,7 +19,15 @@ const VARIANTS = {
 
 export const Pill: React.FC<PillProps> = ({ title, iconLeft, variant = 'yellow' }) => {
   return (
-    <Box gap={4} flexDirection="row" borderRadius={12} paddingVertical={4} paddingHorizontal={8} {...VARIANTS[variant]}>
+    <Box
+      testID="pill-box"
+      gap={4}
+      flexDirection="row"
+      borderRadius={12}
+      paddingVertical={4}
+      paddingHorizontal={8}
+      {...VARIANTS[variant]}
+    >
       {iconLeft}
       <Text>{title}</Text>
     </Box>

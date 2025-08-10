@@ -12,6 +12,6 @@ export interface Listing {
   price: string;
   neighborhood: string;
   user: User;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
