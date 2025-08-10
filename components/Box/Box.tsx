@@ -1,3 +1,4 @@
+import Colors from '@/constants/Colors';
 import React from 'react';
 import { View, ViewProps, StyleProp, ViewStyle } from 'react-native';
 
@@ -11,6 +12,7 @@ type BoxProps = ViewProps & {
   padding?: number;
   paddingTop?: number;
   paddingBottom?: number;
+  borderColor?: (typeof Colors)[keyof typeof Colors];
   paddingLeft?: number;
   paddingRight?: number;
   paddingHorizontal?: number;
@@ -25,6 +27,7 @@ type BoxProps = ViewProps & {
   gap?: number;
   alignSelf?: ViewStyle['alignSelf'];
   children?: React.ReactNode;
+  borderTopWidth?: number;
 };
 
 export default function Box({
@@ -47,9 +50,11 @@ export default function Box({
   justifyContent,
   flexDirection,
   flex,
+  borderColor,
   backgroundColor,
   borderRadius,
   gap,
+  borderTopWidth,
   alignSelf,
   ...rest
 }: BoxProps) {
@@ -72,6 +77,8 @@ export default function Box({
           paddingVertical,
           alignItems,
           justifyContent,
+          borderTopWidth,
+          borderColor,
           flexDirection,
           flex,
           backgroundColor,

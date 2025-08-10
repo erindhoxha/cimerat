@@ -46,7 +46,7 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
 
 router.get('/listings', async (_, res) => {
   try {
-    const listings = await Listing.find();
+    const listings = await Listing.find().sort({ createdAt: -1 }).populate('user', 'username');
     return res.status(200).json(listings);
   } catch (error) {
     console.error('Error fetching listings:', error);

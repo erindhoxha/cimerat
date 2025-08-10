@@ -9,6 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { FontAwesome } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { Listing } from '@/types';
+import { Loading } from '@/components/Loading/Loading';
 
 export default function TabTwoScreen() {
   const { token } = useAuth();
@@ -18,6 +19,7 @@ export default function TabTwoScreen() {
   const listings = useQuery<Listing[]>({
     staleTime: 0,
     queryKey: ['my-listings'],
+    enabled: isLoggedIn,
     queryFn: async () => {
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/my-listings`, {
         headers: {
@@ -31,9 +33,7 @@ export default function TabTwoScreen() {
     },
   });
 
-  const { data, error } = listings;
-
-  console.log(data);
+  const { data, error, isLoading } = listings;
 
   if (error) {
     return <Text>Error: {error.message}</Text>;
@@ -69,7 +69,14 @@ export default function TabTwoScreen() {
           </Link>
         </Box>
       )}
-      {isLoggedIn && (
+
+      {isLoading && (
+        <Box marginTop={24}>
+          <Loading />
+        </Box>
+      )}
+
+      {isLoggedIn && !isLoading && (
         <Box marginTop={24}>
           {!!data?.length ? (
             data.map((item) => <HorizontalCardItem item={item} router={router} key={item._id} />)

@@ -5,7 +5,7 @@ import { Text } from '../Text';
 export const Loading = () => {
   return (
     <Box style={styles.container}>
-      <Text>Loading...</Text>
+      <Text>Duke ngarkuar...</Text>
     </Box>
   );
 };

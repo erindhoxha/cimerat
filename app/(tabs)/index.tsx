@@ -92,10 +92,6 @@ export default function TabOneScreen() {
     },
   });
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
   return (
     <Box style={styles.container}>
       <FlatList
@@ -165,7 +161,7 @@ export default function TabOneScreen() {
                       />
                     </>
                   )}
-                  renderItem={(item, index, isSelected) => (
+                  renderItem={(item, _, isSelected) => (
                     <>
                       <SelectItem item={item} isSelected={isSelected} />
                     </>
@@ -238,6 +234,11 @@ export default function TabOneScreen() {
         data={data}
         renderItem={({ item }) => <CardItem {...item} key={item.id} />}
       />
+      {isLoading && (
+        <Box>
+          <Loading />
+        </Box>
+      )}
     </Box>
   );
 }

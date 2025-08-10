@@ -1,16 +1,20 @@
-import { Box } from "@/components/Box";
-import { Button } from "@/components/Button";
-import { useAuth } from "@/context/AuthContext";
-import { Text } from "@/components/Text";
-import { useQuery } from "@tanstack/react-query";
-import { router } from "expo-router";
-import { StyleSheet } from "react-native";
+import { Box } from '@/components/Box';
+import { Button } from '@/components/Button';
+import { useAuth } from '@/context/AuthContext';
+import { Text } from '@/components/Text';
+import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import { ScrollView, StyleSheet } from 'react-native';
+import Input from '@/components/Input';
+import Label from '@/components/Label';
+import { useState } from 'react';
+import Colors from '@/constants/Colors';
 
 export default function ProfileScreen() {
   const { token } = useAuth();
 
   const { data, error, status } = useQuery({
-    queryKey: ["user"],
+    queryKey: ['user'],
     enabled: !!token,
     queryFn: async () => {
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/user`, {
@@ -19,13 +23,15 @@ export default function ProfileScreen() {
         },
       });
       if (!res.ok) {
-        throw new Error("Failed to fetch user data");
+        throw new Error('Failed to fetch user data');
       }
       return res.json();
     },
   });
 
-  if (status === "pending") {
+  const [name, setName] = useState(data?.user?.username || undefined);
+
+  if (status === 'pending') {
     return (
       <Box flex={1} justifyContent="center" alignItems="center">
         <Text>Duke ngarkuar...</Text>
@@ -42,39 +48,58 @@ export default function ProfileScreen() {
   }
 
   return (
-    <Box flex={1} padding={20} gap={12} style={styles.container}>
-      <Text fontSize="xl" fontWeight="bold">
-        Profili
-      </Text>
+    <ScrollView style={styles.container}>
+      <Box marginBottom={12}>
+        <Text fontSize="xl" fontWeight="bold">
+          Përshendetje, {data.user.username}
+        </Text>
+      </Box>
       <Box>
-        <Box gap={8}>
-          <Text>Emri i përdoruesit:</Text>
-          <Text fontWeight="bold" fontSize="md">
-            {data.user.username}
+        <Box marginBottom={12} gap={12}>
+          <Text fontSize="md" fontWeight="bold">
+            Ndrysho të dhënat e profilit
           </Text>
-          <Button
-            onPress={() => {
-              router.push("/your-listings");
-            }}
-            variant="primary">
-            Shiko listimet e mia
+          <Box>
+            <Label>Emri</Label>
+            <Input placeholder="Emri juaj" value={name ?? data?.user?.username} onChangeText={setName} />
+          </Box>
+          <Box>
+            <Label>Email</Label>
+            <Input placeholder="Email" />
+          </Box>
+          <Box>
+            <Label>Numri i telefonit</Label>
+            <Input placeholder="Numri i telefonit" />
+          </Box>
+          <Button variant="primary" onPress={() => {}}>
+            Ndrysho të dhënat
           </Button>
-          <Button
-            onPress={() => {
-              router.push("/");
-            }}
-            variant="secondary">
-            Kthehu në faqen kryesore
+        </Box>
+        <Box gap={12} marginTop={24} borderTopWidth={1} paddingTop={24} borderColor={Colors.lightGray}>
+          <Text fontSize="md" fontWeight="bold">
+            Ndrysho fjalëkalimin
+          </Text>
+          <Box>
+            <Label>Fjalëkalimi i vjetër</Label>
+            <Input placeholder="Fjalëkalimi juaj" secureTextEntry />
+          </Box>
+          <Box>
+            <Label>Fjalëkalimi i ri</Label>
+            <Input placeholder="Fjalëkalimi i ri" secureTextEntry />
+          </Box>
+          <Button variant="tertiary" onPress={() => {}}>
+            Ndrysho fjalëkalimin
           </Button>
         </Box>
       </Box>
-    </Box>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'white',
     padding: 20,
   },
 });
