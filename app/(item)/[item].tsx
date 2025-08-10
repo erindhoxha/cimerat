@@ -15,6 +15,8 @@ export default function ItemDetailScreen() {
 
   // TODO: Use item data here
 
+  console.log(item);
+
   const { token } = useAuth();
 
   const isLoggedIn = !!token;
@@ -41,7 +43,6 @@ export default function ItemDetailScreen() {
           </Text>
           <Text>300€ për muaj</Text>
         </Box>
-
         <Box style={styles.horizontalLine} />
         <Text>
           Jepet banesa me qira Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam id corporis culpa
@@ -49,7 +50,6 @@ export default function ItemDetailScreen() {
           obcaecati repellendus eum labore hic!
         </Text>
         <Box style={styles.horizontalLine} />
-
         {isLoggedIn ? (
           <>
             <Box>

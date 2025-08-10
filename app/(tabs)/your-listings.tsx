@@ -69,13 +69,11 @@ export default function TabTwoScreen() {
           </Link>
         </Box>
       )}
-
       {isLoading && (
         <Box marginTop={24}>
           <Loading />
         </Box>
       )}
-
       {isLoggedIn && !isLoading && (
         <Box marginTop={24}>
           {!!data?.length ? (
