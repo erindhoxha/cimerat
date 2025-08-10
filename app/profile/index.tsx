@@ -78,7 +78,7 @@ export default function ProfileScreen() {
             Ndrysho të dhënat
           </Button>
         </Box>
-        <Box gap={12} marginTop={24} borderTopWidth={1} paddingTop={24} borderColor={Colors.lightGray}>
+        <Box gap={12} marginTop={12} borderTopWidth={1} paddingTop={12} borderColor={Colors.lightGray}>
           <Text fontSize="md" fontWeight="bold">
             Ndrysho fjalëkalimin
           </Text>
