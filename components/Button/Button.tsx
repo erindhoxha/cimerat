@@ -45,7 +45,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
   },
   secondaryButton: {
-    backgroundColor: Colors.gray,
+    backgroundColor: Colors.lightGray,
     padding: 12,
     borderRadius: 12,
     alignItems: 'center',

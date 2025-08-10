@@ -1,5 +1,4 @@
 import { ScrollView, StyleSheet } from 'react-native';
-import { View } from '@/components/View/View';
 import Colors from '@/constants/Colors';
 import { Link, useRouter } from 'expo-router';
 import { HorizontalCardItem } from '@/components/HorizontalCardItem/HorizontalCardItem';
@@ -34,7 +33,11 @@ export default function TabTwoScreen() {
 
   const { data, error } = listings;
 
-  console.log(data, error);
+  console.log(data);
+
+  if (error) {
+    return <Text>Error: {error.message}</Text>;
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -67,17 +70,16 @@ export default function TabTwoScreen() {
         </Box>
       )}
       {isLoggedIn && (
-        <>
-          <View style={styles.separator} />
+        <Box marginTop={24}>
           {!!data?.length ? (
-            data.map((item) => <HorizontalCardItem item={item} router={router} key={item.id} />)
+            data.map((item) => <HorizontalCardItem item={item} router={router} key={item._id} />)
           ) : (
             <Text style={styles.emptyText}>
               Nuk keni asnjë listim të krijuar. Shtoni një listim të ri duke klikuar në butonin "Krijo" në skedën e
               sipërme.
             </Text>
           )}
-        </>
+        </Box>
       )}
     </ScrollView>
   );

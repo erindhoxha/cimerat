@@ -15,7 +15,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import formSchema from './schema';
 import { ImagePickerGrid } from '@/components/ImagePickerGrid/ImagePickerGrid';
 import { DropdownField } from '@/components/DropdownController/DropdownController';
-import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 
 interface FormData {
@@ -77,7 +76,7 @@ export default function CreateScreen() {
         })),
       ];
       setImages(newImages);
-      setValue('images', newImages); // <-- update form value
+      setValue('images', newImages);
       setImageError(null);
     }
   };

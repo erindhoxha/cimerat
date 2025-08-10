@@ -14,8 +14,8 @@ import Input from '@/components/Input';
 import { useQuery } from '@tanstack/react-query';
 import { styles as dropdownStyles } from '@/components/DropdownController/styles';
 import Colors from '@/constants/Colors';
+import { Loading } from '@/components/Loading/Loading';
 
-// TOOD: Install ESLint
 interface SelectButtonProps {
   title: string | null;
   isOpened?: boolean;
@@ -74,7 +74,7 @@ export default function TabOneScreen() {
     }
   }, []);
 
-  const listings = useQuery({
+  const { data, isLoading } = useQuery({
     staleTime: 0,
     queryKey: ['listings', selectedCity, selectedNeighborhood, selectedPriceFrom, selectedPriceTo],
     queryFn: async () => {
@@ -91,6 +91,10 @@ export default function TabOneScreen() {
       return res.json();
     },
   });
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <Box style={styles.container}>
@@ -231,9 +235,8 @@ export default function TabOneScreen() {
             </Box>
           </Box>
         )}
-        data={listings.data}
-        renderItem={({ item }) => <CardItem {...item} />}
-        keyExtractor={(item) => item.id}
+        data={data}
+        renderItem={({ item }) => <CardItem {...item} key={item.id} />}
       />
     </Box>
   );
@@ -250,5 +253,9 @@ const styles = StyleSheet.create({
   },
   flexShrink: {
     flexShrink: 1,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: Colors.gray,
   },
 });

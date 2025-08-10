@@ -9,8 +9,6 @@ const requireAuth = require('../middlewares/requireAuthentication');
 const upload = multer({ dest: 'uploads/' });
 
 router.get('/my-listings', requireAuth, async (req, res) => {
-  console.log('SENDING');
-  console.log(req.user);
   try {
     const listings = await Listing.find({ user: req.user._id });
     return res.status(200).json(listings);
@@ -46,8 +44,7 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
   }
 });
 
-router.get('/listings', async (req, res) => {
-  console.log('Listings being fetched');
+router.get('/listings', async (_, res) => {
   try {
     const listings = await Listing.find();
     return res.status(200).json(listings);

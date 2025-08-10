@@ -5,11 +5,13 @@ export interface User {
 }
 
 export interface Listing {
-  id: string;
+  _id: string;
   description: string;
-  image: any;
+  images: any;
   city: string;
-  price: number;
+  price: string;
   neighborhood: string;
   user: User;
+  createdAt: string;
+  updatedAt: string;
 }

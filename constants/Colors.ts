@@ -1,5 +1,4 @@
 const tintColorLight = '#2f95dc';
-const tintColorDark = '#fff';
 
 const yellow = '#FFB700';
 const midDarkYellow = '#DC9E00';
@@ -17,4 +16,6 @@ export default {
   gray: '#ccc',
   danger: '#ff0000',
   blue: '#2b8dceff',
+  green: '#29c061ff',
+  lightGray: '#e0e0e0',
 };

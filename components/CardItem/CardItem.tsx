@@ -3,8 +3,12 @@ import { View } from '../View/View';
 import { Image } from 'expo-image';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Text } from '../Text';
+import { Box } from '../Box';
+import { FontAwesome } from '@expo/vector-icons';
+import { Pill } from '../Pill/Pill';
+import Colors from '@/constants/Colors';
 
-interface ItemProps {
+interface CardItemProps {
   images: string;
   description?: string;
   price?: string;
@@ -17,7 +21,7 @@ interface ItemProps {
 const blurhash =
   '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 
-export const CardItem = ({ city, neighborhood, images, description, price, id, date }: ItemProps) => {
+export const CardItem = ({ city, neighborhood, images, description, price, id, date }: CardItemProps) => {
   const router = useRouter();
   return (
     <TouchableOpacity style={styles.cardLink} onPress={() => router.push(`/${id}`)}>
@@ -33,16 +37,25 @@ export const CardItem = ({ city, neighborhood, images, description, price, id, d
         />
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
-            <Text style={styles.cardTitle}>{city + ', ' + neighborhood}</Text>
+            <Box flexDirection="row" justifyContent="space-between" flex={1}>
+              <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start">
+                <Text style={styles.cardTitle}>{city + ', ' + neighborhood}</Text>
+                <Text style={styles.cardPrice}>{price}€ për muaj</Text>
+              </Box>
+              <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-end">
+                <Text>21 Qershor, 2025</Text>
+              </Box>
+            </Box>
             <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
               {description}
             </Text>
-            <Text style={styles.cardPrice}>{price}€ për muaj</Text>
-          </View>
-          <View style={styles.cardInnerContent}>
-            <Text ellipsizeMode="tail" numberOfLines={1} style={styles.cardDate}>
-              {date}
-            </Text>
+            <Box flexDirection="row" gap={8} marginTop={12}>
+              <Pill
+                title="Personi i verifikuar"
+                variant="yellow"
+                iconLeft={<FontAwesome name="check" size={12} color="#000" />}
+              />
+            </Box>
           </View>
         </View>
       </View>
@@ -54,14 +67,12 @@ const styles = StyleSheet.create({
   card: {
     marginVertical: 16,
     width: '100%',
-  },
-  cardDate: {
-    marginBottom: 6,
-    fontSize: 14,
-    fontWeight: '400',
+    borderWidth: 1,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderColor: Colors.lightGray,
   },
   cardLink: {
-    marginBottom: 20,
     width: '100%',
     flex: 1,
   },
@@ -76,31 +87,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginTop: 10,
+    padding: 16,
   },
   cardImage: {
     flex: 1,
     backgroundColor: '#0553',
     height: 200,
-    width: '100%',
-    borderRadius: 10,
   },
   topCardContent: {
     flexDirection: 'column',
     justifyContent: 'space-between',
-    width: '70%',
+    width: '100%',
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 4,
+    fontSize: 18,
+    fontWeight: '600',
   },
   cardPrice: {
     fontSize: 14,
-    marginTop: 6,
+    marginTop: 4,
   },
   cardSubtitle: {
     fontSize: 14,
     fontWeight: '400',
+    marginTop: 16,
   },
 });

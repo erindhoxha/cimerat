@@ -1,8 +1,8 @@
-import React from "react";
-import { View, ViewProps, StyleProp, ViewStyle } from "react-native";
+import React from 'react';
+import { View, ViewProps, StyleProp, ViewStyle } from 'react-native';
 
 type BoxProps = ViewProps & {
-  marginTop?: number | "auto";
+  marginTop?: number | 'auto';
   marginBottom?: number;
   marginLeft?: number;
   marginRight?: number;
@@ -15,14 +15,15 @@ type BoxProps = ViewProps & {
   paddingRight?: number;
   paddingHorizontal?: number;
   paddingVertical?: number;
-  alignItems?: ViewStyle["alignItems"];
-  justifyContent?: ViewStyle["justifyContent"];
-  flexDirection?: ViewStyle["flexDirection"];
+  alignItems?: ViewStyle['alignItems'];
+  justifyContent?: ViewStyle['justifyContent'];
+  flexDirection?: ViewStyle['flexDirection'];
   flex?: number;
   backgroundColor?: string;
   borderRadius?: number;
   style?: StyleProp<ViewStyle>;
   gap?: number;
+  alignSelf?: ViewStyle['alignSelf'];
   children?: React.ReactNode;
 };
 
@@ -49,6 +50,7 @@ export default function Box({
   backgroundColor,
   borderRadius,
   gap,
+  alignSelf,
   ...rest
 }: BoxProps) {
   return (
@@ -75,10 +77,12 @@ export default function Box({
           backgroundColor,
           borderRadius,
           gap,
+          alignSelf,
         },
         style,
       ]}
-      {...rest}>
+      {...rest}
+    >
       {children}
     </View>
   );

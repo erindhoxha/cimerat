@@ -4,6 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { Image } from 'expo-image';
 import Colors from '@/constants/Colors';
+import Label from '../Label';
 
 interface ImageData {
   type?: string;
@@ -19,9 +20,12 @@ interface ImagePickerGridProps {
   onRemove: (idx: number) => void;
 }
 
-export function ImagePickerGrid({ images, onPick, onPreview, onRemove, error }: ImagePickerGridProps) {
+export const ImagePickerGrid: React.FC<ImagePickerGridProps> = ({ images, onPick, onPreview, onRemove, error }) => {
   return (
     <Box>
+      <Label>
+        Fotografitë e listimit<Text style={styles.asterisk}>*</Text>
+      </Label>
       <Button
         variant="tertiary"
         onPress={onPick}
@@ -30,7 +34,7 @@ export function ImagePickerGrid({ images, onPick, onPreview, onRemove, error }: 
         }}
       >
         <Text style={{ color: error ? Colors.danger : '#000' }}>
-          Fotografitë e listimit <FontAwesome name="plus" size={12} color={error ? Colors.danger : '#000'} />
+          Ngarko fotografitë <FontAwesome name="plus" size={12} color={error ? Colors.danger : '#000'} />
         </Text>
       </Button>
       {error && <Text style={styles.errorText}>{error}</Text>}
@@ -54,7 +58,7 @@ export function ImagePickerGrid({ images, onPick, onPreview, onRemove, error }: 
       </Box>
     </Box>
   );
-}
+};
 
 const styles = StyleSheet.create({
   errorText: {
@@ -63,6 +67,9 @@ const styles = StyleSheet.create({
   },
   gridWrap: {
     flexWrap: 'wrap',
+  },
+  asterisk: {
+    color: 'red',
   },
   trashIcon: {
     position: 'absolute',
