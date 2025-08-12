@@ -14,7 +14,7 @@ export default {
   midDarkYellow,
   darkYellow,
   gray: '#ccc',
-  danger: '#ff0000',
+  danger: '#dc0d0dff',
   blue: '#2b8dceff',
   green: '#29c061ff',
   lightGray: '#e0e0e0',

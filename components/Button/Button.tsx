@@ -2,7 +2,7 @@ import { StyleSheet, TouchableOpacity, TouchableOpacityProps } from 'react-nativ
 import { Text } from '../Text';
 import Colors from '@/constants/Colors';
 
-type Variant = 'primary' | 'secondary' | 'tertiary';
+type Variant = 'primary' | 'secondary' | 'tertiary' | 'danger';
 
 export const Button = (
   props: TouchableOpacityProps & {
@@ -21,6 +21,7 @@ export const Button = (
     primary: style.primaryButton,
     secondary: style.secondaryButton,
     tertiary: style.tertiaryButton,
+    danger: style.dangerButton,
   };
 
   return (
@@ -40,6 +41,13 @@ export const Button = (
 const style = StyleSheet.create({
   primaryButton: {
     backgroundColor: Colors.yellow,
+    padding: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  dangerButton: {
+    backgroundColor: Colors.danger,
+    color: 'white',
     padding: 12,
     borderRadius: 12,
     alignItems: 'center',

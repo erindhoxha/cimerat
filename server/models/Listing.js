@@ -30,6 +30,10 @@ const listingSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    blurhash: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,

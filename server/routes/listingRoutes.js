@@ -1,10 +1,21 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const Listing = require('../models/Listing'); // Make sure you have this!
+const Listing = require('../models/Listing');
 const router = express.Router();
 const multer = require('multer');
 const requireAuth = require('../middlewares/requireAuthentication');
+const sharp = require('sharp');
+const { encode } = require('blurhash');
+
+async function getBlurhash(imagePath) {
+  const image = await sharp(imagePath)
+    .raw()
+    .ensureAlpha()
+    .resize(32, 32, { fit: 'inside' })
+    .toBuffer({ resolveWithObject: true });
+
+  const { data, info } = image;
+  return encode(new Uint8ClampedArray(data), info.width, info.height, 4, 4);
+}
 
 const upload = multer({ dest: 'uploads/' });
 
@@ -26,6 +37,8 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
     return res.status(400).json({ error: 'All fields are required' });
   }
 
+  const firstBlurhash = req.files.length > 0 ? await getBlurhash(req.files[0].path) : null;
+
   try {
     const listing = new Listing({
       city,
@@ -33,6 +46,7 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
       description,
       price,
       images: imagePaths,
+      blurhash: firstBlurhash,
       user: req.user._id,
     });
 

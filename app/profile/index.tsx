@@ -3,14 +3,17 @@ import { Button } from '@/components/Button';
 import { useAuth } from '@/context/AuthContext';
 import { Text } from '@/components/Text';
 import { useQuery } from '@tanstack/react-query';
-import { ScrollView, StyleSheet } from 'react-native';
+import { Alert, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import Input from '@/components/Input';
 import Label from '@/components/Label';
 import { useState } from 'react';
 import Colors from '@/constants/Colors';
+import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
-  const { token } = useAuth();
+  const { token, setToken } = useAuth();
+
+  const router = useRouter();
 
   const { data, error, status } = useQuery({
     queryKey: ['user'],
@@ -74,7 +77,7 @@ export default function ProfileScreen() {
             <Label>Numri i telefonit</Label>
             <Input placeholder="Numri i telefonit" />
           </Box>
-          <Button variant="primary" onPress={() => {}}>
+          <Button variant="tertiary" onPress={() => {}}>
             Ndrysho të dhënat
           </Button>
         </Box>
@@ -95,6 +98,29 @@ export default function ProfileScreen() {
           </Button>
         </Box>
       </Box>
+      <Box marginTop={48}>
+        <Button
+          variant="danger"
+          onPress={() => {
+            Alert.alert('Dilja', 'A jeni i sigurt që doni të dilni?', [
+              {
+                text: 'Anulo',
+                style: 'cancel',
+              },
+              {
+                text: 'Dil',
+                style: 'destructive',
+                onPress: () => {
+                  setToken(null);
+                  router.replace('/');
+                },
+              },
+            ]);
+          }}
+        >
+          <Text fontWeight="medium">Dil nga aplikacioni</Text>
+        </Button>
+      </Box>
     </ScrollView>
   );
 }
@@ -104,5 +130,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 20,
+  },
+  linkButton: {
+    padding: 12,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    gap: 6,
+    borderColor: 'white',
+    marginBottom: 12,
   },
 });

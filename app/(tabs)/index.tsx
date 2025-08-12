@@ -83,7 +83,6 @@ export default function TabOneScreen() {
       if (selectedNeighborhood) params.append('neighborhood', selectedNeighborhood);
       if (selectedPriceFrom) params.append('priceFrom', String(selectedPriceFrom));
       if (selectedPriceTo) params.append('priceTo', String(selectedPriceTo));
-
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings?${params.toString()}`);
       if (!res.ok) {
         throw new Error('Failed to fetch listings');
@@ -92,77 +91,110 @@ export default function TabOneScreen() {
     },
   });
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
   return (
-    data && (
-      <Box style={styles.container}>
-        <FlatList
-          contentContainerStyle={styles.contentContainerStyle}
-          ListEmptyComponent={() => (
+    <Box style={styles.container}>
+      <FlatList
+        contentContainerStyle={styles.contentContainerStyle}
+        ListEmptyComponent={() =>
+          isLoading ? (
+            <Box marginTop={24}>
+              <Loading />
+            </Box>
+          ) : (
             <Box marginTop={24}>
               <Text>Asnjë rezultat.</Text>
             </Box>
-          )}
-          ListHeaderComponent={() => (
-            <Box gap={12}>
-              <Input label="Kërko" placeholder="Kërko..." onChangeText={(text) => {}} />
+          )
+        }
+        ListHeaderComponent={() => (
+          <Box gap={12}>
+            <Input label="Kërko" placeholder="Kërko..." onChangeText={(text) => {}} />
+            <Box flex={1} flexDirection="row" gap={12}>
+              <Box flex={1}>
+                <Label>Qyteti</Label>
+                <SelectDropdown
+                  searchInputStyle={dropdownStyles.searchInputStyle}
+                  searchPlaceHolder="Kërko qytetin..."
+                  searchPlaceHolderColor="#6c757d"
+                  search={true}
+                  data={cities}
+                  onSelect={(selectedItem, index) => {
+                    setDisabled(false);
+                    setSelectedCity((prev) => {
+                      if (prev === selectedItem) {
+                        return null;
+                      }
+                      setSelectedNeighborhood(null);
+                      return selectedItem;
+                    });
+                  }}
+                  ref={cityRef}
+                  renderButton={(_, isOpened) => (
+                    <>
+                      <SelectButton title={selectedCity} isOpened={isOpened} placeholder="Zgjedh Qytetin" />
+                    </>
+                  )}
+                  renderItem={(item, index, isSelected) => (
+                    <>
+                      <SelectItem item={item} isSelected={isSelected} />
+                    </>
+                  )}
+                  showsVerticalScrollIndicator={false}
+                  dropdownStyle={dropdownStyles.dropdownMenuStyle}
+                />
+              </Box>
+              <Box flex={1}>
+                <Label>Lagja</Label>
+                <SelectDropdown
+                  search={true}
+                  searchInputStyle={dropdownStyles.searchInputStyle}
+                  searchPlaceHolder="Kërko lagjen..."
+                  searchPlaceHolderColor="#6c757d"
+                  data={selectedCity ? neighborhoods[selectedCity] : []}
+                  disabled={disabled}
+                  ref={neighborHoodRef}
+                  onSelect={(selectedItem, index) => {
+                    setSelectedNeighborhood(selectedItem);
+                  }}
+                  renderButton={(_, isOpened) => (
+                    <>
+                      <SelectButton
+                        title={selectedNeighborhood}
+                        isOpened={isOpened}
+                        placeholder="Zgjedh Lagjen"
+                        disabled={disabled}
+                      />
+                    </>
+                  )}
+                  renderItem={(item, _, isSelected) => (
+                    <>
+                      <SelectItem item={item} isSelected={isSelected} />
+                    </>
+                  )}
+                  showsVerticalScrollIndicator={false}
+                  dropdownStyle={dropdownStyles.dropdownMenuStyle}
+                />
+              </Box>
+            </Box>
+            <Box>
+              <Label>Çmimi për muaj</Label>
               <Box flex={1} flexDirection="row" gap={12}>
-                <Box flex={1}>
-                  <Label>Qyteti</Label>
+                <Box flex={1} style={styles.flexShrink}>
                   <SelectDropdown
-                    searchInputStyle={dropdownStyles.searchInputStyle}
-                    searchPlaceHolder="Kërko qytetin..."
-                    searchPlaceHolderColor="#6c757d"
-                    search={true}
-                    data={cities}
-                    onSelect={(selectedItem, index) => {
-                      setDisabled(false);
-                      setSelectedCity((prev) => {
-                        if (prev === selectedItem) {
-                          return null;
-                        }
-                        setSelectedNeighborhood(null);
-                        return selectedItem;
-                      });
+                    data={cmimi}
+                    onSelect={(selectedItem) => {
+                      setSelectedPriceFrom(selectedItem);
+                      if (selectedPriceTo && selectedItem > selectedPriceTo) {
+                        setSelectedPriceTo(null);
+                      }
                     }}
-                    ref={cityRef}
-                    renderButton={(_, isOpened) => (
-                      <>
-                        <SelectButton title={selectedCity} isOpened={isOpened} placeholder="Zgjedh Qytetin" />
-                      </>
-                    )}
-                    renderItem={(item, index, isSelected) => (
-                      <>
-                        <SelectItem item={item} isSelected={isSelected} />
-                      </>
-                    )}
-                    showsVerticalScrollIndicator={false}
-                    dropdownStyle={dropdownStyles.dropdownMenuStyle}
-                  />
-                </Box>
-                <Box flex={1}>
-                  <Label>Lagja</Label>
-                  <SelectDropdown
-                    search={true}
-                    searchInputStyle={dropdownStyles.searchInputStyle}
-                    searchPlaceHolder="Kërko lagjen..."
-                    searchPlaceHolderColor="#6c757d"
-                    data={selectedCity ? neighborhoods[selectedCity] : []}
-                    disabled={disabled}
-                    ref={neighborHoodRef}
-                    onSelect={(selectedItem, index) => {
-                      setSelectedNeighborhood(selectedItem);
-                    }}
+                    defaultValue={selectedPriceFrom}
                     renderButton={(_, isOpened) => (
                       <>
                         <SelectButton
-                          title={selectedNeighborhood}
+                          title={(selectedPriceFrom && 'Nga ' + selectedPriceFrom + '€') || ''}
                           isOpened={isOpened}
-                          placeholder="Zgjedh Lagjen"
-                          disabled={disabled}
+                          placeholder="Nga"
                         />
                       </>
                     )}
@@ -175,77 +207,39 @@ export default function TabOneScreen() {
                     dropdownStyle={dropdownStyles.dropdownMenuStyle}
                   />
                 </Box>
-              </Box>
-              <Box>
-                <Label>Çmimi për muaj</Label>
-                <Box flex={1} flexDirection="row" gap={12}>
-                  <Box flex={1} style={styles.flexShrink}>
-                    <SelectDropdown
-                      data={cmimi}
-                      onSelect={(selectedItem) => {
-                        setSelectedPriceFrom(selectedItem);
-                        if (selectedPriceTo && selectedItem > selectedPriceTo) {
-                          setSelectedPriceTo(null);
-                        }
-                      }}
-                      defaultValue={selectedPriceFrom}
-                      renderButton={(_, isOpened) => (
-                        <>
-                          <SelectButton
-                            title={(selectedPriceFrom && 'Nga ' + selectedPriceFrom + '€') || ''}
-                            isOpened={isOpened}
-                            placeholder="Nga"
-                          />
-                        </>
-                      )}
-                      renderItem={(item, _, isSelected) => (
-                        <>
-                          <SelectItem item={item} isSelected={isSelected} />
-                        </>
-                      )}
-                      showsVerticalScrollIndicator={false}
-                      dropdownStyle={dropdownStyles.dropdownMenuStyle}
-                    />
-                  </Box>
-                  <Box flex={1} style={styles.flexShrink}>
-                    <SelectDropdown
-                      data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
-                      onSelect={(selectedItem) => {
-                        setSelectedPriceTo(selectedItem);
-                      }}
-                      defaultValue={selectedPriceTo}
-                      renderButton={(_, isOpened) => (
-                        <>
-                          <SelectButton
-                            title={(selectedPriceTo && 'Deri në ' + selectedPriceTo + '€') || ''}
-                            isOpened={isOpened}
-                            placeholder="Deri në"
-                          />
-                        </>
-                      )}
-                      renderItem={(item, index, isSelected) => (
-                        <>
-                          <SelectItem item={item} isSelected={isSelected} />
-                        </>
-                      )}
-                      showsVerticalScrollIndicator={false}
-                      dropdownStyle={dropdownStyles.dropdownMenuStyle}
-                    />
-                  </Box>
+                <Box flex={1} style={styles.flexShrink}>
+                  <SelectDropdown
+                    data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
+                    onSelect={(selectedItem) => {
+                      setSelectedPriceTo(selectedItem);
+                    }}
+                    defaultValue={selectedPriceTo}
+                    renderButton={(_, isOpened) => (
+                      <>
+                        <SelectButton
+                          title={(selectedPriceTo && 'Deri në ' + selectedPriceTo + '€') || ''}
+                          isOpened={isOpened}
+                          placeholder="Deri në"
+                        />
+                      </>
+                    )}
+                    renderItem={(item, index, isSelected) => (
+                      <>
+                        <SelectItem item={item} isSelected={isSelected} />
+                      </>
+                    )}
+                    showsVerticalScrollIndicator={false}
+                    dropdownStyle={dropdownStyles.dropdownMenuStyle}
+                  />
                 </Box>
               </Box>
             </Box>
-          )}
-          data={data}
-          renderItem={({ item }) => <CardItem {...item} key={item.id} />}
-        />
-        {isLoading && (
-          <Box>
-            <Loading />
           </Box>
         )}
-      </Box>
-    )
+        data={isLoading ? [] : data}
+        renderItem={({ item }) => <CardItem {...item} key={item.id} />}
+      />
+    </Box>
   );
 }
 

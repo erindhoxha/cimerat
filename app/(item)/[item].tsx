@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { Image as ExpoImage } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Linking, StyleSheet } from 'react-native';
 import { Text } from '@/components/Text';
@@ -10,6 +10,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { BLURHASH_TRANSITION } from '@/constants/global';
+import { Pill } from '@/components/Pill/Pill';
 
 export default function ItemDetailScreen() {
   const { item } = useLocalSearchParams();
@@ -38,6 +40,8 @@ export default function ItemDetailScreen() {
     return <Text>Error: {error.message}</Text>;
   }
 
+  console.log(data?.blurhash);
+
   if (isLoading) {
     return <Loading />;
   }
@@ -45,23 +49,33 @@ export default function ItemDetailScreen() {
   return (
     data && (
       <Box flex={1} style={styles.container}>
-        <Image
+        <ExpoImage
           style={styles.cardImage}
           source={{
             uri: `${process.env.EXPO_PUBLIC_API_URL}${data.images[0]}`,
           }}
+          placeholder={{
+            blurhash: data?.blurhash || '',
+          }}
+          transition={BLURHASH_TRANSITION}
           contentFit="cover"
         />
         <Box flex={1} paddingHorizontal={20} gap={12}>
           <Box flexDirection="column" justifyContent="space-between" gap={4} alignItems="flex-start">
+            <Box flexDirection="row" gap={8} marginBottom={8}>
+              <Pill
+                title="Personi i verifikuar"
+                variant="yellow"
+                iconLeft={<FontAwesome name="check" size={12} color="#000" />}
+              />
+            </Box>
             <Text fontSize="xl" fontWeight="bold" style={{ flexShrink: 1 }}>
               {data.city}, {data.neighborhood}
             </Text>
             <Text>{data.price}€ për muaj</Text>
           </Box>
-          <Box style={styles.horizontalLine} />
+
           <Text>{data.description || 'Përshkrimi i listimit nuk është i disponueshëm'}</Text>
-          <Box style={styles.horizontalLine} />
           {isLoggedIn ? (
             <>
               <Box>
@@ -94,14 +108,13 @@ export default function ItemDetailScreen() {
             </>
           ) : (
             <>
-              <Text>Duhët të jeni te kyçur për të kontaktuar përsonin</Text>
               <Button
                 variant="primary"
                 onPress={() => {
                   router.navigate('/login');
                 }}
               >
-                <FontAwesome name="user-circle-o" size={16} /> Kyçu
+                <FontAwesome name="user-circle-o" size={16} /> Kyçu për të kontaktuar
               </Button>
             </>
           )}
@@ -126,11 +139,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     height: '100%',
-  },
-  horizontalLine: {
-    height: 1,
-    width: '100%',
-    backgroundColor: Colors.gray,
   },
   link: {
     color: Colors.blue,

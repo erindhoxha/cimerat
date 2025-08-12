@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -13,11 +13,15 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6,
   },
+  verified: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-userSchema.pre("save", function (next) {
+userSchema.pre('save', function (next) {
   const user = this;
-  if (!user.isModified("password")) {
+  if (!user.isModified('password')) {
     return next();
   }
 
@@ -48,6 +52,6 @@ userSchema.methods.comparePassword = function (candidatePassword) {
   });
 };
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;

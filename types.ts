@@ -14,4 +14,5 @@ export interface Listing {
   user: User;
   createdAt: Date;
   updatedAt: Date;
+  blurhash?: string;
 }

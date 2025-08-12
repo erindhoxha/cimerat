@@ -8,6 +8,7 @@ import { Box } from '../Box';
 import { Button } from '../Button';
 import { Listing } from '@/types';
 import { formatDate } from '@/utils';
+import { BLURHASH_TRANSITION } from '@/constants/global';
 
 interface HorizontalCardItemProps {
   item: Listing;
@@ -15,7 +16,7 @@ interface HorizontalCardItemProps {
 }
 
 export const HorizontalCardItem = ({
-  item: { images, _id, city, neighborhood, createdAt, price, description },
+  item: { images, _id, city, neighborhood, createdAt, price, description, blurhash },
   router,
 }: HorizontalCardItemProps) => (
   <View style={styles.listCard}>
@@ -24,8 +25,11 @@ export const HorizontalCardItem = ({
       source={{
         uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
       }}
+      placeholder={{
+        blurhash: blurhash || '',
+      }}
       contentFit="cover"
-      transition={1000}
+      transition={BLURHASH_TRANSITION}
     />
     <View style={styles.cardContent}>
       <Text style={styles.cardTitle}>

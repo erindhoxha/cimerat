@@ -9,11 +9,9 @@ import { Pill } from '../Pill/Pill';
 import Colors from '@/constants/Colors';
 import { formatDate } from '@/utils';
 import { Listing } from '@/types';
+import { BLURHASH_TRANSITION } from '@/constants/global';
 
-const blurhash =
-  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
-
-export const CardItem = ({ city, neighborhood, images, description, price, _id, createdAt }: Listing) => {
+export const CardItem = ({ city, neighborhood, images, description, price, _id, createdAt, blurhash }: Listing) => {
   const router = useRouter();
   return (
     <TouchableOpacity style={styles.cardLink} onPress={() => router.push(`/${_id}`)}>
@@ -23,9 +21,9 @@ export const CardItem = ({ city, neighborhood, images, description, price, _id, 
           source={{
             uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
           }}
-          placeholder={{ blurhash }}
+          placeholder={{ blurhash: blurhash || '' }}
           contentFit="cover"
-          transition={1000}
+          transition={BLURHASH_TRANSITION}
         />
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
