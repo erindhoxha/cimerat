@@ -33,7 +33,7 @@ export default function TabTwoScreen() {
     },
   });
 
-  const { data, error, isLoading } = listings;
+  const { data, error, isLoading, isRefetching } = listings;
 
   if (error) {
     return <Text>Error: {error.message}</Text>;
@@ -69,7 +69,7 @@ export default function TabTwoScreen() {
           </Link>
         </Box>
       )}
-      {isLoading && (
+      {(isLoading || isRefetching) && (
         <Box marginTop={24}>
           <Loading />
         </Box>

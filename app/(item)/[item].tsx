@@ -13,8 +13,6 @@ const blurhash =
 export default function ItemDetailScreen() {
   const { item } = useLocalSearchParams();
 
-  // TODO: Use item data here
-
   console.log(item);
 
   const { token } = useAuth();

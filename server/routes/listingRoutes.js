@@ -10,7 +10,7 @@ const upload = multer({ dest: 'uploads/' });
 
 router.get('/my-listings', requireAuth, async (req, res) => {
   try {
-    const listings = await Listing.find({ user: req.user._id });
+    const listings = await Listing.find({ user: req.user._id }).sort({ createdAt: -1 }).populate('user', 'username');
     return res.status(200).json(listings);
   } catch (error) {
     console.error('Error fetching user listings:', error);
@@ -50,6 +50,19 @@ router.get('/listings', async (_, res) => {
     return res.status(200).json(listings);
   } catch (error) {
     console.error('Error fetching listings:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get('/listing/:id', async (req, res) => {
+  try {
+    const listing = await Listing.findById(req.params.id).populate('user', 'username');
+    if (!listing) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
+    return res.status(200).json(listing);
+  } catch (error) {
+    console.error('Error fetching listing:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
