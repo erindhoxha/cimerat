@@ -1,11 +1,10 @@
-import { StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 import { Box } from '../Box';
-import { Text } from '../Text';
 
 export const Loading = () => {
   return (
     <Box style={styles.container}>
-      <Text>Duke ngarkuar...</Text>
+      <ActivityIndicator />
     </Box>
   );
 };

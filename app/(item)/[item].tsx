@@ -6,14 +6,13 @@ import { Box } from '@/components/Box';
 import Colors from '@/constants/Colors';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/Button';
-
-const blurhash =
-  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
+import { useQuery } from '@tanstack/react-query';
+import { Listing } from '@/types';
+import { Loading } from '@/components/Loading/Loading';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function ItemDetailScreen() {
   const { item } = useLocalSearchParams();
-
-  console.log(item);
 
   const { token } = useAuth();
 
@@ -21,78 +20,94 @@ export default function ItemDetailScreen() {
 
   const router = useRouter();
 
+  const listing = useQuery<Listing>({
+    staleTime: 0,
+    queryKey: ['listing', item],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listing/${item}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch listings');
+      }
+      return res.json();
+    },
+  });
+
+  const { data, error, isLoading } = listing;
+
+  if (error) {
+    return <Text>Error: {error.message}</Text>;
+  }
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
-    <Box flex={1} style={styles.container}>
-      <Image
-        style={styles.cardImage}
-        source={{
-          uri: `${process.env.EXPO_PUBLIC_API_URL}/uploads/87d1ce538b289332d56de223aa4d2227`,
-        }}
-        contentFit="cover"
-        placeholder={{
-          blurhash,
-        }}
-        transition={1000}
-      />
-      <Box flex={1} paddingHorizontal={20} gap={12}>
-        <Box flexDirection="column" justifyContent="space-between" gap={4} alignItems="flex-start">
-          <Text fontSize="xl" fontWeight="bold" style={{ flexShrink: 1 }}>
-            Prishtinë, Dardania
-          </Text>
-          <Text>300€ për muaj</Text>
-        </Box>
-        <Box style={styles.horizontalLine} />
-        <Text>
-          Jepet banesa me qira Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam id corporis culpa
-          fuga sit nisi magni maiores necessitatibus? Blanditiis commodi, provident illum eos laboriosam corporis
-          obcaecati repellendus eum labore hic!
-        </Text>
-        <Box style={styles.horizontalLine} />
-        {isLoggedIn ? (
-          <>
-            <Box>
+    data && (
+      <Box flex={1} style={styles.container}>
+        <Image
+          style={styles.cardImage}
+          source={{
+            uri: `${process.env.EXPO_PUBLIC_API_URL}${data.images[0]}`,
+          }}
+          contentFit="cover"
+        />
+        <Box flex={1} paddingHorizontal={20} gap={12}>
+          <Box flexDirection="column" justifyContent="space-between" gap={4} alignItems="flex-start">
+            <Text fontSize="xl" fontWeight="bold" style={{ flexShrink: 1 }}>
+              {data.city}, {data.neighborhood}
+            </Text>
+            <Text>{data.price}€ për muaj</Text>
+          </Box>
+          <Box style={styles.horizontalLine} />
+          <Text>{data.description || 'Përshkrimi i listimit nuk është i disponueshëm'}</Text>
+          <Box style={styles.horizontalLine} />
+          {isLoggedIn ? (
+            <>
+              <Box>
+                <Text>
+                  Postuar nga <Text fontWeight="bold">{data.user.username}</Text>
+                </Text>
+              </Box>
               <Text>
-                Postuar nga <Text fontWeight="bold">Erind</Text>
+                Tel:{' '}
+                <Text
+                  style={styles.link}
+                  onPress={() => {
+                    Linking.openURL('tel:+38348377390');
+                  }}
+                >
+                  +383 (48) 377 390
+                </Text>
               </Text>
-            </Box>
-            <Text>
-              Tel:{' '}
-              <Text
-                style={styles.link}
+              <Text>
+                Email:{' '}
+                <Text
+                  style={styles.link}
+                  onPress={() => {
+                    Linking.openURL('mailto:erind.cbh@gmail.com');
+                  }}
+                >
+                  erind.cbh@gmail.com
+                </Text>
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text>Duhët të jeni te kyçur për të kontaktuar përsonin</Text>
+              <Button
+                variant="primary"
                 onPress={() => {
-                  Linking.openURL('tel:+38348377390');
+                  router.navigate('/login');
                 }}
               >
-                +383 (48) 377 390
-              </Text>
-            </Text>
-            <Text>
-              Email:{' '}
-              <Text
-                style={styles.link}
-                onPress={() => {
-                  Linking.openURL('mailto:erind.cbh@gmail.com');
-                }}
-              >
-                erind.cbh@gmail.com
-              </Text>
-            </Text>
-          </>
-        ) : (
-          <>
-            <Text>Duhët të jeni te kyçur për të kontaktuar përsonin</Text>
-            <Button
-              variant="primary"
-              onPress={() => {
-                router.navigate('/login');
-              }}
-            >
-              Kyçu për të kontaktuar
-            </Button>
-          </>
-        )}
+                <FontAwesome name="user-circle-o" size={16} /> Kyçu
+              </Button>
+            </>
+          )}
+        </Box>
       </Box>
-    </Box>
+    )
   );
 }
 
@@ -106,6 +121,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     overflow: 'hidden',
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    height: '100%',
   },
   horizontalLine: {
     height: 1,
