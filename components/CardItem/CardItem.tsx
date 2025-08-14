@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { View } from '../View/View';
 import { Image } from 'expo-image';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text } from '../Text';
 import { Box } from '../Box';
 import { FontAwesome } from '@expo/vector-icons';
@@ -10,20 +10,34 @@ import Colors from '@/constants/Colors';
 import { formatDate } from '@/utils';
 import { Listing } from '@/types';
 import { BLURHASH_TRANSITION } from '@/constants/global';
+import { ReusableCarousel } from '@/components/Carousel/Carousel';
+import { useState } from 'react';
 
 export const CardItem = ({ city, neighborhood, images, description, price, _id, createdAt, blurhash }: Listing) => {
   const router = useRouter();
+  const [carouselIndex, setCarouselIndex] = useState(0);
   return (
-    <TouchableOpacity style={styles.cardLink} onPress={() => router.push(`/${_id}`)}>
+    <Pressable
+      style={styles.cardLink}
+      onPress={() => router.push({ pathname: `/(item)/[item]`, params: { imageIndex: carouselIndex, item: _id } })}
+    >
       <View style={styles.card}>
-        <Image
-          style={styles.cardImage}
-          source={{
-            uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
+        <ReusableCarousel
+          data={images}
+          onProgressChange={setCarouselIndex}
+          renderItem={({ item }) => {
+            return (
+              <Image
+                style={styles.cardImage}
+                source={{
+                  uri: `${process.env.EXPO_PUBLIC_API_URL}${item}`,
+                }}
+                placeholder={{ blurhash: blurhash || '' }}
+                contentFit="cover"
+                transition={BLURHASH_TRANSITION}
+              />
+            );
           }}
-          placeholder={{ blurhash: blurhash || '' }}
-          contentFit="cover"
-          transition={BLURHASH_TRANSITION}
         />
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
@@ -49,7 +63,7 @@ export const CardItem = ({ city, neighborhood, images, description, price, _id, 
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

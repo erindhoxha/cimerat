@@ -10,6 +10,10 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
+          tabBarStyle: {
+            backgroundColor: Colors.yellow, // or any color you want
+            borderTopColor: 'transparent',
+          },
         }}
       >
         <Tabs.Screen
@@ -17,7 +21,8 @@ export default function TabLayout() {
           options={{
             tabBarIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} />,
             title: 'Listimet',
-            tabBarActiveTintColor: Colors.tabIconSelected,
+            tabBarActiveTintColor: Colors.tint,
+            tabBarInactiveTintColor: Colors.darkYellow,
           }}
         />
         <Tabs.Screen
@@ -25,6 +30,8 @@ export default function TabLayout() {
           options={{
             title: 'Krijo',
             tabBarIcon: ({ color }) => <FontAwesome name="plus" size={24} color={color} />,
+            tabBarActiveTintColor: Colors.tint,
+            tabBarInactiveTintColor: Colors.darkYellow,
           }}
         />
       </Tabs>

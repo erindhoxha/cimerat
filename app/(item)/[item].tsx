@@ -12,9 +12,12 @@ import { Loading } from '@/components/Loading/Loading';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { BLURHASH_TRANSITION } from '@/constants/global';
 import { Pill } from '@/components/Pill/Pill';
+import { ReusableCarousel } from '@/components/Carousel/Carousel';
 
 export default function ItemDetailScreen() {
-  const { item } = useLocalSearchParams();
+  const { item, imageIndex } = useLocalSearchParams();
+
+  console.log(imageIndex);
 
   const { token } = useAuth();
 
@@ -49,20 +52,25 @@ export default function ItemDetailScreen() {
   return (
     data && (
       <Box flex={1} style={styles.container}>
-        <ExpoImage
-          style={styles.cardImage}
-          source={{
-            uri: `${process.env.EXPO_PUBLIC_API_URL}${data.images[0]}`,
+        <ReusableCarousel
+          data={data.images}
+          renderItem={({ item }) => {
+            return (
+              <ExpoImage
+                style={styles.cardImage}
+                source={{
+                  uri: `${process.env.EXPO_PUBLIC_API_URL}${item}`,
+                }}
+                placeholder={{ blurhash: data?.blurhash || '' }}
+                contentFit="cover"
+                transition={BLURHASH_TRANSITION}
+              />
+            );
           }}
-          placeholder={{
-            blurhash: data?.blurhash || '',
-          }}
-          transition={BLURHASH_TRANSITION}
-          contentFit="cover"
         />
         <Box flex={1} paddingHorizontal={20} gap={12}>
           <Box flexDirection="column" justifyContent="space-between" gap={4} alignItems="flex-start">
-            <Box flexDirection="row" gap={8} marginBottom={8}>
+            <Box flexDirection="row" gap={8} marginBottom={8} marginTop={20}>
               <Pill
                 title="Personi i verifikuar"
                 variant="yellow"
@@ -74,7 +82,6 @@ export default function ItemDetailScreen() {
             </Text>
             <Text>{data.price}€ për muaj</Text>
           </Box>
-
           <Text>{data.description || 'Përshkrimi i listimit nuk është i disponueshëm'}</Text>
           {isLoggedIn ? (
             <>
@@ -127,7 +134,7 @@ export default function ItemDetailScreen() {
 const styles = StyleSheet.create({
   cardImage: {
     width: '100%',
-    height: 200,
+    height: 300,
     marginBottom: 20,
   },
   container: {

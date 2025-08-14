@@ -118,7 +118,7 @@ export default function TabOneScreen() {
                   searchPlaceHolderColor="#6c757d"
                   search={true}
                   data={cities}
-                  onSelect={(selectedItem, index) => {
+                  onSelect={(selectedItem) => {
                     setDisabled(false);
                     setSelectedCity((prev) => {
                       if (prev === selectedItem) {
@@ -134,7 +134,7 @@ export default function TabOneScreen() {
                       <SelectButton title={selectedCity} isOpened={isOpened} placeholder="Zgjedh Qytetin" />
                     </>
                   )}
-                  renderItem={(item, index, isSelected) => (
+                  renderItem={(item, _, isSelected) => (
                     <>
                       <SelectItem item={item} isSelected={isSelected} />
                     </>
@@ -153,7 +153,7 @@ export default function TabOneScreen() {
                   data={selectedCity ? neighborhoods[selectedCity] : []}
                   disabled={disabled}
                   ref={neighborHoodRef}
-                  onSelect={(selectedItem, index) => {
+                  onSelect={(selectedItem) => {
                     setSelectedNeighborhood(selectedItem);
                   }}
                   renderButton={(_, isOpened) => (
@@ -223,7 +223,7 @@ export default function TabOneScreen() {
                         />
                       </>
                     )}
-                    renderItem={(item, index, isSelected) => (
+                    renderItem={(item, _, isSelected) => (
                       <>
                         <SelectItem item={item} isSelected={isSelected} />
                       </>

@@ -77,6 +77,7 @@ export default function RegisterScreen() {
                 autoCapitalize="none"
                 onChangeText={onChange}
                 onBlur={onBlur}
+                autoFocus
                 returnKeyType="next"
                 onSubmitEditing={() => {
                   passwordInputRef.current?.focus();

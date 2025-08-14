@@ -1,7 +1,6 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Colors from '@/constants/Colors';
 import * as SplashScreen from 'expo-splash-screen';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Link, Stack } from 'expo-router';
 import { useEffect } from 'react';
@@ -14,6 +13,7 @@ import { Box } from '@/components/Box';
 import Toast from 'react-native-toast-message';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import DrawerProvider, { useDrawer } from '@/context/DrawerProvider';
+import { StatusBar } from 'expo-status-bar';
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',
@@ -44,8 +44,9 @@ export default function RootLayout() {
   }
 
   return (
-    <Box flex={1}>
+    <Box flex={1} backgroundColor="white">
       <AuthProvider>
+        <StatusBar style="dark" />
         <QueryClientProvider client={queryClient}>
           <DrawerProvider>
             <RootLayoutNav />
@@ -66,71 +67,69 @@ function RootLayoutNav() {
   const isLoggedIn = !!token;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack
-        screenOptions={{
-          headerStyle: styles.headerStyle,
-          headerTintColor: Colors.text,
-          headerTitleStyle: styles.headerTitleStyle,
-          headerBackTitle: 'Back',
-          headerTitle: () => <Text style={styles.logo}>Cimerat.com</Text>,
-          headerRight: () => (
-            <Box
-              style={styles.headerRightBox}
-              gap={12}
-              flexDirection="row"
-              alignItems="flex-end"
-              justifyContent="flex-end"
-            >
-              <Box>
-                {isLoggedIn ? (
-                  <Link href="/profile" style={styles.sideIcon}>
-                    <FontAwesome name="user-circle-o" size={24} color={Colors.text} />
-                  </Link>
-                ) : (
-                  <Link href="/login" style={styles.sideIcon}>
-                    <FontAwesome name="user-circle-o" size={24} color={Colors.text} />
-                  </Link>
-                )}
-              </Box>
-              <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={styles.hamburgerMenu}>
-                <FontAwesome name={isOpen ? 'close' : 'navicon'} size={24} color={Colors.text} />
-              </Pressable>
+    <Stack
+      screenOptions={{
+        headerStyle: styles.headerStyle,
+        headerTintColor: Colors.text,
+        headerTitleStyle: styles.headerTitleStyle,
+        headerBackTitle: 'Back',
+        headerTitle: () => <Text style={styles.logo}>Cimerat.com</Text>,
+        headerRight: () => (
+          <Box
+            style={styles.headerRightBox}
+            gap={12}
+            flexDirection="row"
+            alignItems="flex-end"
+            justifyContent="flex-end"
+          >
+            <Box>
+              {isLoggedIn ? (
+                <Link href="/profile" style={styles.sideIcon}>
+                  <FontAwesome name="user-circle-o" size={24} color={Colors.text} />
+                </Link>
+              ) : (
+                <Link href="/login" style={styles.sideIcon}>
+                  <FontAwesome name="user-circle-o" size={24} color={Colors.text} />
+                </Link>
+              )}
             </Box>
-          ),
-        }}
-      >
-        <Stack.Screen name="(item)/[item]" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Protected guard={!isLoggedIn}>
-          <Stack.Screen
-            name="login/index"
-            options={{
-              presentation: 'modal',
-              headerShown: false,
-              contentStyle: {
-                backgroundColor: 'transparent',
-              },
-            }}
-          />
-        </Stack.Protected>
-        <Stack.Protected guard={!isLoggedIn}>
-          <Stack.Screen
-            name="register/index"
-            options={{
-              presentation: 'modal',
-              headerShown: false,
-              contentStyle: {
-                backgroundColor: 'transparent',
-              },
-            }}
-          />
-        </Stack.Protected>
-        <Stack.Protected guard={isLoggedIn}>
-          <Stack.Screen name="profile/index" />
-        </Stack.Protected>
-      </Stack>
-    </ThemeProvider>
+            <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={styles.hamburgerMenu}>
+              <FontAwesome name={isOpen ? 'close' : 'navicon'} size={24} color={Colors.text} />
+            </Pressable>
+          </Box>
+        ),
+      }}
+    >
+      <Stack.Screen name="(item)/[item]" />
+      <Stack.Screen name="(tabs)" />
+      <Stack.Protected guard={!isLoggedIn}>
+        <Stack.Screen
+          name="login/index"
+          options={{
+            presentation: 'modal',
+            headerShown: false,
+            contentStyle: {
+              backgroundColor: 'transparent',
+            },
+          }}
+        />
+      </Stack.Protected>
+      <Stack.Protected guard={!isLoggedIn}>
+        <Stack.Screen
+          name="register/index"
+          options={{
+            presentation: 'modal',
+            headerShown: false,
+            contentStyle: {
+              backgroundColor: 'transparent',
+            },
+          }}
+        />
+      </Stack.Protected>
+      <Stack.Protected guard={isLoggedIn}>
+        <Stack.Screen name="profile/index" />
+      </Stack.Protected>
+    </Stack>
   );
 }
 
