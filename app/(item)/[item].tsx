@@ -17,9 +17,9 @@ import { ReusableCarousel } from '@/components/Carousel/Carousel';
 export default function ItemDetailScreen() {
   const { item, imageIndex } = useLocalSearchParams();
 
-  console.log(imageIndex);
+  const { token, userId } = useAuth();
 
-  const { token } = useAuth();
+  console.log(imageIndex);
 
   const isLoggedIn = !!token;
 
@@ -43,25 +43,26 @@ export default function ItemDetailScreen() {
     return <Text>Error: {error.message}</Text>;
   }
 
-  console.log(data?.blurhash);
-
   if (isLoading) {
     return <Loading />;
   }
+
+  const isOwner = listing?.data?.user?._id === userId;
 
   return (
     data && (
       <Box flex={1} style={styles.container}>
         <ReusableCarousel
           data={data.images}
-          renderItem={({ item }) => {
+          defaultIndex={typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) : 0}
+          renderItem={({ item, index }) => {
             return (
               <ExpoImage
                 style={styles.cardImage}
                 source={{
                   uri: `${process.env.EXPO_PUBLIC_API_URL}${item}`,
                 }}
-                placeholder={{ blurhash: data?.blurhash || '' }}
+                placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
                 contentFit="cover"
                 transition={BLURHASH_TRANSITION}
               />
@@ -69,14 +70,16 @@ export default function ItemDetailScreen() {
           }}
         />
         <Box flex={1} paddingHorizontal={20} gap={12}>
-          <Box flexDirection="column" justifyContent="space-between" gap={4} alignItems="flex-start">
-            <Box flexDirection="row" gap={8} marginBottom={8} marginTop={20}>
-              <Pill
-                title="Personi i verifikuar"
-                variant="yellow"
-                iconLeft={<FontAwesome name="check" size={12} color="#000" />}
-              />
-            </Box>
+          <Box flexDirection="column" justifyContent="space-between" gap={4} marginTop={20} alignItems="flex-start">
+            {!isOwner && (
+              <Box flexDirection="row" gap={8} marginBottom={8}>
+                <Pill
+                  title={'Personi i verifikuar'}
+                  variant="yellow"
+                  iconLeft={<FontAwesome name="check" size={12} color="#000" />}
+                />
+              </Box>
+            )}
             <Text fontSize="xl" fontWeight="bold" style={{ flexShrink: 1 }}>
               {data.city}, {data.neighborhood}
             </Text>
@@ -124,6 +127,11 @@ export default function ItemDetailScreen() {
                 <FontAwesome name="user-circle-o" size={16} /> Kyçu për të kontaktuar
               </Button>
             </>
+          )}
+          {isOwner && (
+            <Button onPress={() => router.push(`/edit/${listing.data._id}`)} variant="primary">
+              Ndrysho listimin
+            </Button>
           )}
         </Box>
       </Box>

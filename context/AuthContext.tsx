@@ -1,31 +1,41 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AuthContextType {
   token: string | null;
-  setToken: (token: string | null) => void;
+  userId: string | null;
+  setAuth: (token: string | null, userId: string | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
   token: null,
-  setToken: () => {},
+  userId: null,
+  setAuth: () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setTokenState] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [id, setId] = useState<string | null>(null);
 
   useEffect(() => {
-    AsyncStorage.getItem("token").then((t) => setTokenState(t));
+    AsyncStorage.getItem('token').then((t) => setToken(t));
+    AsyncStorage.getItem('userId').then((id) => {
+      setId(id);
+    });
   }, []);
 
-  const setToken = async (t: string | null) => {
-    setTokenState(t);
+  const setAuth = async (t: string | null, userId: string | null) => {
+    setToken(t);
+    setId(userId);
     if (t) {
-      await AsyncStorage.setItem("token", t);
-    } else await AsyncStorage.removeItem("token");
+      await AsyncStorage.setItem('token', t);
+    } else await AsyncStorage.removeItem('token');
+    if (userId) {
+      await AsyncStorage.setItem('userId', userId);
+    } else await AsyncStorage.removeItem('userId');
   };
 
-  return <AuthContext.Provider value={{ token, setToken }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ token, userId: id, setAuth }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

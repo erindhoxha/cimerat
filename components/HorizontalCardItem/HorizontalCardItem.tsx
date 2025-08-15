@@ -20,29 +20,32 @@ export const HorizontalCardItem = ({
   router,
 }: HorizontalCardItemProps) => (
   <View style={styles.listCard}>
-    <Image
-      style={styles.cardImage}
-      source={{
-        uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
-      }}
-      placeholder={{
-        blurhash: blurhash || '',
-      }}
-      contentFit="cover"
-      transition={BLURHASH_TRANSITION}
-    />
+    <Box style={styles.cardWrapper}>
+      <Image
+        style={styles.cardImage}
+        source={{
+          uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
+        }}
+        placeholder={{
+          blurhash: blurhash || '',
+        }}
+        contentFit="cover"
+        transition={BLURHASH_TRANSITION}
+      />
+      {images?.length > 1 && <Text style={styles.imageCounter}>+{images.length - 1} foto</Text>}
+    </Box>
     <View style={styles.cardContent}>
       <Text style={styles.cardTitle}>
         {city} / {neighborhood}
       </Text>
       <Text>
-        {createdAt ? formatDate(createdAt) : ''} / {price}€ për muaj
+        {createdAt ? formatDate(createdAt) : ''} - {price}€ për muaj
       </Text>
       <Text numberOfLines={1} style={styles.cardDescription} ellipsizeMode="tail">
         {description}
       </Text>
       <Box flexDirection="row" gap={8} alignSelf="flex-start" marginTop={8}>
-        <Button variant="tertiary" onPress={() => router.push(`/${_id}`)}>
+        <Button variant="tertiary" onPress={() => router.push(`/edit/${_id}`)}>
           Ndrysho listimin
         </Button>
         <Button variant="secondary" onPress={() => router.push(`/${_id}`)}>
@@ -62,12 +65,25 @@ const styles = StyleSheet.create({
   cardImage: {
     backgroundColor: '#0553',
     width: 100,
-    height: '100%',
+    height: 140,
     borderRadius: 10,
+  },
+  cardWrapper: {
+    width: 100,
+    height: '100%',
   },
   cardDescription: {
     fontSize: 14,
     marginTop: 8,
+  },
+  imageCounter: {
+    position: 'absolute',
+    bottom: 6,
+    right: 6,
+    color: 'white',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 12,
+    padding: 6,
   },
   cardTitle: {
     fontSize: 16,

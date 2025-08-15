@@ -38,6 +38,7 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
   }
 
   const firstBlurhash = req.files.length > 0 ? await getBlurhash(req.files[0].path) : null;
+  const blurhashes = await Promise.all(req.files.map((file) => getBlurhash(file.path)));
 
   try {
     const listing = new Listing({
@@ -47,6 +48,7 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
       price,
       images: imagePaths,
       blurhash: firstBlurhash,
+      blurhashes: blurhashes,
       user: req.user._id,
     });
 

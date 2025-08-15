@@ -43,7 +43,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  const { token, setToken } = useAuth();
+  const { token, setAuth } = useAuth();
 
   const isLoggedIn = !!token;
 
@@ -141,7 +141,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
                     style: 'destructive',
                     onPress: () => {
                       onClose();
-                      setToken(null);
+                      setAuth(null, null);
                       router.replace('/');
                     },
                   },

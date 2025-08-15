@@ -18,7 +18,7 @@ export default function LoginScreen() {
     control,
     formState: { errors, isSubmitting },
   } = useForm();
-  const { setToken } = useAuth();
+  const { setAuth } = useAuth();
 
   const router = useRouter();
 
@@ -43,7 +43,7 @@ export default function LoginScreen() {
       return json;
     },
     onSuccess: (data) => {
-      setToken(data.token);
+      setAuth(data.token, data.userId);
       reset();
     },
   });

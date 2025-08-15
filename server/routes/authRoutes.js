@@ -1,40 +1,40 @@
-const express = require("express");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 const router = express.Router();
 
-router.post("/signup", async (req, res) => {
+router.post('/signup', async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
-    return res.status(400).json({ error: "Username and password are required" });
+    return res.status(400).json({ error: 'Username and password are required' });
   }
 
-  console.log("SIGNING UP", username, password);
+  console.log('SIGNING UP', username, password);
 
   try {
     const user = new User({ username, password });
 
-    console.log("NEW USER", user);
+    console.log('NEW USER', user);
 
     const token = jwt.sign(
       {
         userId: user._id,
       },
-      "MY_SECRET_KEY",
+      'MY_SECRET_KEY',
     );
     await user.save();
-    return res.status(201).json({ token });
+    return res.status(201).json({ token, userId: user._id });
   } catch (error) {
-    console.log("CATCH!", error);
-    return res.status(422).json({ error: "Gabim gjatë regjistrimit. Ju lutemi provoni përsëri ose na kontaktoni." });
+    console.log('CATCH!', error);
+    return res.status(422).json({ error: 'Gabim gjatë regjistrimit. Ju lutemi provoni përsëri ose na kontaktoni.' });
   }
 });
 
-router.post("/signin", async (req, res) => {
+router.post('/signin', async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ error: "Username and password are required" });
+    return res.status(400).json({ error: 'Username and password are required' });
   }
 
   try {
@@ -42,23 +42,23 @@ router.post("/signin", async (req, res) => {
       username,
     });
     if (!user) {
-      return res.status(401).json({ error: "Gabim i username-it ose fjalëkalimit. Ju lutemi provoni përsëri." });
+      return res.status(401).json({ error: 'Gabim i username-it ose fjalëkalimit. Ju lutemi provoni përsëri.' });
     }
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(401).json({ error: "Gabim i username-it ose fjalëkalimit. Ju lutemi provoni përsëri." });
+      return res.status(401).json({ error: 'Gabim i username-it ose fjalëkalimit. Ju lutemi provoni përsëri.' });
     }
     const token = jwt.sign(
       {
         userId: user._id,
       },
-      "MY_SECRET_KEY",
+      'MY_SECRET_KEY',
     );
-    console.log("User signed in:", user.username, token);
-    return res.status(200).json({ token });
+    console.log('User signed in:', user.username, token);
+    return res.status(200).json({ token, userId: user._id });
   } catch (error) {
-    console.log("ERROR", error);
-    return res.status(500).json({ error: "Error i serverit. Te lutem provoni perseri." });
+    console.log('ERROR', error);
+    return res.status(500).json({ error: 'Error i serverit. Te lutem provoni perseri.' });
   }
 });
 

@@ -11,7 +11,7 @@ import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
-  const { token, setToken } = useAuth();
+  const { token, setAuth } = useAuth();
 
   const router = useRouter();
 
@@ -111,7 +111,7 @@ export default function ProfileScreen() {
                 text: 'Dil',
                 style: 'destructive',
                 onPress: () => {
-                  setToken(null);
+                  setAuth(null, null);
                   router.replace('/');
                 },
               },

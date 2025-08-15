@@ -1,7 +1,13 @@
 import * as React from 'react';
 import { Dimensions, View, StyleProp, ViewStyle } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
+import { useSharedValue, configureReanimatedLogger } from 'react-native-reanimated';
 import Carousel, { ICarouselInstance, Pagination } from 'react-native-reanimated-carousel';
+
+// disable warnings
+
+configureReanimatedLogger({
+  strict: false,
+});
 
 interface ReusableCarouselProps<T> {
   data: T[];
@@ -9,6 +15,7 @@ interface ReusableCarouselProps<T> {
   height?: number;
   width?: number;
   style?: StyleProp<ViewStyle>;
+  defaultIndex?: number;
   onProgressChange?: (index: number) => void;
 }
 
@@ -18,6 +25,7 @@ export function ReusableCarousel<T>({
   height,
   width,
   style,
+  defaultIndex,
   onProgressChange,
 }: ReusableCarouselProps<T>) {
   const ref = React.useRef<ICarouselInstance>(null);
@@ -33,36 +41,39 @@ export function ReusableCarousel<T>({
     });
   };
 
+  const isCarousel = data.length > 1;
+
   return (
     <View style={style}>
       <Carousel
         ref={ref}
         width={carouselWidth}
         height={carouselHeight}
+        defaultIndex={defaultIndex}
         data={data}
-        onProgressChange={progresSharedValue}
-        style={{
-          touchAction: 'auto',
+        onProgressChange={(offsetProgress, absoluteProgress) => {
+          progresSharedValue.value = absoluteProgress;
+          onProgressChange?.(absoluteProgress);
         }}
         onConfigurePanGesture={(panGesture) => {
           panGesture.activeOffsetX([-10, 10]);
         }}
-        containerStyle={{
-          touchAction: 'auto',
-        }}
+        enabled={isCarousel}
         renderItem={({ item, index }) => renderItem({ item, index })}
       />
-      <Pagination.Custom
-        activeDotStyle={{
-          backgroundColor: 'rgba(255,255,255, 1)',
-          borderRadius: 30,
-        }}
-        progress={progresSharedValue}
-        data={data as {}[]}
-        dotStyle={{ backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: 50 }}
-        containerStyle={{ gap: 5, marginTop: 10, position: 'absolute', bottom: 12, touchAction: 'auto' }}
-        onPress={onPressPagination}
-      />
+      {isCarousel && (
+        <Pagination.Custom
+          activeDotStyle={{
+            backgroundColor: 'rgba(255,255,255, 1)',
+            borderRadius: 30,
+          }}
+          progress={progresSharedValue}
+          data={data as {}[]}
+          dotStyle={{ backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: 50 }}
+          containerStyle={{ gap: 5, marginTop: 10, position: 'absolute', bottom: 12, touchAction: 'auto' }}
+          onPress={onPressPagination}
+        />
+      )}
     </View>
   );
 }

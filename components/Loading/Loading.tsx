@@ -2,11 +2,15 @@ import { ActivityIndicator, StyleSheet } from 'react-native';
 import { Box } from '../Box';
 import { Text } from '../Text';
 
-export const Loading = () => {
+interface LoadingProps {
+  title?: string;
+}
+
+export const Loading: React.FC<LoadingProps> = ({ title }) => {
   return (
     <Box style={styles.container}>
       <ActivityIndicator />
-      <Text>Loading...</Text>
+      <Text>{title || 'Duke ngarkuar...'}</Text>
     </Box>
   );
 };

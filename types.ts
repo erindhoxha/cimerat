@@ -1,5 +1,5 @@
 export interface User {
-  id: string;
+  _id: string;
   username: string;
   password: string;
 }
@@ -15,4 +15,5 @@ export interface Listing {
   createdAt: Date;
   updatedAt: Date;
   blurhash?: string;
+  blurhashes?: string[];
 }

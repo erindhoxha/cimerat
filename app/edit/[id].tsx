@@ -4,33 +4,37 @@ import Input from '@/components/Input/Input';
 import { Text } from '@/components/Text';
 import { cities } from '@/constants/Cities';
 import { neighborhoods } from '@/constants/Neighborhoods';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image } from 'expo-image';
 import { zodResolver } from '@hookform/resolvers/zod';
 import formSchema from './schema';
 import { ImagePickerGrid } from '@/components/ImagePickerGrid/ImagePickerGrid';
 import { DropdownField } from '@/components/DropdownController/DropdownController';
 import { useAuth } from '@/context/AuthContext';
+import { useQuery } from '@tanstack/react-query';
 import { Listing } from '@/types';
 
-export default function CreateScreen() {
+export default function EditScreen() {
   const [images, setImages] = useState<{ uri: string; type?: string; name: string }[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [mediaLibraryPermission, requestMediaLibraryPermission] = ImagePicker.useMediaLibraryPermissions();
   const [imageError, setImageError] = useState<string | null>(null);
+  const { token } = useAuth();
+  const { id } = useLocalSearchParams();
   const router = useRouter();
+
   const {
     control,
     handleSubmit,
     watch,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,6 +64,7 @@ export default function CreateScreen() {
       allowsMultipleSelection: true,
       quality: 1,
     });
+
     if (!result.canceled) {
       const newImages = [
         ...images,
@@ -77,9 +82,30 @@ export default function CreateScreen() {
 
   const selectedCity = watch('city');
 
-  const { token } = useAuth();
+  const listing = useQuery<Listing>({
+    staleTime: 0,
+    queryKey: ['listing', id],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listing/${id}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch listings');
+      }
+      return res.json();
+    },
+  });
 
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (listing.data) {
+      reset(listing.data);
+      setImages(() => {
+        const newImages = listing.data.images.map((img: Listing['images']) => ({
+          uri: `${process.env.EXPO_PUBLIC_API_URL}${img}`,
+          name: img.split('/').pop(),
+        }));
+        return [...newImages];
+      });
+    }
+  }, [listing.data]);
 
   const onSubmit = async (data: Omit<Listing, '_id' | 'user' | 'createdAt' | 'updatedAt'>) => {
     const formData = new FormData();
@@ -97,7 +123,6 @@ export default function CreateScreen() {
     });
 
     try {
-      setLoading(true);
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings`, {
         method: 'POST',
         body: formData,
@@ -124,8 +149,6 @@ export default function CreateScreen() {
         text1: 'Gabim gjatë krijimit të listimit',
         text2: 'Ju lutemi provoni përsëri, ose na kontaktoni.',
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -141,7 +164,7 @@ export default function CreateScreen() {
     <ScrollView style={styles.container}>
       <Box marginBottom={20}>
         <Text fontSize="xl" fontWeight="bold">
-          Krijo Listimin
+          Ndrysho Listimin
         </Text>
       </Box>
       <Box gap={12}>
@@ -222,7 +245,7 @@ export default function CreateScreen() {
           )}
         />
         <Button variant="primary" style={styles.submitButton} onPress={handleSubmit(onSubmit, onFormError)}>
-          {loading ? 'Duke krijuar...' : 'Krijo Listimin'}
+          {isSubmitting ? 'Duke krijuar...' : 'Krijo Listimin'}
         </Button>
       </Box>
       <Modal visible={!!previewImage} transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>

@@ -19,7 +19,7 @@ export default function RegisterScreen() {
     formState: { errors, isSubmitting },
   } = useForm();
 
-  const { setToken } = useAuth();
+  const { setAuth } = useAuth();
 
   const router = useRouter();
 
@@ -44,7 +44,7 @@ export default function RegisterScreen() {
       return json;
     },
     onSuccess: (data) => {
-      setToken(data.token);
+      setAuth(data.token, data.userId);
       router.push('/');
       reset();
     },

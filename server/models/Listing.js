@@ -18,7 +18,7 @@ const listingSchema = new mongoose.Schema(
       trim: true,
     },
     price: {
-      type: Number,
+      type: String,
       required: true,
     },
     images: {
@@ -32,6 +32,10 @@ const listingSchema = new mongoose.Schema(
     },
     blurhash: {
       type: String,
+      required: false,
+    },
+    blurhashes: {
+      type: [String],
       required: false,
     },
   },

@@ -21,6 +21,7 @@ interface ImagePickerGridProps {
 }
 
 export const ImagePickerGrid: React.FC<ImagePickerGridProps> = ({ images, onPick, onPreview, onRemove, error }) => {
+  console.log('images', images);
   return (
     <Box>
       <Label>
