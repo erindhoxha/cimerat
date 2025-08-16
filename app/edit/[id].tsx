@@ -6,7 +6,7 @@ import { cities } from '@/constants/Cities';
 import { neighborhoods } from '@/constants/Neighborhoods';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
-import { Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
@@ -96,14 +96,15 @@ export default function EditScreen() {
 
   useEffect(() => {
     if (listing.data) {
-      reset(listing.data);
+      const newImages = listing.data.images.map((img: Listing['images']) => ({
+        uri: `${process.env.EXPO_PUBLIC_API_URL}${img}`,
+        name: img.split('/').pop(),
+        type: 'image/jpeg',
+      }));
       setImages(() => {
-        const newImages = listing.data.images.map((img: Listing['images']) => ({
-          uri: `${process.env.EXPO_PUBLIC_API_URL}${img}`,
-          name: img.split('/').pop(),
-        }));
         return [...newImages];
       });
+      reset({ ...listing.data, images: newImages });
     }
   }, [listing.data]);
 
@@ -175,7 +176,7 @@ export default function EditScreen() {
           onRemove={(idx) => {
             const newImages = images.filter((_, i) => i !== idx);
             setImages(newImages);
-            setValue('images', newImages); // <-- update form value
+            setValue('images', newImages);
           }}
           error={imageError}
         />
@@ -185,7 +186,6 @@ export default function EditScreen() {
           label="Qyteti"
           options={cities}
           placeholder="Zgjedh Qytetin"
-          rules={{ required: 'Qyteti është i detyrueshëm' }}
           error={errors.city?.message}
           search
           searchPlaceHolder="Kërko qytetin..."
@@ -198,17 +198,14 @@ export default function EditScreen() {
           options={selectedCity ? neighborhoods[selectedCity] : []}
           placeholder="Zgjedh Lagjën"
           disabled={!selectedCity}
-          rules={{ required: 'Lagja është e detyrueshme' }}
           error={errors.neighborhood?.message}
           search
           searchPlaceHolder="Kërko lagjën..."
           searchPlaceHolderColor="#6c757d"
         />
-        {/* Description */}
         <Controller
           control={control}
           name="description"
-          rules={{ required: true }}
           render={({ field: { onChange, value } }) => (
             <Input
               label="Përshkrimi"
@@ -222,11 +219,9 @@ export default function EditScreen() {
             />
           )}
         />
-        {/* Price */}
         <Controller
           control={control}
           name="price"
-          rules={{ required: true }}
           render={({ field: { onChange, value } }) => (
             <Input
               value={value}
@@ -245,7 +240,14 @@ export default function EditScreen() {
           )}
         />
         <Button variant="primary" style={styles.submitButton} onPress={handleSubmit(onSubmit, onFormError)}>
-          {isSubmitting ? 'Duke krijuar...' : 'Krijo Listimin'}
+          {isSubmitting ? (
+            <Box flexDirection="row" gap={4} alignItems="center">
+              <ActivityIndicator color="#000" />
+              <Text>Duke Ndryshuar...</Text>
+            </Box>
+          ) : (
+            'Krijo Listimin'
+          )}
         </Button>
       </Box>
       <Modal visible={!!previewImage} transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>

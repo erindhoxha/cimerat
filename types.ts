@@ -17,3 +17,11 @@ export interface Listing {
   blurhash?: string;
   blurhashes?: string[];
 }
+
+export interface FormData extends Omit<Listing, '_id' | 'user' | 'createdAt' | 'updatedAt'> {}
+
+export interface ImageType {
+  uri: string;
+  type?: string;
+  name: string;
+}

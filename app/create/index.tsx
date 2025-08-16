@@ -6,7 +6,7 @@ import { cities } from '@/constants/Cities';
 import { neighborhoods } from '@/constants/Neighborhoods';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
-import { Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -29,8 +29,7 @@ export default function CreateScreen() {
     handleSubmit,
     watch,
     setValue,
-    reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -79,8 +78,6 @@ export default function CreateScreen() {
 
   const { token } = useAuth();
 
-  const [loading, setLoading] = useState(false);
-
   const onSubmit = async (data: Omit<Listing, '_id' | 'user' | 'createdAt' | 'updatedAt'>) => {
     const formData = new FormData();
     formData.append('city', data.city);
@@ -97,7 +94,6 @@ export default function CreateScreen() {
     });
 
     try {
-      setLoading(true);
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings`, {
         method: 'POST',
         body: formData,
@@ -124,8 +120,6 @@ export default function CreateScreen() {
         text1: 'Gabim gjatë krijimit të listimit',
         text2: 'Ju lutemi provoni përsëri, ose na kontaktoni.',
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -152,7 +146,7 @@ export default function CreateScreen() {
           onRemove={(idx) => {
             const newImages = images.filter((_, i) => i !== idx);
             setImages(newImages);
-            setValue('images', newImages); // <-- update form value
+            setValue('images', newImages);
           }}
           error={imageError}
         />
@@ -162,7 +156,6 @@ export default function CreateScreen() {
           label="Qyteti"
           options={cities}
           placeholder="Zgjedh Qytetin"
-          rules={{ required: 'Qyteti është i detyrueshëm' }}
           error={errors.city?.message}
           search
           searchPlaceHolder="Kërko qytetin..."
@@ -175,17 +168,14 @@ export default function CreateScreen() {
           options={selectedCity ? neighborhoods[selectedCity] : []}
           placeholder="Zgjedh Lagjën"
           disabled={!selectedCity}
-          rules={{ required: 'Lagja është e detyrueshme' }}
           error={errors.neighborhood?.message}
           search
           searchPlaceHolder="Kërko lagjën..."
           searchPlaceHolderColor="#6c757d"
         />
-        {/* Description */}
         <Controller
           control={control}
           name="description"
-          rules={{ required: true }}
           render={({ field: { onChange, value } }) => (
             <Input
               label="Përshkrimi"
@@ -199,11 +189,9 @@ export default function CreateScreen() {
             />
           )}
         />
-        {/* Price */}
         <Controller
           control={control}
           name="price"
-          rules={{ required: true }}
           render={({ field: { onChange, value } }) => (
             <Input
               value={value}
@@ -222,7 +210,14 @@ export default function CreateScreen() {
           )}
         />
         <Button variant="primary" style={styles.submitButton} onPress={handleSubmit(onSubmit, onFormError)}>
-          {loading ? 'Duke krijuar...' : 'Krijo Listimin'}
+          {isSubmitting ? (
+            <Box flexDirection="row" gap={4} alignItems="center">
+              <ActivityIndicator color="#000" />
+              <Text>Duke krijuar...</Text>
+            </Box>
+          ) : (
+            'Krijo Listimin'
+          )}
         </Button>
       </Box>
       <Modal visible={!!previewImage} transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>

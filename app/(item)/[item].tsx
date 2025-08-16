@@ -19,8 +19,6 @@ export default function ItemDetailScreen() {
 
   const { token, userId } = useAuth();
 
-  console.log(imageIndex);
-
   const isLoggedIn = !!token;
 
   const router = useRouter();
@@ -119,7 +117,6 @@ export default function ItemDetailScreen() {
           ) : (
             <>
               <Button
-                variant="primary"
                 onPress={() => {
                   router.navigate('/login');
                 }}
@@ -128,11 +125,7 @@ export default function ItemDetailScreen() {
               </Button>
             </>
           )}
-          {isOwner && (
-            <Button onPress={() => router.push(`/edit/${listing.data._id}`)} variant="primary">
-              Ndrysho listimin
-            </Button>
-          )}
+          {isOwner && <Button onPress={() => router.push(`/edit/${listing.data._id}`)}>Ndrysho listimin</Button>}
         </Box>
       </Box>
     )

@@ -17,6 +17,7 @@ interface DropdownFieldProps {
   disabled?: boolean;
   rules?: any;
   error?: string;
+  required?: boolean;
   dropdownStyle?: StyleProp<ViewStyle>;
   search?: boolean;
   searchPlaceHolder?: string;
@@ -66,6 +67,7 @@ export function DropdownField({
   disabled,
   rules,
   error,
+  required,
   dropdownStyle,
   ...dropdownProps
 }: DropdownFieldProps) {
@@ -73,7 +75,7 @@ export function DropdownField({
     <Box flex={1}>
       <Label>
         {label}
-        <Text style={styles.asterisk}>*</Text>
+        {required && <Text style={styles.asterisk}>*</Text>}
       </Label>
       <Controller
         control={control}

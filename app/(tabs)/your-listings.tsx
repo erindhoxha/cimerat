@@ -47,7 +47,7 @@ export default function TabTwoScreen() {
             Listimet e mia
           </Text>
           <Link href="/create" asChild>
-            <Button variant="primary">
+            <Button>
               <Text>Krijo një listim të ri</Text>
             </Button>
           </Link>
@@ -63,7 +63,7 @@ export default function TabTwoScreen() {
           </Text>
           <Text style={styles.text}>Ju lutemi, kyçuni për të krijuar listime ose për të parë listimet tuaja.</Text>
           <Link href="/login" asChild>
-            <Button variant="primary" style={styles.fullWidthButton}>
+            <Button style={styles.fullWidthButton}>
               <Text>Kyçu</Text>
             </Button>
           </Link>
@@ -100,7 +100,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   emptyText: {
-    marginTop: 10,
     marginBottom: 24,
   },
   separator: {

@@ -110,7 +110,7 @@ export default function LoginScreen() {
           />
           {errors.password && <Text style={styles.errorText}>Fjalëkalimi është i detyrueshëm</Text>}
         </Box>
-        <Button variant="primary" onPress={handleSubmit(onSubmitHandler)} disabled={isPending || isSubmitting}>
+        <Button onPress={handleSubmit(onSubmitHandler)} disabled={isPending || isSubmitting}>
           {isPending && isSubmitting ? <ActivityIndicator color="#fff" /> : <Text>Kyçu</Text>}
         </Button>
         {isError && (
