@@ -41,6 +41,7 @@
     "expo-web-browser": "~14.1.6",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "libphonenumber-js": "^1.12.12",
     "mongoose": "^8.15.1",
     "multer": "^2.0.2",
     "nodemon": "^3.1.10",

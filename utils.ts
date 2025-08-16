@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import { sq } from 'date-fns/locale';
 import { Listing, ImageType } from '@/types';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 export const formatDate = (date: Date) => {
   return format(date, 'd MMMM, yyyy', { locale: sq });
@@ -25,4 +26,9 @@ export const buildListingFormData = (
   });
 
   return formData;
+};
+
+export const formatKosovoPhone = (phone: string) => {
+  const phoneNumber = parsePhoneNumberFromString(phone, 'XK');
+  return phoneNumber ? phoneNumber.formatInternational() : phone;
 };

@@ -13,6 +13,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { BLURHASH_TRANSITION } from '@/constants/global';
 import { Pill } from '@/components/Pill/Pill';
 import { ReusableCarousel } from '@/components/Carousel/Carousel';
+import { formatKosovoPhone } from '@/utils';
 
 export default function ItemDetailScreen() {
   const { item, imageIndex } = useLocalSearchParams();
@@ -69,7 +70,7 @@ export default function ItemDetailScreen() {
         />
         <Box flex={1} paddingHorizontal={20} gap={12}>
           <Box flexDirection="column" justifyContent="space-between" gap={4} marginTop={20} alignItems="flex-start">
-            {!isOwner && (
+            {listing.data.user.verified && (
               <Box flexDirection="row" gap={8} marginBottom={8}>
                 <Pill
                   title={'Personi i verifikuar'}
@@ -91,28 +92,19 @@ export default function ItemDetailScreen() {
                   Postuar nga <Text fontWeight="bold">{data.user.username}</Text>
                 </Text>
               </Box>
-              <Text>
-                Tel:{' '}
-                <Text
-                  style={styles.link}
-                  onPress={() => {
-                    Linking.openURL('tel:+38348377390');
-                  }}
-                >
-                  +383 (48) 377 390
+              {data.phone && (
+                <Text>
+                  Tel:{' '}
+                  <Text
+                    style={styles.link}
+                    onPress={() => {
+                      Linking.openURL(`tel:${formatKosovoPhone(data.phone)}`);
+                    }}
+                  >
+                    {formatKosovoPhone(data.phone)}
+                  </Text>
                 </Text>
-              </Text>
-              <Text>
-                Email:{' '}
-                <Text
-                  style={styles.link}
-                  onPress={() => {
-                    Linking.openURL('mailto:erind.cbh@gmail.com');
-                  }}
-                >
-                  erind.cbh@gmail.com
-                </Text>
-              </Text>
+              )}
             </>
           ) : (
             <>

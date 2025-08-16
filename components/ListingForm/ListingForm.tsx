@@ -16,6 +16,7 @@ import { ImagePickerGrid } from '@/components/ImagePickerGrid/ImagePickerGrid';
 import { DropdownField } from '@/components/DropdownController/DropdownController';
 import { Listing } from '@/types';
 import formSchema from './schema';
+import { isValidPhoneNumber } from 'libphonenumber-js';
 
 interface ListingFormProps {
   defaultValues?: Partial<Listing>;
@@ -167,6 +168,33 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
               error={errors.price?.message}
               onChangeText={(text) => {
                 const numericValue = text.replace(/[^0-9]/g, '');
+                onChange(numericValue);
+              }}
+            />
+          )}
+        />
+        <Controller
+          control={control}
+          name="phone"
+          rules={{
+            required: 'Numri i telefonit është i detyrueshëm',
+            validate: (value) =>
+              isValidPhoneNumber(value, 'XK') // XK = Kosovo
+                ? true
+                : 'Numri duhet të jetë valid për Kosovë',
+          }}
+          render={({ field: { onChange, value } }) => (
+            <Input
+              value={value}
+              label="Numri i telefonit"
+              maxLength={15}
+              required
+              placeholder="048123456 ose +38348123456"
+              keyboardType="phone-pad"
+              inputMode="numeric"
+              error={errors.phone?.message}
+              onChangeText={(text) => {
+                const numericValue = text.replace(/[^0-9+]/g, '');
                 onChange(numericValue);
               }}
             />

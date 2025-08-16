@@ -13,7 +13,18 @@ import { BLURHASH_TRANSITION } from '@/constants/global';
 import { ReusableCarousel } from '@/components/Carousel/Carousel';
 import { useState } from 'react';
 
-export const CardItem = ({ city, neighborhood, images, description, price, _id, createdAt, blurhash }: Listing) => {
+export const CardItem = ({
+  city,
+  neighborhood,
+  images,
+  description,
+  user,
+  price,
+  _id,
+  createdAt,
+  blurhash,
+}: Listing) => {
+  console.log(user);
   const router = useRouter();
   const [carouselIndex, setCarouselIndex] = useState(0);
   return (
@@ -53,13 +64,15 @@ export const CardItem = ({ city, neighborhood, images, description, price, _id, 
             <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
               {description}
             </Text>
-            <Box flexDirection="row" gap={8} marginTop={12}>
-              <Pill
-                title="Personi i verifikuar"
-                variant="yellow"
-                iconLeft={<FontAwesome name="check" size={12} color="#000" />}
-              />
-            </Box>
+            {user.verified && (
+              <Box flexDirection="row" gap={8} marginTop={12}>
+                <Pill
+                  title="Personi i verifikuar"
+                  variant="yellow"
+                  iconLeft={<FontAwesome name="check" size={12} color="#000" />}
+                />
+              </Box>
+            )}
           </View>
         </View>
       </View>

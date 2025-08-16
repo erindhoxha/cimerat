@@ -2,6 +2,7 @@ export interface User {
   _id: string;
   username: string;
   password: string;
+  verified?: boolean;
 }
 
 export interface Listing {
@@ -11,6 +12,7 @@ export interface Listing {
   city: string;
   price: string;
   neighborhood: string;
+  phone: string;
   user: User;
   createdAt: Date;
   updatedAt: Date;

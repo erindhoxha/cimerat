@@ -30,10 +30,10 @@ router.get('/my-listings', requireAuth, async (req, res) => {
 });
 
 router.post('/listings', requireAuth, upload.array('images'), async (req, res) => {
-  const { city, neighborhood, description, price } = req.body;
+  const { city, neighborhood, description, price, phone } = req.body;
   const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
 
-  if (!city || !neighborhood || !description || !price || imagePaths.length === 0) {
+  if (!city || !neighborhood || !description || !price || !phone || imagePaths.length === 0) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
@@ -47,6 +47,7 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
       description,
       price,
       images: imagePaths,
+      phone,
       blurhash: firstBlurhash,
       blurhashes: blurhashes,
       user: req.user._id,
@@ -62,10 +63,10 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
 
 router.put('/listings/:id', requireAuth, upload.array('images'), async (req, res) => {
   const { id } = req.params;
-  const { city, neighborhood, description, price } = req.body;
+  const { city, neighborhood, description, price, phone } = req.body;
   const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
 
-  if (!city || !neighborhood || !description || !price || imagePaths.length === 0) {
+  if (!city || !neighborhood || !description || !price || !phone || imagePaths.length === 0) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
@@ -81,6 +82,7 @@ router.put('/listings/:id', requireAuth, upload.array('images'), async (req, res
         description,
         price,
         images: imagePaths,
+        phone,
         blurhash: firstBlurhash,
         blurhashes: blurhashes,
       },

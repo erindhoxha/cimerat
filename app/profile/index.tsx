@@ -62,29 +62,10 @@ export default function ProfileScreen() {
       </Box>
       <Box>
         <Box marginBottom={12} gap={12}>
-          <Text fontSize="md" fontWeight="bold">
-            Ndrysho të dhënat e profilit
-          </Text>
           <Box>
             <Label>Emri</Label>
             <Input placeholder="Emri juaj" value={name ?? username} onChangeText={setName} />
           </Box>
-          <Box>
-            <Label>Email</Label>
-            <Input placeholder="Email" />
-          </Box>
-          <Box>
-            <Label>Numri i telefonit</Label>
-            <Input placeholder="Numri i telefonit" />
-          </Box>
-          <Button variant="tertiary" onPress={() => {}}>
-            Ndrysho të dhënat
-          </Button>
-        </Box>
-        <Box gap={12} marginTop={12} borderTopWidth={1} paddingTop={12} borderColor={Colors.lightGray}>
-          <Text fontSize="md" fontWeight="bold">
-            Ndrysho fjalëkalimin
-          </Text>
           <Box>
             <Label>Fjalëkalimi i vjetër</Label>
             <Input placeholder="Fjalëkalimi juaj" secureTextEntry />
@@ -93,33 +74,10 @@ export default function ProfileScreen() {
             <Label>Fjalëkalimi i ri</Label>
             <Input placeholder="Fjalëkalimi i ri" secureTextEntry />
           </Box>
-          <Button variant="tertiary" onPress={() => {}}>
-            Ndrysho fjalëkalimin
+          <Button variant="primary" onPress={() => {}}>
+            Ndrysho të dhënat e profilit
           </Button>
         </Box>
-      </Box>
-      <Box marginTop={48}>
-        <Button
-          variant="danger"
-          onPress={() => {
-            Alert.alert('Dilja', 'A jeni i sigurt që doni të dilni?', [
-              {
-                text: 'Anulo',
-                style: 'cancel',
-              },
-              {
-                text: 'Dil',
-                style: 'destructive',
-                onPress: () => {
-                  setAuth(null, null);
-                  router.replace('/');
-                },
-              },
-            ]);
-          }}
-        >
-          <Text fontWeight="medium">Dil nga aplikacioni</Text>
-        </Button>
       </Box>
     </ScrollView>
   );

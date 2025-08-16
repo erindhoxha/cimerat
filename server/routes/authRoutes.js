@@ -9,12 +9,8 @@ router.post('/signup', async (req, res) => {
     return res.status(400).json({ error: 'Username and password are required' });
   }
 
-  console.log('SIGNING UP', username, password);
-
   try {
     const user = new User({ username, password });
-
-    console.log('NEW USER', user);
 
     const token = jwt.sign(
       {
@@ -25,7 +21,6 @@ router.post('/signup', async (req, res) => {
     await user.save();
     return res.status(201).json({ token, userId: user._id });
   } catch (error) {
-    console.log('CATCH!', error);
     return res.status(422).json({ error: 'Gabim gjatë regjistrimit. Ju lutemi provoni përsëri ose na kontaktoni.' });
   }
 });
@@ -56,6 +51,33 @@ router.post('/signin', async (req, res) => {
     );
     console.log('User signed in:', user.username, token);
     return res.status(200).json({ token, userId: user._id });
+  } catch (error) {
+    console.log('ERROR', error);
+    return res.status(500).json({ error: 'Error i serverit. Te lutem provoni perseri.' });
+  }
+});
+
+router.put('/user', async (req, res) => {
+  const { userId, username, password } = req.body;
+  if (!userId || (!username && !password)) {
+    return res.status(400).json({ error: 'User ID and at least one field to update are required' });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (username) {
+      user.username = username;
+    }
+    if (password) {
+      user.password = password;
+    }
+
+    await user.save();
+    return res.status(200).json({ message: 'User updated successfully' });
   } catch (error) {
     console.log('ERROR', error);
     return res.status(500).json({ error: 'Error i serverit. Te lutem provoni perseri.' });

@@ -68,27 +68,35 @@ export default function RegisterScreen() {
         <Box>
           <Controller
             control={control}
-            render={({ field: { onChange, onBlur, value, ref } }) => (
-              <Input
-                ref={ref}
-                label="Emri i përdoruesit"
-                required
-                placeholder="Emri i përdoruesit"
-                autoCapitalize="none"
-                onChangeText={onChange}
-                onBlur={onBlur}
-                autoFocus
-                returnKeyType="next"
-                onSubmitEditing={() => {
-                  passwordInputRef.current?.focus();
-                }}
-                value={value}
-              />
+            render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
+              <>
+                <Input
+                  ref={ref}
+                  label="Emri i përdoruesit"
+                  required
+                  placeholder="Emri i përdoruesit"
+                  autoCapitalize="none"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  autoFocus
+                  returnKeyType="next"
+                  onSubmitEditing={() => {
+                    passwordInputRef.current?.focus();
+                  }}
+                  value={value}
+                />
+                {error && <Text style={styles.errorText}>{error.message}</Text>}
+              </>
             )}
             name="username"
-            rules={{ required: true }}
+            rules={{
+              required: true,
+              pattern: {
+                value: /^[a-zA-Z0-9]+$/,
+                message: 'Lejohen vetëm shkronja dhe numra, pa hapësira apo karaktere të veçanta.',
+              },
+            }}
           />
-          {errors.username && <Text style={styles.errorText}>Emri është i detyrueshëm</Text>}
         </Box>
         <Box>
           <Controller
