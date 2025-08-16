@@ -70,7 +70,7 @@ export default function ItemDetailScreen() {
         />
         <Box flex={1} paddingHorizontal={20} gap={12}>
           <Box flexDirection="column" justifyContent="space-between" gap={4} marginTop={20} alignItems="flex-start">
-            {listing.data.user.verified && (
+            {data.user.verified && (
               <Box flexDirection="row" gap={8} marginBottom={8}>
                 <Pill
                   title={'Personi i verifikuar'}
@@ -117,7 +117,7 @@ export default function ItemDetailScreen() {
               </Button>
             </>
           )}
-          {isOwner && <Button onPress={() => router.push(`/edit/${listing.data._id}`)}>Ndrysho listimin</Button>}
+          {isOwner && <Button onPress={() => router.push(`/edit/${data._id}`)}>Ndrysho listimin</Button>}
         </Box>
       </Box>
     )
