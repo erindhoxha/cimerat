@@ -60,6 +60,45 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
   }
 });
 
+router.put('/listings/:id', requireAuth, upload.array('images'), async (req, res) => {
+  const { id } = req.params;
+  const { city, neighborhood, description, price } = req.body;
+  const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
+
+  if (!city || !neighborhood || !description || !price || imagePaths.length === 0) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  const firstBlurhash = req.files.length > 0 ? await getBlurhash(req.files[0].path) : null;
+  const blurhashes = await Promise.all(req.files.map((file) => getBlurhash(file.path)));
+
+  try {
+    const listing = await Listing.findByIdAndUpdate(
+      id,
+      {
+        city,
+        neighborhood,
+        description,
+        price,
+        images: imagePaths,
+        blurhash: firstBlurhash,
+        blurhashes: blurhashes,
+      },
+      { new: true },
+    );
+
+    if (!listing) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
+
+    await listing.save();
+    return res.status(200).json({ message: 'Listing updated successfully', listing });
+  } catch (error) {
+    console.error('Error updating listing:', error);
+    return res.status(422).json({ error: 'Error updating listing. Please try again.' });
+  }
+});
+
 router.get('/listings', async (_, res) => {
   try {
     const listings = await Listing.find().sort({ createdAt: -1 }).populate('user', 'username');
