@@ -31,7 +31,8 @@ export default function EditScreen() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Gabim gjatë ndryshimit.');
       Toast.show({ type: 'success', text1: 'Listimi u ndryshua' });
-      router.push('/');
+      router.dismissAll();
+      router.push(`/${id}`);
     } catch (e) {
       Toast.show({ type: 'error', text1: 'Gabim gjatë ndryshimit' });
     }

@@ -17,6 +17,9 @@ import { DropdownField } from '@/components/DropdownController/DropdownControlle
 import { Listing } from '@/types';
 import formSchema from './schema';
 import { isValidPhoneNumber } from 'libphonenumber-js';
+import { useRouter } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
+import Colors from '@/constants/Colors';
 
 interface ListingFormProps {
   defaultValues?: Partial<Listing>;
@@ -32,6 +35,8 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [mediaLibraryPermission, requestMediaLibraryPermission] = ImagePicker.useMediaLibraryPermissions();
   const [imageError, setImageError] = useState<string | null>(null);
+  const router = useRouter();
+  const { token } = useAuth();
 
   const {
     control,
@@ -92,6 +97,20 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
       setImageError('Duhet të ngarkoni së paku një foto');
     } else {
       setImageError(null);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings/${defaultValues?._id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to delete listing');
+      Toast.show({ type: 'success', text1: 'Listimi u fshi me sukses' });
+      router.dismiss();
+    } catch (error) {
+      Toast.show({ type: 'error', text1: 'Gabim gjatë fshirjes së listimit' });
     }
   };
 
@@ -216,6 +235,11 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             'Krijo Listimin'
           )}
         </Button>
+        {isEditing && (
+          <Text style={styles.deleteButton} onPress={handleDelete}>
+            Fshi Listimin
+          </Text>
+        )}
       </Box>
       <Modal visible={!!previewImage} transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>
         <Pressable style={styles.previewOverlay} onPress={() => setPreviewImage(null)}>
@@ -228,12 +252,18 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', padding: 20 },
-  submitButton: { marginBottom: 48 },
+  submitButton: { marginBottom: 0 },
   previewOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  deleteButton: {
+    marginTop: 12,
+    marginBottom: 48,
+    color: Colors.danger,
+    textAlign: 'center',
   },
   previewImage: { width: '90%', height: '80%', borderRadius: 32 },
 });

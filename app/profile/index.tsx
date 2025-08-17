@@ -3,7 +3,7 @@ import { Button } from '@/components/Button';
 import { useAuth } from '@/context/AuthContext';
 import { Text } from '@/components/Text';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet } from 'react-native';
 import Input from '@/components/Input';
 import Label from '@/components/Label';
 import { useState } from 'react';
@@ -20,7 +20,7 @@ interface Mutation {
 }
 
 export default function ProfileScreen() {
-  const { token, userId } = useAuth();
+  const { token, userId, setAuth } = useAuth();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -109,7 +109,7 @@ export default function ProfileScreen() {
         </Text>
       </Box>
       <Box>
-        <Box marginBottom={12} gap={12}>
+        <Box marginBottom={12} gap={12} marginTop={12}>
           <Box flexDirection="row" gap={4}>
             <Label>Username:</Label>
             <Text fontWeight="bold">{data?.user?.username ?? username}</Text>
@@ -133,6 +133,35 @@ export default function ProfileScreen() {
             )}
           </Button>
           {mutationError && <Text style={styles.errorText}>Error: {mutationError.message}</Text>}
+        </Box>
+        <Box gap={12} marginTop={24}>
+          <Text fontSize="md" fontWeight="bold">
+            Veprime të tjera
+          </Text>
+          <Button variant="tertiary" onPress={() => router.push(`/your-listings`)}>
+            Shiko listimet e mia
+          </Button>
+          <Button
+            variant="danger"
+            onPress={() => {
+              Alert.alert('Dilja', 'A jeni i sigurt që doni të dilni?', [
+                {
+                  text: 'Anulo',
+                  style: 'cancel',
+                },
+                {
+                  text: 'Dil',
+                  style: 'destructive',
+                  onPress: () => {
+                    setAuth(null, null);
+                    router.replace('/');
+                  },
+                },
+              ]);
+            }}
+          >
+            Dil nga profili
+          </Button>
         </Box>
       </Box>
     </ScrollView>
