@@ -7,7 +7,7 @@ import { Box } from '../Box';
 import { FontAwesome } from '@expo/vector-icons';
 import { Pill } from '../Pill/Pill';
 import Colors from '@/constants/Colors';
-import { formatDate } from '@/utils';
+import { formatDate, listingHasExpired } from '@/utils';
 import { Listing } from '@/types';
 import { BLURHASH_TRANSITION } from '@/constants/global';
 import { ReusableCarousel } from '@/components/Carousel/Carousel';
@@ -33,7 +33,7 @@ export const CardItem = ({
 
   const isOwner = user?._id === userId;
 
-  const isExpired = createdAt && differenceInDays(new Date(), new Date(createdAt)) > 14;
+  const isExpired = listingHasExpired(createdAt);
 
   return (
     <Pressable

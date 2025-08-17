@@ -4,7 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { Link, Stack } from 'expo-router';
 import { useEffect } from 'react';
-import { Pressable, StyleSheet, useColorScheme } from 'react-native';
+import { Pressable, StyleSheet, TouchableOpacity, useColorScheme } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 export { ErrorBoundary } from 'expo-router';
 import 'react-native-reanimated';
@@ -84,12 +84,16 @@ function RootLayoutNav() {
           >
             <Box>
               {isLoggedIn ? (
-                <Link href="/profile" style={styles.sideIcon}>
-                  <FontAwesome name="user-circle-o" size={24} color={Colors.text} />
+                <Link href="/profile" asChild>
+                  <TouchableOpacity>
+                    <FontAwesome name="user-circle-o" size={24} color={Colors.text} />
+                  </TouchableOpacity>
                 </Link>
               ) : (
-                <Link href="/login" style={styles.sideIcon}>
-                  <FontAwesome name="user-circle-o" size={24} color={Colors.text} />
+                <Link href="/login" asChild>
+                  <TouchableOpacity>
+                    <FontAwesome name="user-circle-o" size={24} color={Colors.text} />
+                  </TouchableOpacity>
                 </Link>
               )}
             </Box>

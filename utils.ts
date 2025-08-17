@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { differenceInDays, format } from 'date-fns';
 import { sq } from 'date-fns/locale';
 import { Listing, ImageType } from '@/types';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
@@ -31,4 +31,11 @@ export const buildListingFormData = (
 export const formatKosovoPhone = (phone: string) => {
   const phoneNumber = parsePhoneNumberFromString(phone, 'XK');
   return phoneNumber ? phoneNumber.formatInternational() : phone;
+};
+
+export const listingHasExpired = (createdAt?: Date) => {
+  if (!createdAt) {
+    return undefined;
+  }
+  return createdAt && differenceInDays(new Date(), new Date(createdAt)) > 14;
 };

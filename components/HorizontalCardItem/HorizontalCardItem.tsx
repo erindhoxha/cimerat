@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { ImageSourcePropType, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { View } from '../View/View';
 import { Router } from 'expo-router';
 import { Text } from '../Text';
@@ -7,10 +7,8 @@ import Colors from '@/constants/Colors';
 import { Box } from '../Box';
 import { Button } from '../Button';
 import { Listing } from '@/types';
-import { formatDate } from '@/utils';
+import { formatDate, listingHasExpired } from '@/utils';
 import { BLURHASH_TRANSITION } from '@/constants/global';
-import { differenceInDays } from 'date-fns';
-
 interface HorizontalCardItemProps {
   item: Listing;
   router: Router;
@@ -20,7 +18,7 @@ export const HorizontalCardItem = ({
   item: { images, _id, city, neighborhood, createdAt, price, description, blurhash },
   router,
 }: HorizontalCardItemProps) => {
-  const isExpired = createdAt && differenceInDays(new Date(), new Date(createdAt)) > 14;
+  const isExpired = listingHasExpired(createdAt);
   return (
     <View style={styles.listCard}>
       <Box style={styles.cardWrapper}>

@@ -11,7 +11,7 @@ import { Loading } from '@/components/Loading/Loading';
 import { Pill } from '@/components/Pill/Pill';
 import { BLURHASH_TRANSITION } from '@/constants/global';
 import { ReusableCarousel } from '@/components/Carousel/Carousel';
-import { formatKosovoPhone } from '@/utils';
+import { formatKosovoPhone, listingHasExpired } from '@/utils';
 import Colors from '@/constants/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { differenceInDays } from 'date-fns';
@@ -49,7 +49,7 @@ export default function ItemDetailScreen() {
 
   const isOwner = listing?.data?.user?._id === userId;
 
-  const isExpired = listing.data?.createdAt && differenceInDays(new Date(), new Date(listing.data.createdAt)) > 14;
+  const isExpired = listingHasExpired(data?.createdAt);
 
   return (
     data && (
