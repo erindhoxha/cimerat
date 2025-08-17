@@ -10,11 +10,13 @@ import { Text } from '@/components/Text';
 import { cmimi } from '@/constants/Price';
 import { cities } from '@/constants/Cities';
 import { neighborhoods } from '@/constants/Neighborhoods';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { styles as dropdownStyles } from '@/components/DropdownController/styles';
 import Colors from '@/constants/Colors';
 import { Loading } from '@/components/Loading/Loading';
 import * as Location from 'expo-location';
+
+const PAGE_SIZE = 20;
 
 interface SelectButtonProps {
   title: string | null;
@@ -79,7 +81,6 @@ export default function TabOneScreen() {
   useEffect(() => {
     const getCity = async () => {
       setLocationLoading(true);
-      console.log('Loading');
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setLocationLoading(false);
@@ -104,26 +105,31 @@ export default function TabOneScreen() {
       }
       setLocationLoading(false);
     };
-
     getCity();
   }, []);
 
-  const { data, isLoading } = useQuery({
-    staleTime: 0,
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useInfiniteQuery({
+    initialPageParam: 0,
     queryKey: ['listings', selectedCity, selectedNeighborhood, selectedPriceFrom, selectedPriceTo],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 0 }) => {
       const params = new URLSearchParams();
       if (selectedCity) params.append('city', selectedCity);
       if (selectedNeighborhood) params.append('neighborhood', selectedNeighborhood);
       if (selectedPriceFrom) params.append('priceFrom', String(selectedPriceFrom));
       if (selectedPriceTo) params.append('priceTo', String(selectedPriceTo));
+      params.append('limit', String(PAGE_SIZE));
+      params.append('skip', String(pageParam));
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings?${params.toString()}`);
-      if (!res.ok) {
-        throw new Error('Failed to fetch listings');
-      }
+      if (!res.ok) throw new Error('Failed to fetch listings');
       return res.json();
     },
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.reduce((acc, page) => acc + page.listings.length, 0);
+      return loaded < lastPage.total ? loaded : undefined;
+    },
   });
+
+  const listings = data?.pages.flatMap((page) => page.listings) ?? [];
 
   {
     locationLoading && (
@@ -136,7 +142,22 @@ export default function TabOneScreen() {
   return (
     <Box style={styles.container}>
       <FlatList
+        data={listings}
+        renderItem={({ item }) => <CardItem {...item} key={item.id} />}
         contentContainerStyle={styles.contentContainerStyle}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+        }}
+        onEndReachedThreshold={0.5}
+        refreshing={isLoading}
+        onRefresh={refetch}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <Box marginVertical={16}>
+              <Loading />
+            </Box>
+          ) : null
+        }
         ListEmptyComponent={() =>
           isLoading ? (
             <Box marginTop={24}>
@@ -197,7 +218,12 @@ export default function TabOneScreen() {
                   disabled={disabled}
                   ref={neighborHoodRef}
                   onSelect={(selectedItem) => {
-                    setSelectedNeighborhood(selectedItem);
+                    setSelectedNeighborhood((prev) => {
+                      if (prev === selectedItem) {
+                        return null;
+                      }
+                      return selectedItem;
+                    });
                   }}
                   renderButton={(_, isOpened) => (
                     <>
@@ -226,7 +252,12 @@ export default function TabOneScreen() {
                   <SelectDropdown
                     data={cmimi}
                     onSelect={(selectedItem) => {
-                      setSelectedPriceFrom(selectedItem);
+                      setSelectedPriceFrom((prev) => {
+                        if (prev === selectedItem) {
+                          return null;
+                        }
+                        return selectedItem;
+                      });
                       if (selectedPriceTo && selectedItem > selectedPriceTo) {
                         setSelectedPriceTo(null);
                       }
@@ -254,7 +285,12 @@ export default function TabOneScreen() {
                   <SelectDropdown
                     data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
                     onSelect={(selectedItem) => {
-                      setSelectedPriceTo(selectedItem);
+                      setSelectedPriceTo((prev) => {
+                        if (prev === selectedItem) {
+                          return null;
+                        }
+                        return selectedItem;
+                      });
                     }}
                     defaultValue={selectedPriceTo}
                     renderButton={(_, isOpened) => (
@@ -277,10 +313,21 @@ export default function TabOneScreen() {
                 </Box>
               </Box>
             </Box>
+            <Box flexDirection="row" justifyContent="flex-end" alignItems="flex-end">
+              <Text
+                style={styles.filter}
+                onPress={() => {
+                  setSelectedCity(null);
+                  setSelectedNeighborhood(null);
+                  setSelectedPriceFrom(null);
+                  setSelectedPriceTo(null);
+                }}
+              >
+                Pastro filtrat
+              </Text>
+            </Box>
           </Box>
         )}
-        data={isLoading ? [] : data}
-        renderItem={({ item }) => <CardItem {...item} key={item.id} />}
       />
     </Box>
   );
@@ -301,5 +348,10 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: Colors.gray,
+  },
+  filter: {
+    padding: 8,
+    borderRadius: 8,
+    textDecorationLine: 'underline',
   },
 });

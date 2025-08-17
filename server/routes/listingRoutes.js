@@ -115,11 +115,9 @@ router.put('/listings/:id', requireAuth, upload.array('images'), async (req, res
 });
 
 router.get('/listings', async (req, res) => {
-  console.log('Gettting listings');
   try {
-    const { city, neighborhood, priceFrom, priceTo } = req.query;
+    const { city, neighborhood, priceFrom, priceTo, limit = 20, skip = 0 } = req.query;
     const filter = {};
-
     if (city) filter.city = city;
     if (neighborhood) filter.neighborhood = neighborhood;
     if (priceFrom || priceTo) {
@@ -127,9 +125,13 @@ router.get('/listings', async (req, res) => {
       if (priceFrom) filter.price.$gte = Number(priceFrom);
       if (priceTo) filter.price.$lte = Number(priceTo);
     }
-
-    const listings = await Listing.find(filter).sort({ createdAt: -1 }).populate('user', 'username');
-    return res.status(200).json(listings);
+    const listings = await Listing.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(Number(skip))
+      .limit(Number(limit))
+      .populate('user', 'username');
+    const total = await Listing.countDocuments(filter);
+    return res.status(200).json({ listings, total });
   } catch (error) {
     console.error('Error fetching listings:', error);
     return res.status(500).json({ error: 'Internal server error' });
