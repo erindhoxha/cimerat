@@ -153,7 +153,7 @@ export default function ProfileScreen() {
                   text: 'Dil',
                   style: 'destructive',
                   onPress: () => {
-                    setAuth(null, null);
+                    setAuth(null, null, null);
                     router.replace('/');
                   },
                 },

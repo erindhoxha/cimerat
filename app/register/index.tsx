@@ -44,7 +44,7 @@ export default function RegisterScreen() {
       return json;
     },
     onSuccess: (data) => {
-      setAuth(data.token, data.userId);
+      setAuth(data.token, data.userId, data.username);
       router.push('/');
       reset();
     },

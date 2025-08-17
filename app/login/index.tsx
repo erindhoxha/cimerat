@@ -43,7 +43,7 @@ export default function LoginScreen() {
       return json;
     },
     onSuccess: (data) => {
-      setAuth(data.token, data.userId);
+      setAuth(data.token, data.userId, data.username);
       reset();
     },
   });

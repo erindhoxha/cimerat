@@ -18,7 +18,7 @@ import * as Location from 'expo-location';
 import { MultiSelect } from 'react-native-element-dropdown';
 import { Pill } from '@/components/Pill/Pill';
 import Input from '@/components/Input';
-import { RefreshControl } from 'react-native-gesture-handler';
+import { useAuth } from '@/context/AuthContext';
 
 const PAGE_SIZE = 20;
 
@@ -62,14 +62,10 @@ const SelectItem = ({ isSelected, item }: SelectItemProps) => {
 };
 
 export default function TabOneScreen() {
-  const [disabled, setDisabled] = useState(true);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<string[]>([]);
   const [selectedPriceFrom, setSelectedPriceFrom] = useState<number | null>(null);
   const [selectedPriceTo, setSelectedPriceTo] = useState<number | null>(null);
-
-  const cityRef = useRef<SelectDropdown>(null);
-  const neighborHoodRef = useRef<SelectDropdown>(null);
 
   const router = useRouter();
 
@@ -102,7 +98,6 @@ export default function TabOneScreen() {
           const matchedCity = cities.find((c) => c.toLowerCase() === userCity.toLowerCase());
           if (matchedCity) {
             setSelectedCities([matchedCity]);
-            setDisabled(false);
           }
         }
       }
@@ -140,6 +135,10 @@ export default function TabOneScreen() {
 
   const listings = data?.pages.flatMap((page) => page.listings) ?? [];
 
+  const { token, username } = useAuth();
+
+  const isLoggedIn = !!token && username;
+
   {
     locationLoading && (
       <Box marginTop={24}>
@@ -152,6 +151,7 @@ export default function TabOneScreen() {
     <Box style={styles.container}>
       <FlatList
         data={listings}
+        progressViewOffset={-5}
         renderItem={({ item }) => <CardItem {...item} key={item.id} />}
         contentContainerStyle={styles.contentContainerStyle}
         onEndReached={() => {
@@ -180,6 +180,11 @@ export default function TabOneScreen() {
         }
         ListHeaderComponent={() => (
           <Box gap={12}>
+            {isLoggedIn && (
+              <Text fontSize="lg" fontWeight="bold">
+                <Text fontWeight="regular">Përshëndetje</Text>, {username}
+              </Text>
+            )}
             <Box flex={1} flexDirection="row" gap={12}>
               <Box flex={1}>
                 <Label>Qyteti</Label>

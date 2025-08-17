@@ -141,7 +141,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
                     style: 'destructive',
                     onPress: () => {
                       onClose();
-                      setAuth(null, null);
+                      setAuth(null, null, null);
                       router.replace('/');
                     },
                   },

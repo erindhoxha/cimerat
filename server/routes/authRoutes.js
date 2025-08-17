@@ -18,7 +18,7 @@ router.post('/signup', async (req, res) => {
       'MY_SECRET_KEY',
     );
     await user.save();
-    return res.status(201).json({ token, userId: user._id });
+    return res.status(201).json({ token, userId: user._id, username: user.username });
   } catch (error) {
     if (error.code === 11000) {
       return res.status(409).json({ error: 'Ky emër përdoruesi ekziston tashmë. Ju lutem provoni një emër tjetër.' });
@@ -52,7 +52,7 @@ router.post('/signin', async (req, res) => {
       'MY_SECRET_KEY',
     );
     console.log('User signed in:', user.username, token);
-    return res.status(200).json({ token, userId: user._id });
+    return res.status(200).json({ token, userId: user._id, username: user.username });
   } catch (error) {
     console.log('ERROR', error);
     return res.status(500).json({ error: 'Error i serverit. Te lutem provoni perseri.' });
