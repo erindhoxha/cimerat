@@ -5,8 +5,17 @@ export const styles = StyleSheet.create({
   asterisk: {
     color: 'red',
   },
+  placeholderStyle: {
+    color: Colors.gray,
+    fontSize: 14,
+    height: '100%',
+    width: '100%',
+    padding: 14,
+  },
   dropdownItemSelected: {
-    backgroundColor: '#D2D9DF',
+    backgroundColor: Colors.yellow,
+    color: 'white',
+    borderColor: 'white',
   },
   dropdownButtonStyle: {
     width: '100%',
@@ -19,6 +28,14 @@ export const styles = StyleSheet.create({
     flexShrink: 1,
     borderWidth: 1,
     borderColor: '#ccc',
+    fontSize: 14,
+  },
+  multiSelectStyle: {
+    width: '100%',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    fontSize: 14,
   },
   dropdownButtonErrorStyle: {
     borderColor: Colors.danger,
@@ -30,13 +47,15 @@ export const styles = StyleSheet.create({
   },
   dropdownMenuStyle: {
     borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 24,
   },
   dropdownItemStyle: {
     flexDirection: 'row',
     paddingHorizontal: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 12,
   },
   dropdownItemTxtStyle: {
     flex: 1,
@@ -50,6 +69,11 @@ export const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   dropdownButtonDisabledStyle: {
+    backgroundColor: '#f3f3f3ff',
+    opacity: 1,
+    borderWidth: 0,
+  },
+  disabledMultiSelectStyle: {
     backgroundColor: '#f3f3f3ff',
     opacity: 1,
     borderWidth: 0,

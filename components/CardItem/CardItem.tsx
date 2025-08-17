@@ -60,7 +60,7 @@ export const CardItem = ({
         />
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
-            <Box flexDirection="row" justifyContent="space-between" flex={1}>
+            <Box flexDirection="row" justifyContent="space-between" flex={1} gap={12} flexWrap="wrap">
               <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start">
                 <Text style={styles.cardTitle}>{city + ', ' + neighborhood}</Text>
                 {isExpired ? (

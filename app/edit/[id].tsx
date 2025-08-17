@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import { useAuth } from '@/context/AuthContext';
 import { ImageType, Listing } from '@/types';
@@ -10,6 +10,8 @@ export default function EditScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { token } = useAuth();
+
+  const queryClient = useQueryClient();
 
   const listing = useQuery<Listing>({
     queryKey: ['listing', id],
@@ -31,6 +33,7 @@ export default function EditScreen() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Gabim gjatë ndryshimit.');
       Toast.show({ type: 'success', text1: 'Listimi u ndryshua' });
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
       router.dismissAll();
       router.push(`/${id}`);
     } catch (e) {
@@ -50,6 +53,7 @@ export default function EditScreen() {
           name: img.split('/').pop(),
           type: 'image/jpeg',
         })),
+        price: listing.data.price.toString(),
       }}
       isEditing
     />

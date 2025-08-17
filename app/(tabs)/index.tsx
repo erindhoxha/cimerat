@@ -1,6 +1,6 @@
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { CardItem } from '@/components/CardItem/CardItem';
 import { useRouter } from 'expo-router';
@@ -15,6 +15,10 @@ import { styles as dropdownStyles } from '@/components/DropdownController/styles
 import Colors from '@/constants/Colors';
 import { Loading } from '@/components/Loading/Loading';
 import * as Location from 'expo-location';
+import { MultiSelect } from 'react-native-element-dropdown';
+import { Pill } from '@/components/Pill/Pill';
+import Input from '@/components/Input';
+import { RefreshControl } from 'react-native-gesture-handler';
 
 const PAGE_SIZE = 20;
 
@@ -39,7 +43,7 @@ const SelectButton = ({ title, isOpened, placeholder, disabled }: SelectButtonPr
       {title || placeholder}
     </Text>
     <Text>
-      <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} />
+      <FontAwesome color={Colors.gray} size={16} name="chevron-down" />
     </Text>
   </Box>
 );
@@ -59,8 +63,8 @@ const SelectItem = ({ isSelected, item }: SelectItemProps) => {
 
 export default function TabOneScreen() {
   const [disabled, setDisabled] = useState(true);
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [selectedNeighborhood, setSelectedNeighborhood] = useState<string | null>(null);
+  const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<string[]>([]);
   const [selectedPriceFrom, setSelectedPriceFrom] = useState<number | null>(null);
   const [selectedPriceTo, setSelectedPriceTo] = useState<number | null>(null);
 
@@ -95,10 +99,9 @@ export default function TabOneScreen() {
       if (reverse && reverse.length > 0) {
         const userCity = reverse[0].city;
         if (userCity) {
-          // Find the closest match (case-insensitive)
           const matchedCity = cities.find((c) => c.toLowerCase() === userCity.toLowerCase());
           if (matchedCity) {
-            setSelectedCity(matchedCity);
+            setSelectedCities([matchedCity]);
             setDisabled(false);
           }
         }
@@ -110,11 +113,17 @@ export default function TabOneScreen() {
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useInfiniteQuery({
     initialPageParam: 0,
-    queryKey: ['listings', selectedCity, selectedNeighborhood, selectedPriceFrom, selectedPriceTo],
+    queryKey: ['listings', selectedCities, selectedNeighborhoods, selectedPriceFrom, selectedPriceTo],
     queryFn: async ({ pageParam = 0 }) => {
+      console.log('Fetching listings with params:', {
+        selectedCities,
+        selectedNeighborhoods,
+        selectedPriceFrom,
+        selectedPriceTo,
+      });
       const params = new URLSearchParams();
-      if (selectedCity) params.append('city', selectedCity);
-      if (selectedNeighborhood) params.append('neighborhood', selectedNeighborhood);
+      selectedCities.forEach((city) => params.append('city', city));
+      selectedNeighborhoods.forEach((n) => params.append('neighborhood', n));
       if (selectedPriceFrom) params.append('priceFrom', String(selectedPriceFrom));
       if (selectedPriceTo) params.append('priceTo', String(selectedPriceTo));
       params.append('limit', String(PAGE_SIZE));
@@ -174,74 +183,93 @@ export default function TabOneScreen() {
             <Box flex={1} flexDirection="row" gap={12}>
               <Box flex={1}>
                 <Label>Qyteti</Label>
-                <SelectDropdown
-                  searchInputStyle={dropdownStyles.searchInputStyle}
-                  searchPlaceHolder="Kërko qytetin..."
-                  searchPlaceHolderColor="#6c757d"
-                  search={true}
-                  data={cities}
-                  onSelect={(selectedItem) => {
-                    setDisabled(false);
-                    setSelectedCity((prev) => {
-                      if (prev === selectedItem) {
-                        setDisabled(true);
-                        setSelectedNeighborhood(null);
-                        return null;
-                      }
-                      setSelectedNeighborhood(null);
-                      return selectedItem;
-                    });
+                <MultiSelect
+                  style={dropdownStyles.multiSelectStyle}
+                  data={cities.map((c) => ({ label: c, value: c }))}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Zgjedh Qytetet"
+                  placeholderStyle={dropdownStyles.placeholderStyle}
+                  value={selectedCities}
+                  onChange={(value) => {
+                    setSelectedCities(value);
+                    if (value.length === 0) {
+                      setSelectedNeighborhoods([]);
+                    }
                   }}
-                  ref={cityRef}
-                  renderButton={(_, isOpened) => (
-                    <>
-                      <SelectButton title={selectedCity} isOpened={isOpened} placeholder="Zgjedh Qytetin" />
-                    </>
+                  showsVerticalScrollIndicator
+                  renderRightIcon={() => (
+                    <Box marginRight={12}>
+                      <FontAwesome name="chevron-down" size={16} color={Colors.gray} />
+                    </Box>
                   )}
-                  renderItem={(item, _, isSelected) => (
-                    <>
-                      <SelectItem item={item} isSelected={isSelected} />
-                    </>
+                  renderSelectedItem={(item, unSelect) => (
+                    <TouchableOpacity
+                      onPress={unSelect}
+                      style={{
+                        marginTop: 4,
+                        marginRight: 4,
+                      }}
+                    >
+                      <Pill title={item.label} iconLeft={<FontAwesome name="times" size={12} color="#000" />} />
+                    </TouchableOpacity>
                   )}
-                  showsVerticalScrollIndicator={false}
-                  dropdownStyle={dropdownStyles.dropdownMenuStyle}
+                  renderInputSearch={(onSearch) => (
+                    <Box padding={12}>
+                      <Input autoFocus placeholder="Kërko lagjet..." onChangeText={onSearch} />
+                    </Box>
+                  )}
+                  search
+                  searchPlaceholder="Kërko qytetet..."
                 />
               </Box>
               <Box flex={1}>
                 <Label>Lagja</Label>
-                <SelectDropdown
-                  search={true}
-                  searchInputStyle={dropdownStyles.searchInputStyle}
-                  searchPlaceHolder="Kërko lagjen..."
-                  searchPlaceHolderColor="#6c757d"
-                  data={selectedCity ? neighborhoods[selectedCity] : []}
-                  disabled={disabled}
-                  ref={neighborHoodRef}
-                  onSelect={(selectedItem) => {
-                    setSelectedNeighborhood((prev) => {
-                      if (prev === selectedItem) {
-                        return null;
-                      }
-                      return selectedItem;
-                    });
-                  }}
-                  renderButton={(_, isOpened) => (
-                    <>
-                      <SelectButton
-                        title={selectedCity ? selectedNeighborhood : null}
-                        isOpened={isOpened}
-                        placeholder="Zgjedh Lagjen"
-                        disabled={disabled}
-                      />
-                    </>
+                <MultiSelect
+                  style={[
+                    dropdownStyles.multiSelectStyle,
+                    selectedCities.length === 0 && dropdownStyles.disabledMultiSelectStyle,
+                  ]}
+                  showsVerticalScrollIndicator
+                  data={
+                    selectedCities.length > 0
+                      ? selectedCities.flatMap((city) =>
+                          (neighborhoods[city] || []).map((n) => ({ label: n, value: n })),
+                        )
+                      : []
+                  }
+                  renderRightIcon={() => (
+                    <Box marginRight={12}>
+                      <FontAwesome name="chevron-down" size={16} color={Colors.gray} />
+                    </Box>
                   )}
-                  renderItem={(item, _, isSelected) => (
-                    <>
-                      <SelectItem item={item} isSelected={isSelected} />
-                    </>
+                  labelField="label"
+                  valueField="value"
+                  disable={selectedCities.length === 0}
+                  placeholder="Zgjedh Lagjet"
+                  placeholderStyle={dropdownStyles.placeholderStyle}
+                  value={selectedNeighborhoods}
+                  onChange={setSelectedNeighborhoods}
+                  dropdownPosition="bottom"
+                  renderInputSearch={(onSearch) => (
+                    <Box padding={12}>
+                      <Input autoFocus placeholder="Kërko lagjet..." onChangeText={onSearch} />
+                    </Box>
                   )}
-                  showsVerticalScrollIndicator={false}
-                  dropdownStyle={dropdownStyles.dropdownMenuStyle}
+                  selectedStyle={dropdownStyles.dropdownItemSelected}
+                  renderSelectedItem={(item, unSelect) => (
+                    <TouchableOpacity
+                      onPress={unSelect}
+                      style={{
+                        marginTop: 4,
+                        marginRight: 4,
+                      }}
+                    >
+                      <Pill title={item.label} iconLeft={<FontAwesome name="times" size={12} color="#000" />} />
+                    </TouchableOpacity>
+                  )}
+                  search
+                  searchPlaceholder="Kërko lagjet..."
                 />
               </Box>
             </Box>
@@ -313,19 +341,24 @@ export default function TabOneScreen() {
                 </Box>
               </Box>
             </Box>
-            <Box flexDirection="row" justifyContent="flex-end" alignItems="flex-end">
-              <Text
-                style={styles.filter}
-                onPress={() => {
-                  setSelectedCity(null);
-                  setSelectedNeighborhood(null);
-                  setSelectedPriceFrom(null);
-                  setSelectedPriceTo(null);
-                }}
-              >
-                Pastro filtrat
-              </Text>
-            </Box>
+            {(selectedPriceFrom !== null ||
+              selectedPriceTo !== null ||
+              selectedCities.length > 0 ||
+              selectedNeighborhoods.length > 0) && (
+              <Box flexDirection="row" justifyContent="flex-end" alignItems="flex-end">
+                <Text
+                  style={styles.filter}
+                  onPress={() => {
+                    setSelectedCities([]);
+                    setSelectedNeighborhoods([]);
+                    setSelectedPriceFrom(null);
+                    setSelectedPriceTo(null);
+                  }}
+                >
+                  Pastro filtrat
+                </Text>
+              </Box>
+            )}
           </Box>
         )}
       />

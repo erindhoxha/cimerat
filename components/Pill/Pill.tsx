@@ -25,6 +25,7 @@ export const Pill: React.FC<PillProps> = ({ title, iconLeft, variant = 'yellow' 
       flexDirection="row"
       borderRadius={12}
       paddingVertical={4}
+      alignItems="center"
       paddingHorizontal={8}
       {...VARIANTS[variant]}
     >

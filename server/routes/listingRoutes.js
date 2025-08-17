@@ -118,8 +118,14 @@ router.get('/listings', async (req, res) => {
   try {
     const { city, neighborhood, priceFrom, priceTo, limit = 20, skip = 0 } = req.query;
     const filter = {};
-    if (city) filter.city = city;
-    if (neighborhood) filter.neighborhood = neighborhood;
+    if (city) {
+      // Handles both single and multiple cities
+      filter.city = Array.isArray(city) ? { $in: city } : city;
+    }
+    if (neighborhood) {
+      // Handles both single and multiple neighborhoods
+      filter.neighborhood = Array.isArray(neighborhood) ? { $in: neighborhood } : neighborhood;
+    }
     if (priceFrom || priceTo) {
       filter.price = {};
       if (priceFrom) filter.price.$gte = Number(priceFrom);

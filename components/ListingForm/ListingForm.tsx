@@ -1,4 +1,3 @@
-// components/ListingForm.tsx
 import { Box } from '@/components/Box';
 import { Button } from '@/components/Button/Button';
 import Input from '@/components/Input/Input';
@@ -50,7 +49,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
       city: '',
       neighborhood: '',
       description: '',
-      price: '',
+      price: undefined,
       images: [],
       ...defaultValues,
     },
@@ -175,22 +174,25 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
         <Controller
           control={control}
           name="price"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              value={value}
-              label="Çmimi në euro (€)"
-              maxLength={6}
-              required
-              placeholder="300"
-              keyboardType="numeric"
-              inputMode="numeric"
-              error={errors.price?.message}
-              onChangeText={(text) => {
-                const numericValue = text.replace(/[^0-9]/g, '');
-                onChange(numericValue);
-              }}
-            />
-          )}
+          render={({ field: { onChange, value } }) => {
+            console.log(typeof value);
+            return (
+              <Input
+                value={value?.toString()}
+                label="Çmimi në euro (€)"
+                maxLength={6}
+                required
+                placeholder="300"
+                keyboardType="numeric"
+                inputMode="numeric"
+                error={errors.price?.message}
+                onChangeText={(text) => {
+                  const numericValue = text.replace(/[^0-9]/g, '');
+                  onChange(numericValue);
+                }}
+              />
+            );
+          }}
         />
         <Controller
           control={control}

@@ -29,6 +29,7 @@ type BoxProps = ViewProps & {
   children?: React.ReactNode;
   borderTopWidth?: number;
   width?: DimensionValue;
+  flexWrap?: ViewStyle['flexWrap'];
 };
 
 export default function Box({
