@@ -4,8 +4,6 @@ const User = require('../models/User');
 module.exports = async (req, res, next) => {
   const { authorization } = req.headers;
 
-  console.log(authorization, 'auth');
-
   if (!authorization) {
     return res.status(401).json({ error: 'You must be logged in' });
   }

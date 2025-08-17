@@ -3,17 +3,18 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Linking, StyleSheet } from 'react-native';
 import { Text } from '@/components/Text';
 import { Box } from '@/components/Box';
-import Colors from '@/constants/Colors';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/Button';
 import { useQuery } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { BLURHASH_TRANSITION } from '@/constants/global';
 import { Pill } from '@/components/Pill/Pill';
+import { BLURHASH_TRANSITION } from '@/constants/global';
 import { ReusableCarousel } from '@/components/Carousel/Carousel';
 import { formatKosovoPhone } from '@/utils';
+import Colors from '@/constants/Colors';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { differenceInDays } from 'date-fns';
 
 export default function ItemDetailScreen() {
   const { item, imageIndex } = useLocalSearchParams();
@@ -47,6 +48,8 @@ export default function ItemDetailScreen() {
   }
 
   const isOwner = listing?.data?.user?._id === userId;
+
+  const isExpired = listing.data?.createdAt && differenceInDays(new Date(), new Date(listing.data.createdAt)) > 14;
 
   return (
     data && (
@@ -82,7 +85,7 @@ export default function ItemDetailScreen() {
             <Text fontSize="xl" fontWeight="bold" style={{ flexShrink: 1 }}>
               {data.city}, {data.neighborhood}
             </Text>
-            <Text>{data.price}€ për muaj</Text>
+            {isExpired ? <Text style={styles.expiredText}>❌ Skaduar</Text> : <Text>{data.price}€ për muaj</Text>}
           </Box>
           <Text>{data.description || 'Përshkrimi i listimit nuk është i disponueshëm'}</Text>
           {isLoggedIn ? (
@@ -97,8 +100,15 @@ export default function ItemDetailScreen() {
                   Tel:{' '}
                   <Text
                     style={styles.link}
-                    onPress={() => {
-                      Linking.openURL(`tel:${formatKosovoPhone(data.phone)}`);
+                    accessibilityRole="link"
+                    onPress={async () => {
+                      const url = `tel:${formatKosovoPhone(data.phone)}`;
+                      const supported = await Linking.canOpenURL(url);
+                      if (supported) {
+                        Linking.openURL(url);
+                      } else {
+                        console.warn("Can't handle tel link");
+                      }
                     }}
                   >
                     {formatKosovoPhone(data.phone)}
@@ -112,12 +122,22 @@ export default function ItemDetailScreen() {
                 onPress={() => {
                   router.navigate('/login');
                 }}
+                variant={isExpired ? 'secondary' : 'primary'}
+                disabled={isExpired}
               >
                 <FontAwesome name="user-circle-o" size={16} /> Kyçu për të kontaktuar
               </Button>
             </>
           )}
-          {isOwner && <Button onPress={() => router.push(`/edit/${data._id}`)}>Ndrysho listimin</Button>}
+          {isOwner && (
+            <Button
+              variant={isExpired ? 'secondary' : 'primary'}
+              disabled={isExpired}
+              onPress={() => router.push(`/edit/${data._id}`)}
+            >
+              Ndrysho listimin
+            </Button>
+          )}
         </Box>
       </Box>
     )
@@ -134,6 +154,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     overflow: 'hidden',
+  },
+  expiredText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: 'red',
   },
   loadingContainer: {
     flex: 1,

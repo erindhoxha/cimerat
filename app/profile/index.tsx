@@ -2,16 +2,28 @@ import { Box } from '@/components/Box';
 import { Button } from '@/components/Button';
 import { useAuth } from '@/context/AuthContext';
 import { Text } from '@/components/Text';
-import { useQuery } from '@tanstack/react-query';
-import { Alert, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import Input from '@/components/Input';
 import Label from '@/components/Label';
 import { useState } from 'react';
 import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
+import { FieldValues } from 'react-hook-form';
+import Toast from 'react-native-toast-message';
+
+interface Mutation {
+  userId: string | null;
+  username: string;
+  password: string;
+  oldPassword: string;
+}
 
 export default function ProfileScreen() {
-  const { token, setAuth } = useAuth();
+  const { token, userId } = useAuth();
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
@@ -31,7 +43,23 @@ export default function ProfileScreen() {
     },
   });
 
-  const [name, setName] = useState(data?.user?.username || undefined);
+  const { mutateAsync: updateMutation, error: mutationError } = useMutation({
+    mutationFn: async (variables: Mutation) => {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/edit-user`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        method: 'PUT',
+        body: JSON.stringify(variables),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error || 'Gabim gjatë kyçjes. Ju lutemi provoni përsëri.');
+      }
+      return json;
+    },
+  });
 
   if (status === 'pending') {
     return (
@@ -53,30 +81,58 @@ export default function ProfileScreen() {
     user: { username },
   } = data;
 
+  const onSubmitHandler = async (data: FieldValues) => {
+    setLoading(true);
+    await updateMutation(
+      {
+        userId,
+        username: data?.user?.username ?? username,
+        oldPassword,
+        password: newPassword,
+      },
+      {
+        onSuccess(data) {
+          Toast.show({ type: 'success', text1: 'Përdoruesi u përditësua me sukses' });
+          router.push('/');
+        },
+        onSettled() {
+          setLoading(false);
+        },
+      },
+    );
+  };
   return (
     <ScrollView style={styles.container}>
       <Box marginBottom={12}>
         <Text fontSize="xl" fontWeight="bold">
-          Përshendetje, {username}
+          Profili juaj
         </Text>
       </Box>
       <Box>
         <Box marginBottom={12} gap={12}>
-          <Box>
-            <Label>Emri</Label>
-            <Input placeholder="Emri juaj" value={name ?? username} onChangeText={setName} />
+          <Box flexDirection="row" gap={4}>
+            <Label>Username:</Label>
+            <Text fontWeight="bold">{data?.user?.username ?? username}</Text>
           </Box>
           <Box>
             <Label>Fjalëkalimi i vjetër</Label>
-            <Input placeholder="Fjalëkalimi juaj" secureTextEntry />
+            <Input placeholder="Fjalëkalimi juaj" secureTextEntry value={oldPassword} onChangeText={setOldPassword} />
           </Box>
           <Box>
             <Label>Fjalëkalimi i ri</Label>
-            <Input placeholder="Fjalëkalimi i ri" secureTextEntry />
+            <Input placeholder="Fjalëkalimi i ri" secureTextEntry value={newPassword} onChangeText={setNewPassword} />
           </Box>
-          <Button variant="primary" onPress={() => {}}>
-            Ndrysho të dhënat e profilit
+          <Button variant="primary" onPress={onSubmitHandler}>
+            {loading ? (
+              <Box flexDirection="row" gap={4}>
+                <ActivityIndicator size="small" />
+                <Text>Duke ngarkuar...</Text>
+              </Box>
+            ) : (
+              <Text>Ndrysho të dhënat e profilit</Text>
+            )}
           </Button>
+          {mutationError && <Text style={styles.errorText}>Error: {mutationError.message}</Text>}
         </Box>
       </Box>
     </ScrollView>
@@ -88,6 +144,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 20,
+  },
+  errorText: {
+    color: Colors.danger,
+    marginTop: 4,
   },
   linkButton: {
     padding: 12,

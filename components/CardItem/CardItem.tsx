@@ -12,6 +12,9 @@ import { Listing } from '@/types';
 import { BLURHASH_TRANSITION } from '@/constants/global';
 import { ReusableCarousel } from '@/components/Carousel/Carousel';
 import { useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { Button } from '../Button';
+import { differenceInDays } from 'date-fns';
 
 export const CardItem = ({
   city,
@@ -24,9 +27,14 @@ export const CardItem = ({
   createdAt,
   blurhash,
 }: Listing) => {
-  console.log(user);
   const router = useRouter();
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const { userId } = useAuth();
+
+  const isOwner = user?._id === userId;
+
+  const isExpired = createdAt && differenceInDays(new Date(), new Date(createdAt)) > 14;
+
   return (
     <Pressable
       style={styles.cardLink}
@@ -55,7 +63,11 @@ export const CardItem = ({
             <Box flexDirection="row" justifyContent="space-between" flex={1}>
               <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start">
                 <Text style={styles.cardTitle}>{city + ', ' + neighborhood}</Text>
-                <Text style={styles.cardPrice}>{price}€ për muaj</Text>
+                {isExpired ? (
+                  <Text style={styles.expiredText}>❌ Skaduar</Text>
+                ) : (
+                  <Text style={styles.cardPrice}>{price}€ për muaj</Text>
+                )}
               </Box>
               <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-end">
                 {createdAt && <Text>{formatDate(createdAt)}</Text>}
@@ -64,6 +76,17 @@ export const CardItem = ({
             <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
               {description}
             </Text>
+            {isOwner && (
+              <Box flexDirection="row" gap={8} marginTop={12}>
+                <Button
+                  disabled={isExpired}
+                  variant={isExpired ? 'secondary' : 'primary'}
+                  onPress={() => router.push(`/edit/${_id}`)}
+                >
+                  Ndrysho listimin
+                </Button>
+              </Box>
+            )}
             {user.verified && (
               <Box flexDirection="row" gap={8} marginTop={12}>
                 <Pill
@@ -88,6 +111,12 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     borderColor: Colors.lightGray,
+  },
+  expiredText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: 'red',
+    marginTop: 4,
   },
   cardLink: {
     width: '100%',

@@ -10,11 +10,11 @@ import { Text } from '@/components/Text';
 import { cmimi } from '@/constants/Price';
 import { cities } from '@/constants/Cities';
 import { neighborhoods } from '@/constants/Neighborhoods';
-import Input from '@/components/Input';
 import { useQuery } from '@tanstack/react-query';
 import { styles as dropdownStyles } from '@/components/DropdownController/styles';
 import Colors from '@/constants/Colors';
 import { Loading } from '@/components/Loading/Loading';
+import * as Location from 'expo-location';
 
 interface SelectButtonProps {
   title: string | null;
@@ -74,6 +74,40 @@ export default function TabOneScreen() {
     }
   }, []);
 
+  const [locationLoading, setLocationLoading] = useState(false);
+
+  useEffect(() => {
+    const getCity = async () => {
+      setLocationLoading(true);
+      console.log('Loading');
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setLocationLoading(false);
+        return;
+      }
+      let loc = await Location.getCurrentPositionAsync({});
+      let reverse = await Location.reverseGeocodeAsync({
+        latitude: loc.coords.latitude,
+        longitude: loc.coords.longitude,
+      });
+
+      if (reverse && reverse.length > 0) {
+        const userCity = reverse[0].city;
+        if (userCity) {
+          // Find the closest match (case-insensitive)
+          const matchedCity = cities.find((c) => c.toLowerCase() === userCity.toLowerCase());
+          if (matchedCity) {
+            setSelectedCity(matchedCity);
+            setDisabled(false);
+          }
+        }
+      }
+      setLocationLoading(false);
+    };
+
+    getCity();
+  }, []);
+
   const { data, isLoading } = useQuery({
     staleTime: 0,
     queryKey: ['listings', selectedCity, selectedNeighborhood, selectedPriceFrom, selectedPriceTo],
@@ -90,6 +124,14 @@ export default function TabOneScreen() {
       return res.json();
     },
   });
+
+  {
+    locationLoading && (
+      <Box marginTop={24}>
+        <Loading />
+      </Box>
+    );
+  }
 
   return (
     <Box style={styles.container}>
@@ -108,7 +150,6 @@ export default function TabOneScreen() {
         }
         ListHeaderComponent={() => (
           <Box gap={12}>
-            <Input label="Kërko" placeholder="Kërko..." onChangeText={(text) => {}} />
             <Box flex={1} flexDirection="row" gap={12}>
               <Box flex={1}>
                 <Label>Qyteti</Label>

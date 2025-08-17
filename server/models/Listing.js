@@ -43,6 +43,10 @@ const listingSchema = new mongoose.Schema(
       type: [String],
       required: false,
     },
+    expired: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -8,7 +8,6 @@ router.post('/signup', async (req, res) => {
   if (!username || !password) {
     return res.status(400).json({ error: 'Username and password are required' });
   }
-
   try {
     const user = new User({ username, password });
 
@@ -57,9 +56,10 @@ router.post('/signin', async (req, res) => {
   }
 });
 
-router.put('/user', async (req, res) => {
-  const { userId, username, password } = req.body;
+router.put('/edit-user', async (req, res) => {
+  const { userId, username, password, oldPassword } = req.body;
   if (!userId || (!username && !password)) {
+    console.log('EROR');
     return res.status(400).json({ error: 'User ID and at least one field to update are required' });
   }
 
@@ -67,6 +67,11 @@ router.put('/user', async (req, res) => {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
+    }
+
+    const isMatch = await user.comparePassword(oldPassword);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Gabim i username-it ose fjalëkalimit. Ju lutemi provoni përsëri.' });
     }
 
     if (username) {

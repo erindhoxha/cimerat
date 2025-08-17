@@ -9,6 +9,7 @@ import { Button } from '../Button';
 import { Listing } from '@/types';
 import { formatDate } from '@/utils';
 import { BLURHASH_TRANSITION } from '@/constants/global';
+import { differenceInDays } from 'date-fns';
 
 interface HorizontalCardItemProps {
   item: Listing;
@@ -18,49 +19,69 @@ interface HorizontalCardItemProps {
 export const HorizontalCardItem = ({
   item: { images, _id, city, neighborhood, createdAt, price, description, blurhash },
   router,
-}: HorizontalCardItemProps) => (
-  <View style={styles.listCard}>
-    <Box style={styles.cardWrapper}>
-      <Image
-        style={styles.cardImage}
-        source={{
-          uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
-        }}
-        placeholder={{
-          blurhash: blurhash || '',
-        }}
-        contentFit="cover"
-        transition={BLURHASH_TRANSITION}
-      />
-      {images?.length > 1 && <Text style={styles.imageCounter}>+{images.length - 1} foto</Text>}
-    </Box>
-    <View style={styles.cardContent}>
-      <Text style={styles.cardTitle}>
-        {city} / {neighborhood}
-      </Text>
-      <Text>
-        {createdAt ? formatDate(createdAt) : ''} - {price}€ për muaj
-      </Text>
-      <Text numberOfLines={1} style={styles.cardDescription} ellipsizeMode="tail">
-        {description}
-      </Text>
-      <Box flexDirection="row" gap={8} alignSelf="flex-start" marginTop={8}>
-        <Button variant="tertiary" onPress={() => router.push(`/edit/${_id}`)}>
-          Ndrysho listimin
-        </Button>
-        <Button variant="secondary" onPress={() => router.push(`/${_id}`)}>
-          Shiko detajet
-        </Button>
+}: HorizontalCardItemProps) => {
+  const isExpired = createdAt && differenceInDays(new Date(), new Date(createdAt)) > 14;
+  return (
+    <View style={styles.listCard}>
+      <Box style={styles.cardWrapper}>
+        <Image
+          style={styles.cardImage}
+          source={{
+            uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
+          }}
+          placeholder={{
+            blurhash: blurhash || '',
+          }}
+          contentFit="cover"
+          transition={BLURHASH_TRANSITION}
+        />
+        {images?.length > 1 && <Text style={styles.imageCounter}>+{images.length - 1} foto</Text>}
       </Box>
+      <View style={styles.cardContent}>
+        <Text style={styles.cardTitle}>
+          {city} / {neighborhood}
+        </Text>
+        {isExpired ? (
+          <Text style={styles.expiredText}>❌ Skaduar</Text>
+        ) : (
+          <Text>
+            {createdAt ? formatDate(createdAt) : ''} - {price}€ për muaj
+          </Text>
+        )}
+        <Text numberOfLines={1} style={styles.cardDescription} ellipsizeMode="tail">
+          {description}
+        </Text>
+        <Box flexDirection="row" gap={8} alignSelf="flex-start" marginTop={8}>
+          <Button
+            disabled={isExpired}
+            variant={!isExpired ? 'primary' : 'secondary'}
+            onPress={() => router.push(`/edit/${_id}`)}
+          >
+            Ndrysho listimin
+          </Button>
+          <Button
+            variant={!isExpired ? 'tertiary' : 'secondary'}
+            disabled={isExpired}
+            onPress={() => router.push(`/${_id}`)}
+          >
+            Shiko detajet
+          </Button>
+        </Box>
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   cardContent: {
     flexShrink: 1,
     maxWidth: '100%',
     padding: 12,
+  },
+  expiredText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: 'red',
   },
   cardImage: {
     backgroundColor: '#0553',
