@@ -68,8 +68,8 @@ export default function LoginScreen() {
             control={control}
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
-                label="Emri i përdoruesit"
-                placeholder="Emri i përdoruesit"
+                label="Emri në aplikacion"
+                placeholder="Pershembull: cimeri1994"
                 required
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -85,7 +85,7 @@ export default function LoginScreen() {
             name="username"
             rules={{ required: true }}
           />
-          {errors.username && <Text style={styles.errorText}>Username është i detyrueshëm</Text>}
+          {errors.username && <Text style={styles.errorText}>Emri është i detyrueshëm</Text>}
         </Box>
         <Box>
           <Controller

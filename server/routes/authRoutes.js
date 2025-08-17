@@ -20,6 +20,9 @@ router.post('/signup', async (req, res) => {
     await user.save();
     return res.status(201).json({ token, userId: user._id });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({ error: 'Ky emër përdoruesi ekziston tashmë. Ju lutem provoni një emër tjetër.' });
+    }
     return res.status(422).json({ error: 'Gabim gjatë regjistrimit. Ju lutemi provoni përsëri ose na kontaktoni.' });
   }
 });
@@ -59,30 +62,21 @@ router.post('/signin', async (req, res) => {
 router.post('/listing/:id/like', async (req, res) => {
   const { userId } = req.body;
   const listingId = req.params.id;
-  console.log('USER ID', userId);
-  console.log('LISTING ID', listingId);
   if (!userId || !listingId) {
     console.log({ ERROR: 'User ID and Listing ID are required' });
     return res.status(400).json({ error: 'User ID and Listing ID are required' });
   }
-
   try {
     const user = await User.findById(userId);
     if (!user) {
       console.log({ ERROR: 'User not found' });
       return res.status(404).json({ error: 'User not found' });
     }
-
     if (user.likedListings.includes(listingId)) {
       user.likedListings.pull(listingId);
     } else {
       user.likedListings.push(listingId);
     }
-
-    await user.save();
-    const updatedUser = await User.findById(userId);
-    console.log('Updated user:', updatedUser);
-
     await user.save();
     return res.status(200).json({ message: 'Listing liked status updated successfully' });
   } catch (error) {

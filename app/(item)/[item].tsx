@@ -1,11 +1,11 @@
 import { Image as ExpoImage } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Linking, Pressable, StyleSheet } from 'react-native';
+import { ActivityIndicator, Linking, Pressable, StyleSheet } from 'react-native';
 import { Text } from '@/components/Text';
 import { Box } from '@/components/Box';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/Button';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
 import { Pill } from '@/components/Pill/Pill';
@@ -14,6 +14,7 @@ import { ReusableCarousel } from '@/components/Carousel/Carousel';
 import { formatKosovoPhone, listingHasExpired } from '@/utils';
 import Colors from '@/constants/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Toast from 'react-native-toast-message';
 
 export default function ItemDetailScreen() {
   const { item, imageIndex } = useLocalSearchParams();
@@ -21,6 +22,8 @@ export default function ItemDetailScreen() {
   const { token, userId } = useAuth();
 
   const isLoggedIn = !!token;
+
+  const queryClient = useQueryClient();
 
   const router = useRouter();
 
@@ -40,9 +43,9 @@ export default function ItemDetailScreen() {
     },
   });
 
-  const { mutate: like } = useMutation({
+  const { mutate: like, status } = useMutation({
     mutationFn: async (listingId: string) => {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listing/${data?._id}/like`, {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listing/${listingId}/like`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -50,10 +53,42 @@ export default function ItemDetailScreen() {
         },
         body: JSON.stringify({ userId }),
       });
-      if (!res.ok) {
-        throw new Error('Failed to like listing');
-      }
+      if (!res.ok) throw new Error('Failed to like listing');
       return res.json();
+    },
+    onMutate: async (listingId: string) => {
+      await queryClient.cancelQueries({ queryKey: ['user'] });
+
+      const previousUser = queryClient.getQueryData<any>(['user']);
+
+      queryClient.setQueryData(['user'], (old: any) => {
+        if (!old?.user) return old;
+        const likedListings = old.user.likedListings || [];
+        const alreadyLiked = likedListings.includes(listingId);
+        return {
+          ...old,
+          user: {
+            ...old.user,
+            likedListings: alreadyLiked
+              ? likedListings.filter((id: string) => id !== listingId)
+              : [...likedListings, listingId],
+          },
+        };
+      });
+      return { previousUser };
+    },
+    onError: (_, __, context) => {
+      if (context?.previousUser) {
+        queryClient.setQueryData(['user'], context.previousUser);
+      }
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to like listing',
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] });
     },
   });
 
@@ -80,9 +115,7 @@ export default function ItemDetailScreen() {
   }
 
   const isOwner = listing?.data?.user?._id === userId;
-
   const isExpired = listingHasExpired(data?.createdAt);
-
   const liked = userData?.user?.likedListings?.includes(data?._id as unknown as Listing);
 
   return (
@@ -134,7 +167,13 @@ export default function ItemDetailScreen() {
                     },
                   ]}
                 >
-                  <FontAwesome name={liked ? 'heart' : 'heart-o'} size={24} color={Colors.yellow} />
+                  <Box>
+                    {status === 'pending' ? (
+                      <ActivityIndicator size={24} color={Colors.yellow} />
+                    ) : (
+                      <FontAwesome name={liked ? 'heart' : 'heart-o'} size={24} color={Colors.yellow} />
+                    )}
+                  </Box>
                 </Pressable>
               )}
             </Box>

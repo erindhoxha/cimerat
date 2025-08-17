@@ -163,6 +163,8 @@ export default function TabOneScreen() {
                     setDisabled(false);
                     setSelectedCity((prev) => {
                       if (prev === selectedItem) {
+                        setDisabled(true);
+                        setSelectedNeighborhood(null);
                         return null;
                       }
                       setSelectedNeighborhood(null);
@@ -200,7 +202,7 @@ export default function TabOneScreen() {
                   renderButton={(_, isOpened) => (
                     <>
                       <SelectButton
-                        title={selectedNeighborhood}
+                        title={selectedCity ? selectedNeighborhood : null}
                         isOpened={isOpened}
                         placeholder="Zgjedh Lagjen"
                         disabled={disabled}
