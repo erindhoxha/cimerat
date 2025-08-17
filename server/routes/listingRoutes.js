@@ -30,6 +30,7 @@ router.get('/my-listings', requireAuth, async (req, res) => {
 });
 
 router.post('/listings', requireAuth, upload.array('images'), async (req, res) => {
+  console.log('Starting!');
   const { city, neighborhood, description, price, phone } = req.body;
   const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
 
@@ -52,6 +53,8 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
       blurhashes: blurhashes,
       user: req.user._id,
     });
+
+    console.log('Saving');
 
     await listing.save();
     return res.status(201).json({ message: 'Listing created successfully', listing });
@@ -111,6 +114,7 @@ router.put('/listings/:id', requireAuth, upload.array('images'), async (req, res
 });
 
 router.get('/listings', async (req, res) => {
+  console.log('Gettting listings');
   try {
     const { city, neighborhood, priceFrom, priceTo } = req.query;
     const filter = {};

@@ -26,6 +26,15 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
+          name="liked"
+          options={{
+            title: 'Të ruajturat',
+            tabBarIcon: ({ color }) => <FontAwesome name="heart" size={24} color={color} />,
+            tabBarActiveTintColor: Colors.tint,
+            tabBarInactiveTintColor: Colors.darkYellow,
+          }}
+        />
+        <Tabs.Screen
           name="your-listings"
           options={{
             title: 'Krijo',

@@ -18,6 +18,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  likedListings: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Listing',
+    },
+  ],
 });
 
 userSchema.pre('save', function (next) {

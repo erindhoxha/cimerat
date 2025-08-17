@@ -1,11 +1,11 @@
 import { Image as ExpoImage } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Linking, StyleSheet } from 'react-native';
+import { Linking, Pressable, StyleSheet } from 'react-native';
 import { Text } from '@/components/Text';
 import { Box } from '@/components/Box';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/Button';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
 import { Pill } from '@/components/Pill/Pill';
@@ -14,7 +14,6 @@ import { ReusableCarousel } from '@/components/Carousel/Carousel';
 import { formatKosovoPhone, listingHasExpired } from '@/utils';
 import Colors from '@/constants/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { differenceInDays } from 'date-fns';
 
 export default function ItemDetailScreen() {
   const { item, imageIndex } = useLocalSearchParams();
@@ -24,6 +23,39 @@ export default function ItemDetailScreen() {
   const isLoggedIn = !!token;
 
   const router = useRouter();
+
+  const { data: userData } = useQuery({
+    queryKey: ['user'],
+    enabled: !!token,
+    queryFn: async () => {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+      return res.json();
+    },
+  });
+
+  const { mutate: like } = useMutation({
+    mutationFn: async (listingId: string) => {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listing/${data?._id}/like`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+      if (!res.ok) {
+        throw new Error('Failed to like listing');
+      }
+      return res.json();
+    },
+  });
 
   const listing = useQuery<Listing>({
     staleTime: 0,
@@ -50,6 +82,8 @@ export default function ItemDetailScreen() {
   const isOwner = listing?.data?.user?._id === userId;
 
   const isExpired = listingHasExpired(data?.createdAt);
+
+  const liked = userData?.user?.likedListings?.includes(data?._id as unknown as Listing);
 
   return (
     data && (
@@ -82,52 +116,55 @@ export default function ItemDetailScreen() {
                 />
               </Box>
             )}
-            <Text fontSize="xl" fontWeight="bold" style={{ flexShrink: 1 }}>
-              {data.city}, {data.neighborhood}
-            </Text>
+            <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="100%">
+              <Text fontSize="xl" fontWeight="bold" style={{ flexShrink: 1 }}>
+                {data.city}, {data.neighborhood}
+              </Text>
+              {isLoggedIn && (
+                <Pressable
+                  onPress={() => {
+                    like(data._id);
+                  }}
+                  style={({ pressed }) => [
+                    {
+                      backgroundColor: pressed ? '#eee' : 'transparent',
+                      opacity: pressed ? 0.7 : 1,
+                      borderRadius: 8,
+                      padding: 8,
+                    },
+                  ]}
+                >
+                  <FontAwesome name={liked ? 'heart' : 'heart-o'} size={24} color={Colors.yellow} />
+                </Pressable>
+              )}
+            </Box>
             {isExpired ? <Text style={styles.expiredText}>❌ Skaduar</Text> : <Text>{data.price}€ për muaj</Text>}
           </Box>
           <Text>{data.description || 'Përshkrimi i listimit nuk është i disponueshëm'}</Text>
-          {isLoggedIn ? (
-            <>
-              <Box>
-                <Text>
-                  Postuar nga <Text fontWeight="bold">{data.user.username}</Text>
-                </Text>
-              </Box>
-              {data.phone && (
-                <Text>
-                  Tel:{' '}
-                  <Text
-                    style={styles.link}
-                    accessibilityRole="link"
-                    onPress={async () => {
-                      const url = `tel:${formatKosovoPhone(data.phone)}`;
-                      const supported = await Linking.canOpenURL(url);
-                      if (supported) {
-                        Linking.openURL(url);
-                      } else {
-                        console.warn("Can't handle tel link");
-                      }
-                    }}
-                  >
-                    {formatKosovoPhone(data.phone)}
-                  </Text>
-                </Text>
-              )}
-            </>
-          ) : (
-            <>
-              <Button
-                onPress={() => {
-                  router.navigate('/login');
+          <Box>
+            <Text>
+              Postuar nga <Text fontWeight="bold">{data.user.username}</Text>
+            </Text>
+          </Box>
+          {data.phone && (
+            <Text>
+              Tel:{' '}
+              <Text
+                style={styles.link}
+                accessibilityRole="link"
+                onPress={async () => {
+                  const url = `tel:${formatKosovoPhone(data.phone)}`;
+                  const supported = await Linking.canOpenURL(url);
+                  if (supported) {
+                    Linking.openURL(url);
+                  } else {
+                    console.warn("Can't handle tel link");
+                  }
                 }}
-                variant={isExpired ? 'secondary' : 'primary'}
-                disabled={isExpired}
               >
-                <FontAwesome name="user-circle-o" size={16} /> Kyçu për të kontaktuar
-              </Button>
-            </>
+                {formatKosovoPhone(data.phone)}
+              </Text>
+            </Text>
           )}
           {isOwner && (
             <Button

@@ -3,6 +3,7 @@ export interface User {
   username: string;
   password: string;
   verified?: boolean;
+  likedListings: Listing[];
 }
 
 export interface Listing {
