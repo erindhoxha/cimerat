@@ -17,13 +17,13 @@ export default function Liked() {
   const isLoggedIn = !!token;
 
   const listings = useQuery<Listing[]>({
-    staleTime: 0,
-    queryKey: ['my-listings'],
+    queryKey: ['liked-listings'],
     enabled: isLoggedIn,
     queryFn: async () => {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/my-listings`, {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/liked-listings`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
       });
       if (!res.ok) {

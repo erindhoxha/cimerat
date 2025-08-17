@@ -4,6 +4,7 @@ const { default: mongoose } = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
 const requireAuth = require('./middlewares/requireAuthentication');
+const User = require('./models/User');
 
 const port = process.env.PORT || 3000;
 
@@ -30,6 +31,18 @@ mongoose.connection.on('error', (err) => {
 app.get('/user', requireAuth, (req, res) => {
   console.log('Getting user!');
   res.status(200).json({ user: req.user });
+});
+
+app.get('/liked-listings', requireAuth, async (req, res) => {
+  console.log('Getting liked listings for user:', req.user);
+
+  try {
+    const user = await User.findById(req.user._id).populate('likedListings');
+    return res.status(200).json(user.likedListings);
+  } catch (error) {
+    console.error('Error fetching liked listings:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 app.listen(port, () => {

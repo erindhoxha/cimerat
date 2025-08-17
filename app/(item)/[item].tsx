@@ -89,6 +89,7 @@ export default function ItemDetailScreen() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['user'] });
+      queryClient.invalidateQueries({ queryKey: ['liked-listings'] });
     },
   });
 

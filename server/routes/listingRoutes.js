@@ -5,6 +5,7 @@ const multer = require('multer');
 const requireAuth = require('../middlewares/requireAuthentication');
 const sharp = require('sharp');
 const { encode } = require('blurhash');
+const User = require('../models/User');
 
 async function getBlurhash(imagePath) {
   const image = await sharp(imagePath)
