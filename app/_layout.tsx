@@ -73,7 +73,7 @@ function RootLayoutNav() {
         headerTintColor: Colors.text,
         headerTitleStyle: styles.headerTitleStyle,
         headerBackTitle: 'Back',
-        headerTitle: () => <Text style={styles.logo}>Cimerat.com</Text>,
+        headerTitle: () => <Text style={styles.logo}>Cimerat</Text>,
         headerRight: () => (
           <Box
             style={styles.headerRightBox}

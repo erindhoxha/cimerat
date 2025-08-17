@@ -5,7 +5,7 @@ import { Text } from '@/components/Text';
 import { cities } from '@/constants/Cities';
 import { neighborhoods } from '@/constants/Neighborhoods';
 import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -19,6 +19,10 @@ import { isValidPhoneNumber } from 'libphonenumber-js';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import Colors from '@/constants/Colors';
+import { genders } from '@/constants/Genders';
+import { numriIDhomave } from '@/constants/NumberOfRooms';
+import { cimerat } from '@/constants/NumberOfCimera';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ListingFormProps {
   defaultValues?: Partial<Listing>;
@@ -45,6 +49,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(formSchema),
+    shouldFocusError: true,
     defaultValues: {
       city: '',
       neighborhood: '',
@@ -99,18 +104,36 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
     }
   };
 
+  const client = useQueryClient();
+
   const handleDelete = async () => {
-    try {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings/${defaultValues?._id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error('Failed to delete listing');
-      Toast.show({ type: 'success', text1: 'Listimi u fshi me sukses' });
-      router.dismiss();
-    } catch (error) {
-      Toast.show({ type: 'error', text1: 'Gabim gjatë fshirjes së listimit' });
-    }
+    Alert.alert('Fshije listimin', 'A jeni të sigurt që doni të fshini këtë listim?', [
+      {
+        text: 'Anulo',
+        style: 'cancel',
+      },
+      {
+        text: 'Fshi',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings/${defaultValues?._id}`, {
+              method: 'DELETE',
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!res.ok) throw new Error('Failed to delete listing');
+            Toast.show({ type: 'success', text1: 'Listimi u fshi me sukses' });
+            client.invalidateQueries({
+              queryKey: ['listings'],
+            });
+            router.dismissAll();
+            router.push('/your-listings');
+          } catch (error) {
+            Toast.show({ type: 'error', text1: 'Gabim gjatë fshirjes së listimit' });
+          }
+        },
+      },
+    ]);
   };
 
   return (
@@ -120,7 +143,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
           {isEditing ? 'Ndrysho Listimin' : 'Krijo Listimin'}
         </Text>
       </Box>
-      <Box gap={12}>
+      <Box gap={12} paddingBottom={80}>
         <ImagePickerGrid
           images={images}
           onPick={pickImage}
@@ -221,6 +244,31 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             />
           )}
         />
+        <DropdownField
+          control={control}
+          name="flatmateGender"
+          label="Gjinia e preferuar e bashkëbanuesit/es"
+          options={genders}
+          placeholder="Zgjedh gjininë"
+          defaultValue={genders[2]}
+          error={errors.flatmateGender?.message}
+        />
+        <DropdownField
+          control={control}
+          name="currentFlatmates"
+          label="Numri i bashkëbanuesve ekzistues"
+          options={cimerat}
+          placeholder="Zgjedh numrin"
+          error={errors.currentFlatmates?.message}
+        />
+        <DropdownField
+          control={control}
+          name="rooms"
+          label="Numri i dhomave në total"
+          options={numriIDhomave}
+          placeholder="Zgjedh numrin"
+          error={errors.rooms?.message}
+        />
         <Button
           variant="primary"
           style={styles.submitButton}
@@ -228,8 +276,8 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
         >
           {isSubmitting ? (
             <Box flexDirection="row" gap={4} alignItems="center">
-              <ActivityIndicator color="#000" />
               <Text>{isEditing ? 'Duke Ndryshuar...' : 'Duke Krijuar...'}</Text>
+              <ActivityIndicator color="#000" />
             </Box>
           ) : isEditing ? (
             'Ndrysho Listimin'

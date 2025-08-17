@@ -5,7 +5,6 @@ const multer = require('multer');
 const requireAuth = require('../middlewares/requireAuthentication');
 const sharp = require('sharp');
 const { encode } = require('blurhash');
-const User = require('../models/User');
 
 async function getBlurhash(imagePath) {
   const image = await sharp(imagePath)
@@ -32,10 +31,22 @@ router.get('/my-listings', requireAuth, async (req, res) => {
 
 router.post('/listings', requireAuth, upload.array('images'), async (req, res) => {
   console.log('Starting!');
-  const { city, neighborhood, description, price, phone } = req.body;
+  const { city, neighborhood, description, price, phone, rooms, flatmateGender, currentFlatmates } = req.body;
   const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
 
-  if (!city || !neighborhood || !description || !price || !phone || imagePaths.length === 0) {
+  console.log('CURRENT FLATMATES', currentFlatmates);
+
+  if (
+    !city ||
+    !neighborhood ||
+    !description ||
+    !price ||
+    !phone ||
+    !rooms ||
+    !flatmateGender ||
+    !currentFlatmates ||
+    imagePaths.length === 0
+  ) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
@@ -52,10 +63,11 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
       phone,
       blurhash: firstBlurhash,
       blurhashes: blurhashes,
+      rooms: rooms,
+      flatmateGender: flatmateGender,
+      currentFlatmates: currentFlatmates,
       user: req.user._id,
     });
-
-    console.log('Saving');
 
     await listing.save();
     return res.status(201).json({ message: 'Listing created successfully', listing });
@@ -65,9 +77,24 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
   }
 });
 
+router.delete('/listings/:id', requireAuth, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const listing = await Listing.findByIdAndDelete(id);
+    if (!listing) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
+    return res.status(200).json({ message: 'Listing deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting listing:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 router.put('/listings/:id', requireAuth, upload.array('images'), async (req, res) => {
   const { id } = req.params;
-  const { city, neighborhood, description, price, phone } = req.body;
+  const { city, neighborhood, description, price, phone, rooms, flatmateGender, currentFlatmates } = req.body;
   const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
 
   if (!city || !neighborhood || !description || !price || !phone || imagePaths.length === 0) {
@@ -98,6 +125,9 @@ router.put('/listings/:id', requireAuth, upload.array('images'), async (req, res
         phone,
         blurhash: firstBlurhash,
         blurhashes: blurhashes,
+        rooms: rooms,
+        flatmateGender: flatmateGender,
+        currentFlatmates: currentFlatmates,
       },
       { new: true },
     );

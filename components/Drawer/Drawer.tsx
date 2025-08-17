@@ -16,6 +16,7 @@ import { View } from '@/components/View/View';
 import { Box } from '../Box';
 import { Text } from '../Text';
 import { useAuth } from '../../context/AuthContext';
+import { useQueryClient } from '@tanstack/react-query';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -46,6 +47,8 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
   const { token, setAuth } = useAuth();
 
   const isLoggedIn = !!token;
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     Keyboard.dismiss();
@@ -142,7 +145,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
                     onPress: () => {
                       onClose();
                       setAuth(null, null, null);
-                      router.replace('/');
+                      queryClient.clear();
                     },
                   },
                 ]);

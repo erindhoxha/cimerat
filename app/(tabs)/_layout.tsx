@@ -8,10 +8,11 @@ export default function TabLayout() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <Tabs
+        initialRouteName="index"
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: Colors.yellow, // or any color you want
+            backgroundColor: Colors.yellow,
             borderTopColor: 'transparent',
           },
         }}

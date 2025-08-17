@@ -119,6 +119,8 @@ export default function ItemDetailScreen() {
   const isExpired = listingHasExpired(data?.createdAt);
   const liked = userData?.user?.likedListings?.includes(data?._id as unknown as Listing);
 
+  console.log('Listing data', data?.flatmateGender);
+
   return (
     data && (
       <Box flex={1} style={styles.container}>
@@ -154,10 +156,14 @@ export default function ItemDetailScreen() {
               <Text fontSize="xl" fontWeight="bold" style={{ flexShrink: 1 }}>
                 {data.city}, {data.neighborhood}
               </Text>
-              {isLoggedIn && !isOwner && (
+              {!isOwner && (
                 <Pressable
                   onPress={() => {
-                    like(data._id);
+                    if (!isLoggedIn) {
+                      router.push('/login');
+                    } else {
+                      like(data._id);
+                    }
                   }}
                   style={({ pressed }) => [
                     {

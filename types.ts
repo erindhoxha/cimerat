@@ -15,6 +15,9 @@ export interface Listing {
   neighborhood: string;
   phone: string;
   user: User;
+  rooms?: string;
+  flatmateGender?: string;
+  currentFlatmates?: string;
   createdAt: Date;
   updatedAt: Date;
   blurhash?: string;

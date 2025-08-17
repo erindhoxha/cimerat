@@ -21,6 +21,9 @@ const formSchema = z.object({
       }),
     )
     .min(1, 'Duhet të ngarkoni së paku një foto'),
+  flatmateGender: z.string().optional(),
+  currentFlatmates: z.string().optional(),
+  rooms: z.string().optional(),
 });
 
 export default formSchema;

@@ -2,7 +2,7 @@ import { Box } from '@/components/Box';
 import { Button } from '@/components/Button';
 import { useAuth } from '@/context/AuthContext';
 import { Text } from '@/components/Text';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet } from 'react-native';
 import Input from '@/components/Input';
 import Label from '@/components/Label';
@@ -77,6 +77,8 @@ export default function ProfileScreen() {
     );
   }
 
+  const queryClient = useQueryClient();
+
   const {
     user: { username },
   } = data;
@@ -125,8 +127,8 @@ export default function ProfileScreen() {
           <Button variant="primary" onPress={onSubmitHandler}>
             {loading ? (
               <Box flexDirection="row" gap={4}>
-                <ActivityIndicator size="small" />
-                <Text>Duke ngarkuar...</Text>
+                <Text>Duke ndryshuar...</Text>
+                <ActivityIndicator size="small" color="#000" />
               </Box>
             ) : (
               <Text>Ndrysho të dhënat e profilit</Text>
@@ -144,7 +146,7 @@ export default function ProfileScreen() {
           <Button
             variant="danger"
             onPress={() => {
-              Alert.alert('Dilja', 'A jeni i sigurt që doni të dilni?', [
+              Alert.alert('Dalja', 'A jeni i sigurt që doni të dilni?', [
                 {
                   text: 'Anulo',
                   style: 'cancel',
@@ -154,6 +156,7 @@ export default function ProfileScreen() {
                   style: 'destructive',
                   onPress: () => {
                     setAuth(null, null, null);
+                    queryClient.clear();
                     router.replace('/');
                   },
                 },

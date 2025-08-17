@@ -22,6 +22,7 @@ interface DropdownFieldProps {
   search?: boolean;
   searchPlaceHolder?: string;
   searchPlaceHolderColor?: string;
+  defaultValue?: string;
 }
 
 interface SelectValueProps {
@@ -68,6 +69,7 @@ export function DropdownField({
   rules,
   error,
   required,
+  defaultValue,
   dropdownStyle,
   ...dropdownProps
 }: DropdownFieldProps) {
@@ -81,6 +83,7 @@ export function DropdownField({
         control={control}
         name={name}
         rules={rules}
+        defaultValue={defaultValue}
         render={({ field: { onChange, value } }) => (
           <SelectDropdown
             data={options}

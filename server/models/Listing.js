@@ -47,6 +47,18 @@ const listingSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    rooms: {
+      type: String,
+      required: false,
+    },
+    flatmateGender: {
+      type: String,
+      required: false,
+    },
+    currentFlatmates: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,
