@@ -154,7 +154,7 @@ export default function ItemDetailScreen() {
               <Text fontSize="xl" fontWeight="bold" style={{ flexShrink: 1 }}>
                 {data.city}, {data.neighborhood}
               </Text>
-              {isLoggedIn && (
+              {isLoggedIn && !isOwner && (
                 <Pressable
                   onPress={() => {
                     like(data._id);

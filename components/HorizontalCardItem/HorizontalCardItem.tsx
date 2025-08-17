@@ -9,15 +9,18 @@ import { Button } from '../Button';
 import { Listing } from '@/types';
 import { formatDate, listingHasExpired } from '@/utils';
 import { BLURHASH_TRANSITION } from '@/constants/global';
+import { useAuth } from '@/context/AuthContext';
 interface HorizontalCardItemProps {
   item: Listing;
   router: Router;
 }
 
 export const HorizontalCardItem = ({
-  item: { images, _id, city, neighborhood, createdAt, price, description, blurhash },
+  item: { images, _id, city, neighborhood, createdAt, price, description, blurhash, user },
   router,
 }: HorizontalCardItemProps) => {
+  const { userId } = useAuth();
+  const isOwner = user?._id === userId;
   const isExpired = listingHasExpired(createdAt);
   return (
     <View style={styles.listCard}>
@@ -50,13 +53,15 @@ export const HorizontalCardItem = ({
           {description}
         </Text>
         <Box flexDirection="row" gap={8} alignSelf="flex-start" marginTop={8}>
-          <Button
-            disabled={isExpired}
-            variant={!isExpired ? 'primary' : 'secondary'}
-            onPress={() => router.push(`/edit/${_id}`)}
-          >
-            Ndrysho listimin
-          </Button>
+          {isOwner && (
+            <Button
+              disabled={isExpired}
+              variant={!isExpired ? 'primary' : 'secondary'}
+              onPress={() => router.push(`/edit/${_id}`)}
+            >
+              Ndrysho listimin
+            </Button>
+          )}
           <Button
             variant={!isExpired ? 'tertiary' : 'secondary'}
             disabled={isExpired}
