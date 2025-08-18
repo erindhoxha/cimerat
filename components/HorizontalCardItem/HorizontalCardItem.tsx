@@ -59,7 +59,7 @@ export const HorizontalCardItem = ({
               variant={!isExpired ? 'primary' : 'secondary'}
               onPress={() => router.push(`/edit/${_id}`)}
             >
-              Ndrysho listimin
+              Modifiko listimin
             </Button>
           )}
           <Button

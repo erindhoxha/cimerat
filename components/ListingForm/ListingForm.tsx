@@ -140,7 +140,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
     <ScrollView style={styles.container}>
       <Box marginBottom={20}>
         <Text fontSize="xl" fontWeight="bold">
-          {isEditing ? 'Ndrysho Listimin' : 'Krijo Listimin'}
+          {isEditing ? 'Modifiko Listimin' : 'Krijo Listimin'}
         </Text>
       </Box>
       <Box gap={12} paddingBottom={80}>
@@ -197,25 +197,22 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
         <Controller
           control={control}
           name="price"
-          render={({ field: { onChange, value } }) => {
-            console.log(typeof value);
-            return (
-              <Input
-                value={value?.toString()}
-                label="Çmimi në euro (€)"
-                maxLength={6}
-                required
-                placeholder="300"
-                keyboardType="numeric"
-                inputMode="numeric"
-                error={errors.price?.message}
-                onChangeText={(text) => {
-                  const numericValue = text.replace(/[^0-9]/g, '');
-                  onChange(numericValue);
-                }}
-              />
-            );
-          }}
+          render={({ field: { onChange, value } }) => (
+            <Input
+              value={value?.toString()}
+              label="Çmimi në euro (€)"
+              maxLength={6}
+              required
+              placeholder="300"
+              keyboardType="numeric"
+              inputMode="numeric"
+              error={errors.price?.message}
+              onChangeText={(text) => {
+                const numericValue = text.replace(/[^0-9]/g, '');
+                onChange(numericValue);
+              }}
+            />
+          )}
         />
         <Controller
           control={control}
@@ -280,7 +277,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
               <ActivityIndicator color="#000" />
             </Box>
           ) : isEditing ? (
-            'Ndrysho Listimin'
+            'Modifiko Listimin'
           ) : (
             'Krijo Listimin'
           )}

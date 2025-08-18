@@ -110,12 +110,6 @@ export default function TabOneScreen() {
     initialPageParam: 0,
     queryKey: ['listings', selectedCities, selectedNeighborhoods, selectedPriceFrom, selectedPriceTo],
     queryFn: async ({ pageParam = 0 }) => {
-      console.log('Fetching listings with params:', {
-        selectedCities,
-        selectedNeighborhoods,
-        selectedPriceFrom,
-        selectedPriceTo,
-      });
       const params = new URLSearchParams();
       selectedCities.forEach((city) => params.append('city', city));
       selectedNeighborhoods.forEach((n) => params.append('neighborhood', n));
@@ -146,6 +140,12 @@ export default function TabOneScreen() {
       </Box>
     );
   }
+
+  const showFilter =
+    selectedPriceFrom !== null ||
+    selectedPriceTo !== null ||
+    selectedCities.length > 0 ||
+    selectedNeighborhoods.length > 0;
 
   return (
     <Box style={styles.container}>
@@ -346,24 +346,30 @@ export default function TabOneScreen() {
                 </Box>
               </Box>
             </Box>
-            {(selectedPriceFrom !== null ||
-              selectedPriceTo !== null ||
-              selectedCities.length > 0 ||
-              selectedNeighborhoods.length > 0) && (
-              <Box flexDirection="row" justifyContent="flex-end" alignItems="flex-end">
-                <Text
-                  style={styles.filter}
-                  onPress={() => {
-                    setSelectedCities([]);
-                    setSelectedNeighborhoods([]);
-                    setSelectedPriceFrom(null);
-                    setSelectedPriceTo(null);
-                  }}
-                >
-                  Pastro filtrat
-                </Text>
-              </Box>
-            )}
+            <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+              <Text
+                style={{
+                  width: showFilter ? '75%' : '100%',
+                }}
+              >
+                Listimet janë renditur sipas datës së krijimit.
+              </Text>
+              {showFilter && (
+                <Box flexDirection="row">
+                  <Text
+                    style={styles.filter}
+                    onPress={() => {
+                      setSelectedCities([]);
+                      setSelectedNeighborhoods([]);
+                      setSelectedPriceFrom(null);
+                      setSelectedPriceTo(null);
+                    }}
+                  >
+                    Pastro filtrat
+                  </Text>
+                </Box>
+              )}
+            </Box>
           </Box>
         )}
       />

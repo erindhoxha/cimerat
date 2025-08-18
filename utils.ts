@@ -19,8 +19,6 @@ export const buildListingFormData = (
     }
   });
 
-  console.log('FORM DATA', formData);
-
   images.forEach((img, idx) => {
     formData.append('images', {
       uri: img.uri,

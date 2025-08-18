@@ -119,8 +119,6 @@ export default function ItemDetailScreen() {
   const isExpired = listingHasExpired(data?.createdAt);
   const liked = userData?.user?.likedListings?.includes(data?._id as unknown as Listing);
 
-  console.log('Listing data', data?.flatmateGender);
-
   return (
     data && (
       <Box flex={1} style={styles.container}>
@@ -152,16 +150,15 @@ export default function ItemDetailScreen() {
                 />
               </Box>
             )}
-
-            <Box flexDirection="row" alignItems="flex-start" justifyContent="space-between" width="100%">
-              <Box>
+            <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="100%">
+              <Box style={{ flexShrink: 1, flexGrow: 1, minWidth: 0 }}>
                 <Box>
                   <Text>
                     Postuar nga <Text fontWeight="bold">{data.user.username}</Text>
                   </Text>
                 </Box>
                 <Box marginTop={8} marginBottom={8}>
-                  <Text fontSize="xl" fontWeight="bold" style={{ flexShrink: 1 }}>
+                  <Text fontSize="xl" fontWeight="bold" numberOfLines={1} ellipsizeMode="tail" style={{ minWidth: 0 }}>
                     {data.city}, {data.neighborhood}
                   </Text>
                 </Box>
@@ -181,6 +178,7 @@ export default function ItemDetailScreen() {
                       opacity: pressed ? 0.7 : 1,
                       borderRadius: 8,
                       padding: 8,
+                      marginLeft: 8,
                     },
                   ]}
                 >
@@ -251,7 +249,7 @@ export default function ItemDetailScreen() {
               disabled={isExpired}
               onPress={() => router.push(`/edit/${data._id}`)}
             >
-              Ndrysho listimin
+              Modifiko listimin
             </Button>
           )}
         </Box>

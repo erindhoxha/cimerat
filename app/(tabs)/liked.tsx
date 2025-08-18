@@ -61,7 +61,7 @@ export default function Liked() {
       ) : (
         <Box gap={12}>
           <Text fontSize="xl" fontWeight="bold">
-            Listimet e ruajtura
+            Listimet e preferuara
           </Text>
         </Box>
       )}

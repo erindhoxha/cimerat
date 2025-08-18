@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { View } from '../View/View';
 import { Image } from 'expo-image';
-import { Pressable, StyleSheet, TouchableOpacity } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { Text } from '../Text';
 import { Box } from '../Box';
 import { FontAwesome } from '@expo/vector-icons';
@@ -25,6 +25,9 @@ export const CardItem = ({
   price,
   _id,
   createdAt,
+  currentFlatmates,
+  flatmateGender,
+  rooms,
   blurhash,
 }: Listing) => {
   const router = useRouter();
@@ -34,6 +37,8 @@ export const CardItem = ({
   const isOwner = user?._id === userId;
 
   const isExpired = listingHasExpired(createdAt);
+
+  console.log(flatmateGender);
 
   return (
     <Pressable
@@ -62,6 +67,55 @@ export const CardItem = ({
           <View style={styles.topCardContent}>
             <Box flexDirection="row" justifyContent="space-between" flex={1} gap={12} flexWrap="wrap">
               <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start">
+                <Box
+                  flexDirection="row"
+                  alignItems="center"
+                  paddingHorizontal={8}
+                  paddingVertical={4}
+                  borderRadius={24}
+                  gap={12}
+                  style={{
+                    borderWidth: 1,
+                    borderColor: Colors.gray,
+                    marginBottom: 12,
+                  }}
+                >
+                  {rooms && (
+                    <Box flexDirection="row" alignItems="center" gap={4}>
+                      <Text>{rooms}</Text>
+                      <FontAwesome name="bed" size={12} />
+                    </Box>
+                  )}
+                  {currentFlatmates && (
+                    <Box
+                      flexDirection="row"
+                      alignItems="center"
+                      style={{
+                        gap: 4,
+                      }}
+                    >
+                      <Text>{currentFlatmates}</Text>
+                      <FontAwesome name="user" size={16} />
+                    </Box>
+                  )}
+                  {flatmateGender === 'Mashkull' ? (
+                    <Box flexDirection="row" alignItems="center" gap={4}>
+                      <Text>M</Text>
+                      <FontAwesome name="male" size={16} />
+                    </Box>
+                  ) : flatmateGender === 'Femër' ? (
+                    <Box flexDirection="row" alignItems="center" gap={4}>
+                      <Text>F</Text>
+                      <FontAwesome name="female" size={16} />
+                    </Box>
+                  ) : (
+                    <Box flexDirection="row" alignItems="center" gap={4}>
+                      <Text>M/F</Text>
+                      <FontAwesome name="male" size={16} />
+                      <FontAwesome name="female" size={16} />
+                    </Box>
+                  )}
+                </Box>
                 <Text style={styles.cardTitle}>{city + ', ' + neighborhood}</Text>
                 {isExpired ? (
                   <Text style={styles.expiredText}>❌ Skaduar</Text>
@@ -83,7 +137,7 @@ export const CardItem = ({
                   variant={isExpired ? 'secondary' : 'primary'}
                   onPress={() => router.push(`/edit/${_id}`)}
                 >
-                  Ndrysho listimin
+                  Modifiko listimin
                 </Button>
               </Box>
             )}

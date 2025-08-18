@@ -131,7 +131,7 @@ export default function ProfileScreen() {
                 <ActivityIndicator size="small" color="#000" />
               </Box>
             ) : (
-              <Text>Ndrysho të dhënat e profilit</Text>
+              <Text>Modifiko të dhënat e profilit</Text>
             )}
           </Button>
           {mutationError && <Text style={styles.errorText}>Error: {mutationError.message}</Text>}
