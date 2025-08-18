@@ -14,8 +14,12 @@ export const buildListingFormData = (
   const formData = new FormData();
 
   Object.entries(data).forEach(([k, v]) => {
-    formData.append(k, v as string);
+    if (v !== undefined && v !== null) {
+      formData.append(k, v as string);
+    }
   });
+
+  console.log('FORM DATA', formData);
 
   images.forEach((img, idx) => {
     formData.append('images', {

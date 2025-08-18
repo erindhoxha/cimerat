@@ -35,7 +35,10 @@ export default function RegisterScreen() {
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          username: data.username.toLowerCase(),
+          password: data.password,
+        }),
       });
       const json = await res.json();
       if (!res.ok) {

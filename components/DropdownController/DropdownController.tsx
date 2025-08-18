@@ -90,18 +90,20 @@ export function DropdownField({
             onSelect={onChange}
             disabled={disabled}
             searchInputStyle={styles.searchInputStyle}
-            renderButton={(_: any, isOpened: boolean) => (
-              <>
-                <SelectValue
-                  value={value}
-                  title={value || placeholder}
-                  isOpened={isOpened}
-                  placeholder={placeholder}
-                  disabled={disabled}
-                  error={error}
-                />
-              </>
-            )}
+            renderButton={(_: any, isOpened: boolean) => {
+              return (
+                <>
+                  <SelectValue
+                    value={value === 'undefined' ? undefined : value}
+                    title={value === 'undefined' ? undefined : value ?? placeholder ?? ''}
+                    isOpened={isOpened}
+                    placeholder={placeholder}
+                    disabled={disabled}
+                    error={error}
+                  />
+                </>
+              );
+            }}
             renderItem={(item: string, _: number, isSelected: boolean) => (
               <Box style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
                 <Text style={styles.dropdownItemTxtStyle}>{item}</Text>

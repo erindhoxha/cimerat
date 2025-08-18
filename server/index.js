@@ -35,7 +35,6 @@ app.get('/user', requireAuth, (req, res) => {
 
 app.get('/liked-listings', requireAuth, async (req, res) => {
   console.log('Getting liked listings for user:', req.user);
-
   try {
     const user = await User.findById(req.user._id).populate('likedListings');
     return res.status(200).json(user.likedListings);

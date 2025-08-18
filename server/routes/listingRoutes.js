@@ -30,23 +30,10 @@ router.get('/my-listings', requireAuth, async (req, res) => {
 });
 
 router.post('/listings', requireAuth, upload.array('images'), async (req, res) => {
-  console.log('Starting!');
   const { city, neighborhood, description, price, phone, rooms, flatmateGender, currentFlatmates } = req.body;
   const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
 
-  console.log('CURRENT FLATMATES', currentFlatmates);
-
-  if (
-    !city ||
-    !neighborhood ||
-    !description ||
-    !price ||
-    !phone ||
-    !rooms ||
-    !flatmateGender ||
-    !currentFlatmates ||
-    imagePaths.length === 0
-  ) {
+  if (!city || !neighborhood || !description || !price || !phone || imagePaths.length === 0) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 

@@ -11,7 +11,7 @@ import { Loading } from '@/components/Loading/Loading';
 import { Pill } from '@/components/Pill/Pill';
 import { BLURHASH_TRANSITION } from '@/constants/global';
 import { ReusableCarousel } from '@/components/Carousel/Carousel';
-import { formatKosovoPhone, listingHasExpired } from '@/utils';
+import { formatDate, formatKosovoPhone, listingHasExpired } from '@/utils';
 import Colors from '@/constants/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Toast from 'react-native-toast-message';
@@ -152,10 +152,20 @@ export default function ItemDetailScreen() {
                 />
               </Box>
             )}
-            <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="100%">
-              <Text fontSize="xl" fontWeight="bold" style={{ flexShrink: 1 }}>
-                {data.city}, {data.neighborhood}
-              </Text>
+
+            <Box flexDirection="row" alignItems="flex-start" justifyContent="space-between" width="100%">
+              <Box>
+                <Box>
+                  <Text>
+                    Postuar nga <Text fontWeight="bold">{data.user.username}</Text>
+                  </Text>
+                </Box>
+                <Box marginTop={8} marginBottom={8}>
+                  <Text fontSize="xl" fontWeight="bold" style={{ flexShrink: 1 }}>
+                    {data.city}, {data.neighborhood}
+                  </Text>
+                </Box>
+              </Box>
               {!isOwner && (
                 <Pressable
                   onPress={() => {
@@ -184,17 +194,40 @@ export default function ItemDetailScreen() {
                 </Pressable>
               )}
             </Box>
-            {isExpired ? <Text style={styles.expiredText}>❌ Skaduar</Text> : <Text>{data.price}€ për muaj</Text>}
+            {isExpired ? (
+              <Text style={styles.expiredText}>❌ Skaduar</Text>
+            ) : (
+              <Text>
+                <Text fontWeight="bold">Çmimi:</Text> {data.price}€ për muaj
+              </Text>
+            )}
           </Box>
-          <Text>{data.description || 'Përshkrimi i listimit nuk është i disponueshëm'}</Text>
-          <Box>
-            <Text>
-              Postuar nga <Text fontWeight="bold">{data.user.username}</Text>
-            </Text>
+          <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start">
+            {data.createdAt && (
+              <Text>
+                <Text fontWeight="bold">Data e postimit:</Text> {formatDate(data.createdAt)}
+              </Text>
+            )}
           </Box>
+          <Text>
+            <Text fontWeight="bold">Numri i Dhomave: </Text>
+            {data.rooms || 'Nuk është cekur'}
+          </Text>
+          <Text>
+            <Text fontWeight="bold">Numri i Cimerave: </Text>
+            {data.currentFlatmates || 'Nuk është cekur'}
+          </Text>
+          <Text>
+            <Text fontWeight="bold">Gjinia e preferuar: </Text>
+            {data.flatmateGender || 'Nuk është cekur'}
+          </Text>
+          <Text>
+            <Text fontWeight="bold">Mesazhi: </Text>
+            {data.description || 'Përshkrimi i listimit nuk është i disponueshëm'}
+          </Text>
           {data.phone && (
             <Text>
-              Tel:{' '}
+              <Text fontWeight="bold">Numri i telefonit: </Text>
               <Text
                 style={styles.link}
                 accessibilityRole="link"
