@@ -38,8 +38,6 @@ export const CardItem = ({
 
   const isExpired = listingHasExpired(createdAt);
 
-  console.log(flatmateGender);
-
   return (
     <Pressable
       style={styles.cardLink}

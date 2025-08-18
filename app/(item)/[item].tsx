@@ -261,7 +261,8 @@ export default function ItemDetailScreen() {
 const styles = StyleSheet.create({
   cardImage: {
     width: '100%',
-    height: 300,
+    height: '100%',
+    aspectRatio: 2,
     marginBottom: 20,
   },
   container: {
