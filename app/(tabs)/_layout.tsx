@@ -2,11 +2,14 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Tabs } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
 
 export default function TabLayout() {
+  const isWeb = Platform.OS === 'web';
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <GestureHandlerRootView style={[styles.container]}>
       <Tabs
         initialRouteName="index"
         screenOptions={{

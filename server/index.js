@@ -5,12 +5,14 @@ const bodyParser = require('body-parser');
 const app = express();
 const requireAuth = require('./middlewares/requireAuthentication');
 const User = require('./models/User');
+const cors = require('cors');
 
 const port = process.env.PORT || 3000;
 
 const authRoutes = require('./routes/authRoutes');
 const listingRoutes = require('./routes/listingRoutes');
 
+app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(authRoutes);

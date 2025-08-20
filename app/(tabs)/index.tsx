@@ -1,6 +1,6 @@
-import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { FlatList, Platform, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { CardItem } from '@/components/CardItem/CardItem';
 import { useRouter } from 'expo-router';
@@ -147,11 +147,23 @@ export default function TabOneScreen() {
     selectedCities.length > 0 ||
     selectedNeighborhoods.length > 0;
 
+  const { width } = useWindowDimensions();
+  const isWeb = Platform.OS === 'web';
+
+  const numColumns = useMemo(() => {
+    if (!isWeb) return 1;
+    if (width >= 1200) return 3;
+    if (width >= 800) return 2;
+    return 1;
+  }, [width, isWeb]);
+
   return (
-    <Box style={styles.container}>
+    <Box style={[styles.container]}>
       <FlatList
         data={listings}
         progressViewOffset={-5}
+        numColumns={numColumns}
+        key={numColumns}
         renderItem={({ item }) => <CardItem {...item} key={item.id} />}
         contentContainerStyle={styles.contentContainerStyle}
         onEndReached={() => {
@@ -160,6 +172,7 @@ export default function TabOneScreen() {
         onEndReachedThreshold={0.5}
         refreshing={isLoading}
         onRefresh={refetch}
+        columnWrapperStyle={isWeb && numColumns > 1 && { gap: 24 }}
         ListFooterComponent={
           isFetchingNextPage ? (
             <Box marginVertical={16}>

@@ -14,7 +14,6 @@ import { ReusableCarousel } from '@/components/Carousel/Carousel';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '../Button';
-import { differenceInDays } from 'date-fns';
 
 export const CardItem = ({
   city,
