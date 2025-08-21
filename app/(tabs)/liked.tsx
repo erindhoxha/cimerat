@@ -10,6 +10,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
+import { WebView } from '@/components/WebView/WebView';
 
 export default function Liked() {
   const { token } = useAuth();
@@ -41,8 +42,8 @@ export default function Liked() {
 
   return (
     <ScrollView style={styles.container}>
-      {!isLoggedIn ? (
-        <>
+      <WebView>
+        {!isLoggedIn ? (
           <Box marginTop={24} gap={12} style={styles.centeredBox}>
             <Box>
               <FontAwesome name="exclamation" size={48} color={Colors.danger} />
@@ -57,28 +58,28 @@ export default function Liked() {
               </Button>
             </Link>
           </Box>
-        </>
-      ) : (
-        <Box gap={12}>
-          <Text fontSize="xl" fontWeight="bold">
-            Listimet e preferuara
-          </Text>
-        </Box>
-      )}
-      {(isLoading || isRefetching) && (
-        <Box marginTop={24}>
-          <Loading />
-        </Box>
-      )}
-      {isLoggedIn && !isLoading && (
-        <Box marginTop={24}>
-          {!!data?.length ? (
-            data.map((item) => <HorizontalCardItem item={item} router={router} key={item._id} />)
-          ) : (
-            <Text style={styles.emptyText}>Nuk keni asnjë listim të ruajtur.</Text>
-          )}
-        </Box>
-      )}
+        ) : (
+          <Box gap={12}>
+            <Text fontSize="xl" fontWeight="bold">
+              Listimet e preferuara
+            </Text>
+          </Box>
+        )}
+        {(isLoading || isRefetching) && (
+          <Box marginTop={24}>
+            <Loading />
+          </Box>
+        )}
+        {isLoggedIn && !isLoading && (
+          <Box marginTop={24}>
+            {!!data?.length ? (
+              data.map((item) => <HorizontalCardItem item={item} router={router} key={item._id} />)
+            ) : (
+              <Text style={styles.emptyText}>Nuk keni asnjë listim të ruajtur.</Text>
+            )}
+          </Box>
+        )}
+      </WebView>
     </ScrollView>
   );
 }

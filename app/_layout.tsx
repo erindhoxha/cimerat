@@ -4,7 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { Link, Stack } from 'expo-router';
 import { useEffect } from 'react';
-import { Pressable, StyleSheet, TouchableOpacity, useColorScheme } from 'react-native';
+import { Platform, Pressable, StyleSheet, TouchableOpacity, useColorScheme, useWindowDimensions } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 export { ErrorBoundary } from 'expo-router';
 import 'react-native-reanimated';
@@ -59,10 +59,11 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
   const { openDrawer, closeDrawer, isOpen } = useDrawer();
 
   const { token } = useAuth();
+
+  const isWeb = Platform.OS === 'web';
 
   const isLoggedIn = !!token;
 
@@ -111,7 +112,7 @@ function RootLayoutNav() {
           name="login/index"
           options={{
             presentation: 'modal',
-            headerShown: false,
+            headerShown: isWeb,
             contentStyle: {
               backgroundColor: 'transparent',
             },
@@ -123,7 +124,7 @@ function RootLayoutNav() {
           name="register/index"
           options={{
             presentation: 'modal',
-            headerShown: false,
+            headerShown: isWeb,
             contentStyle: {
               backgroundColor: 'transparent',
             },

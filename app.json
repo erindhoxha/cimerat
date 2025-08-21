@@ -18,7 +18,8 @@
       "bundleIdentifier": "com.erindhoxha.cimerat",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "backgroundColor": "#ffffff"
     },
     "android": {
       "adaptiveIcon": {

@@ -10,6 +10,7 @@ import {
   Dimensions,
   Keyboard,
   Alert,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { View } from '@/components/View/View';
@@ -70,12 +71,21 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
 
   if (!visible) return null;
 
+  const isWeb = Platform.OS === 'web';
+  const isMobile = Dimensions.get('window').width < 768;
+
   return (
     <>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.overlay} />
       </TouchableWithoutFeedback>
-      <Animated.View style={[styles.drawer, { transform: [{ translateX: animation }], paddingTop: insets.top + 20 }]}>
+      <Animated.View
+        style={[
+          styles.drawer,
+          { transform: [{ translateX: animation }], paddingTop: insets.top + 20 },
+          isWeb && { maxWidth: 400 },
+        ]}
+      >
         <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
           <FontAwesome name="close" size={24} style={{ height: 24, width: 24, textAlign: 'center' }} />
         </TouchableOpacity>

@@ -5,7 +5,7 @@ import { Text } from '@/components/Text';
 import { cities } from '@/constants/Cities';
 import { neighborhoods } from '@/constants/Neighborhoods';
 import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -136,163 +136,177 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
     ]);
   };
 
+  const isWeb = Platform.OS === 'web';
+
   return (
     <ScrollView style={styles.container}>
-      <Box marginBottom={20}>
-        <Text fontSize="xl" fontWeight="bold">
-          {isEditing ? 'Modifiko Listimin' : 'Krijo Listimin'}
-        </Text>
-      </Box>
-      <Box gap={12} paddingBottom={80}>
-        <ImagePickerGrid
-          images={images}
-          onPick={pickImage}
-          onPreview={setPreviewImage}
-          onRemove={(idx) => {
-            const newImages = images.filter((_, i) => i !== idx);
-            setImages(newImages);
-            setValue('images', newImages);
-          }}
-          error={imageError}
-        />
-        <DropdownField
-          control={control}
-          name="city"
-          label="Qyteti"
-          options={cities}
-          placeholder="Zgjedh Qytetin"
-          error={errors.city?.message}
-          search
-          searchPlaceHolder="Kërko qytetin..."
-          searchPlaceHolderColor="#6c757d"
-        />
-        <DropdownField
-          control={control}
-          name="neighborhood"
-          label="Lagja"
-          options={selectedCity ? neighborhoods[selectedCity] : []}
-          placeholder="Zgjedh Lagjën"
-          disabled={!selectedCity}
-          error={errors.neighborhood?.message}
-          search
-          searchPlaceHolder="Kërko lagjën..."
-          searchPlaceHolderColor="#6c757d"
-        />
-        <Controller
-          control={control}
-          name="description"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              label="Përshkrimi"
-              placeholder="Përshkrimi"
-              multiline
-              numberOfLines={20}
-              required
-              error={errors.description?.message}
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="price"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              value={value?.toString()}
-              label="Çmimi në euro (€)"
-              maxLength={6}
-              required
-              placeholder="300"
-              keyboardType="numeric"
-              inputMode="numeric"
-              error={errors.price?.message}
-              onChangeText={(text) => {
-                const numericValue = text.replace(/[^0-9]/g, '');
-                onChange(numericValue);
-              }}
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="phone"
-          rules={{
-            required: 'Numri i telefonit është i detyrueshëm',
-            validate: (value) =>
-              isValidPhoneNumber(value, 'XK') // XK = Kosovo
-                ? true
-                : 'Numri duhet të jetë valid për Kosovë',
-          }}
-          render={({ field: { onChange, value } }) => (
-            <Input
-              value={value}
-              label="Numri i telefonit"
-              maxLength={15}
-              required
-              placeholder="048123456 ose +38348123456"
-              keyboardType="phone-pad"
-              inputMode="numeric"
-              error={errors.phone?.message}
-              onChangeText={(text) => {
-                const numericValue = text.replace(/[^0-9+]/g, '');
-                onChange(numericValue);
-              }}
-            />
-          )}
-        />
-        <DropdownField
-          control={control}
-          name="flatmateGender"
-          label="Gjinia e preferuar e bashkëbanuesit/es"
-          options={genders}
-          placeholder="Zgjedh gjininë"
-          defaultValue={genders[2]}
-          error={errors.flatmateGender?.message}
-        />
-        <DropdownField
-          control={control}
-          name="currentFlatmates"
-          label="Numri i bashkëbanuesve ekzistues"
-          options={cimerat}
-          placeholder="Zgjedh numrin"
-          error={errors.currentFlatmates?.message}
-        />
-        <DropdownField
-          control={control}
-          name="rooms"
-          label="Numri i dhomave në total"
-          options={numriIDhomave}
-          placeholder="Zgjedh numrin"
-          error={errors.rooms?.message}
-        />
-        <Button
-          variant="primary"
-          style={styles.submitButton}
-          onPress={handleSubmit((data) => onSubmit(data, images), onFormError)}
-        >
-          {isSubmitting ? (
-            <Box flexDirection="row" gap={4} alignItems="center">
-              <Text>{isEditing ? 'Duke Ndryshuar...' : 'Duke Krijuar...'}</Text>
-              <ActivityIndicator color="#000" />
-            </Box>
-          ) : isEditing ? (
-            'Modifiko Listimin'
-          ) : (
-            'Krijo Listimin'
-          )}
-        </Button>
-        {isEditing && (
-          <Text style={styles.deleteButton} onPress={handleDelete}>
-            Fshi Listimin
+      <Box
+        style={
+          isWeb && {
+            maxWidth: 1028,
+            width: '100%',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            minHeight: '100%',
+          }
+        }
+      >
+        <Box marginBottom={20}>
+          <Text fontSize="xl" fontWeight="bold">
+            {isEditing ? 'Modifiko Listimin' : 'Krijo Listimin'}
           </Text>
-        )}
+        </Box>
+        <Box gap={12} paddingBottom={80}>
+          <ImagePickerGrid
+            images={images}
+            onPick={pickImage}
+            onPreview={setPreviewImage}
+            onRemove={(idx) => {
+              const newImages = images.filter((_, i) => i !== idx);
+              setImages(newImages);
+              setValue('images', newImages);
+            }}
+            error={imageError}
+          />
+          <DropdownField
+            control={control}
+            name="city"
+            label="Qyteti"
+            options={cities}
+            placeholder="Zgjedh Qytetin"
+            error={errors.city?.message}
+            search
+            searchPlaceHolder="Kërko qytetin..."
+            searchPlaceHolderColor="#6c757d"
+          />
+          <DropdownField
+            control={control}
+            name="neighborhood"
+            label="Lagja"
+            options={selectedCity ? neighborhoods[selectedCity] : []}
+            placeholder="Zgjedh Lagjën"
+            disabled={!selectedCity}
+            error={errors.neighborhood?.message}
+            search
+            searchPlaceHolder="Kërko lagjën..."
+            searchPlaceHolderColor="#6c757d"
+          />
+          <Controller
+            control={control}
+            name="description"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label="Përshkrimi"
+                placeholder="Përshkrimi"
+                multiline
+                numberOfLines={20}
+                required
+                error={errors.description?.message}
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="price"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                value={value?.toString()}
+                label="Çmimi në euro (€)"
+                maxLength={6}
+                required
+                placeholder="300"
+                keyboardType="numeric"
+                inputMode="numeric"
+                error={errors.price?.message}
+                onChangeText={(text) => {
+                  const numericValue = text.replace(/[^0-9]/g, '');
+                  onChange(numericValue);
+                }}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="phone"
+            rules={{
+              required: 'Numri i telefonit është i detyrueshëm',
+              validate: (value) =>
+                isValidPhoneNumber(value, 'XK') // XK = Kosovo
+                  ? true
+                  : 'Numri duhet të jetë valid për Kosovë',
+            }}
+            render={({ field: { onChange, value } }) => (
+              <Input
+                value={value}
+                label="Numri i telefonit"
+                maxLength={15}
+                required
+                placeholder="048123456 ose +38348123456"
+                keyboardType="phone-pad"
+                inputMode="numeric"
+                error={errors.phone?.message}
+                onChangeText={(text) => {
+                  const numericValue = text.replace(/[^0-9+]/g, '');
+                  onChange(numericValue);
+                }}
+              />
+            )}
+          />
+          <DropdownField
+            control={control}
+            name="flatmateGender"
+            label="Gjinia e preferuar e bashkëbanuesit/es"
+            options={genders}
+            placeholder="Zgjedh gjininë"
+            defaultValue={genders[2]}
+            error={errors.flatmateGender?.message}
+          />
+          <DropdownField
+            control={control}
+            name="currentFlatmates"
+            label="Numri i bashkëbanuesve ekzistues"
+            options={cimerat}
+            placeholder="Zgjedh numrin"
+            error={errors.currentFlatmates?.message}
+          />
+          <DropdownField
+            control={control}
+            name="rooms"
+            label="Numri i dhomave në total"
+            options={numriIDhomave}
+            placeholder="Zgjedh numrin"
+            error={errors.rooms?.message}
+          />
+          <Button
+            variant="primary"
+            style={styles.submitButton}
+            onPress={handleSubmit((data) => onSubmit(data, images), onFormError)}
+          >
+            {isSubmitting ? (
+              <Box flexDirection="row" gap={4} alignItems="center">
+                <Text>{isEditing ? 'Duke Ndryshuar...' : 'Duke Krijuar...'}</Text>
+                <ActivityIndicator color="#000" />
+              </Box>
+            ) : isEditing ? (
+              'Modifiko Listimin'
+            ) : (
+              'Krijo Listimin'
+            )}
+          </Button>
+          {isEditing && (
+            <Text style={styles.deleteButton} onPress={handleDelete}>
+              Fshi Listimin
+            </Text>
+          )}
+        </Box>
+        <Modal visible={!!previewImage} transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>
+          <Pressable style={styles.previewOverlay} onPress={() => setPreviewImage(null)}>
+            {previewImage && <Image source={{ uri: previewImage }} style={styles.previewImage} contentFit="contain" />}
+          </Pressable>
+        </Modal>
       </Box>
-      <Modal visible={!!previewImage} transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>
-        <Pressable style={styles.previewOverlay} onPress={() => setPreviewImage(null)}>
-          {previewImage && <Image source={{ uri: previewImage }} style={styles.previewImage} contentFit="contain" />}
-        </Pressable>
-      </Modal>
     </ScrollView>
   );
 }

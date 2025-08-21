@@ -1,6 +1,6 @@
 import { Image as ExpoImage } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { Text } from '@/components/Text';
 import { Box } from '@/components/Box';
 import { useAuth } from '@/context/AuthContext';
@@ -15,6 +15,7 @@ import { formatDate, formatKosovoPhone, listingHasExpired } from '@/utils';
 import Colors from '@/constants/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Toast from 'react-native-toast-message';
+import { WebView } from '@/components/WebView/WebView';
 
 export default function ItemDetailScreen() {
   const { item, imageIndex } = useLocalSearchParams();
@@ -119,147 +120,158 @@ export default function ItemDetailScreen() {
   const isExpired = listingHasExpired(data?.createdAt);
   const liked = userData?.user?.likedListings?.includes(data?._id as unknown as Listing);
 
+  const isWeb = Platform.OS === 'web';
   return (
     data && (
       <ScrollView style={styles.scrollViewContainer}>
         <Box flex={1}>
-          <ReusableCarousel
-            data={data.images}
-            defaultIndex={typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) : 0}
-            renderItem={({ item, index }) => {
-              return (
-                <ExpoImage
-                  style={styles.cardImage}
-                  source={{
-                    uri: `${process.env.EXPO_PUBLIC_API_URL}${item}`,
-                  }}
-                  placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
-                  contentFit="cover"
-                  transition={BLURHASH_TRANSITION}
-                />
-              );
-            }}
-          />
-          <Box flex={1} paddingHorizontal={20} gap={12}>
-            <Box flexDirection="column" justifyContent="space-between" gap={4} marginTop={20} alignItems="flex-start">
-              {data.user.verified && (
-                <Box flexDirection="row" gap={8} marginBottom={8}>
-                  <Pill
-                    title={'Personi i verifikuar'}
-                    variant="yellow"
-                    iconLeft={<FontAwesome name="check" size={12} color="#000" />}
-                  />
-                </Box>
-              )}
-              <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="100%">
-                <Box style={{ flexShrink: 1, flexGrow: 1, minWidth: 0 }}>
-                  <Box>
-                    <Text>
-                      Postuar nga <Text fontWeight="bold">{data.user.username}</Text>
-                    </Text>
-                  </Box>
-                  <Box marginTop={8} marginBottom={8}>
-                    <Text
-                      fontSize="xl"
-                      fontWeight="bold"
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                      style={{ minWidth: 0 }}
-                    >
-                      {data.city}, {data.neighborhood}
-                    </Text>
-                  </Box>
-                </Box>
-                {!isOwner && (
-                  <Pressable
-                    onPress={() => {
-                      if (!isLoggedIn) {
-                        router.push('/login');
-                      } else {
-                        like(data._id);
-                      }
+          <WebView>
+            <ReusableCarousel
+              style={
+                isWeb
+                  ? {
+                      maxHeight: 320,
+                      width: '100%',
+                    }
+                  : undefined
+              }
+              data={data.images}
+              defaultIndex={typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) : 0}
+              renderItem={({ item, index }) => {
+                return (
+                  <ExpoImage
+                    style={styles.cardImage}
+                    source={{
+                      uri: `${process.env.EXPO_PUBLIC_API_URL}${item}`,
                     }}
-                    style={({ pressed }) => [
-                      {
-                        backgroundColor: pressed ? '#eee' : 'transparent',
-                        opacity: pressed ? 0.7 : 1,
-                        borderRadius: 8,
-                        padding: 8,
-                        marginLeft: 8,
-                      },
-                    ]}
-                  >
+                    placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
+                    contentFit="cover"
+                    transition={BLURHASH_TRANSITION}
+                  />
+                );
+              }}
+            />
+            <Box flex={1} paddingHorizontal={20} gap={12}>
+              <Box flexDirection="column" justifyContent="space-between" gap={4} marginTop={20} alignItems="flex-start">
+                {data.user.verified && (
+                  <Box flexDirection="row" gap={8} marginBottom={8}>
+                    <Pill
+                      title={'Personi i verifikuar'}
+                      variant="yellow"
+                      iconLeft={<FontAwesome name="check" size={12} color="#000" />}
+                    />
+                  </Box>
+                )}
+                <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="100%">
+                  <Box style={{ flexShrink: 1, flexGrow: 1, minWidth: 0 }}>
                     <Box>
-                      {status === 'pending' ? (
-                        <ActivityIndicator size={24} color={Colors.yellow} />
-                      ) : (
-                        <FontAwesome name={liked ? 'heart' : 'heart-o'} size={24} color={Colors.yellow} />
-                      )}
+                      <Text>
+                        Postuar nga <Text fontWeight="bold">{data.user.username}</Text>
+                      </Text>
                     </Box>
-                  </Pressable>
+                    <Box marginTop={8} marginBottom={8}>
+                      <Text
+                        fontSize="xl"
+                        fontWeight="bold"
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={{ minWidth: 0 }}
+                      >
+                        {data.city}, {data.neighborhood}
+                      </Text>
+                    </Box>
+                  </Box>
+                  {!isOwner && (
+                    <Pressable
+                      onPress={() => {
+                        if (!isLoggedIn) {
+                          router.push('/login');
+                        } else {
+                          like(data._id);
+                        }
+                      }}
+                      style={({ pressed }) => [
+                        {
+                          backgroundColor: pressed ? '#eee' : 'transparent',
+                          opacity: pressed ? 0.7 : 1,
+                          borderRadius: 8,
+                          padding: 8,
+                          marginLeft: 8,
+                        },
+                      ]}
+                    >
+                      <Box>
+                        {status === 'pending' ? (
+                          <ActivityIndicator size={24} color={Colors.yellow} />
+                        ) : (
+                          <FontAwesome name={liked ? 'heart' : 'heart-o'} size={24} color={Colors.yellow} />
+                        )}
+                      </Box>
+                    </Pressable>
+                  )}
+                </Box>
+                {isExpired ? (
+                  <Text style={styles.expiredText}>❌ Skaduar</Text>
+                ) : (
+                  <Text>
+                    <Text fontWeight="bold">Çmimi:</Text> {data.price}€ për muaj
+                  </Text>
                 )}
               </Box>
-              {isExpired ? (
-                <Text style={styles.expiredText}>❌ Skaduar</Text>
-              ) : (
-                <Text>
-                  <Text fontWeight="bold">Çmimi:</Text> {data.price}€ për muaj
-                </Text>
-              )}
-            </Box>
-            <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start">
-              {data.createdAt && (
-                <Text>
-                  <Text fontWeight="bold">Data e postimit:</Text> {formatDate(data.createdAt)}
-                </Text>
-              )}
-            </Box>
-            <Text>
-              <Text fontWeight="bold">Numri i Dhomave: </Text>
-              {data.rooms || 'Nuk është cekur'}
-            </Text>
-            <Text>
-              <Text fontWeight="bold">Numri i Cimerave: </Text>
-              {data.currentFlatmates || 'Nuk është cekur'}
-            </Text>
-            <Text>
-              <Text fontWeight="bold">Gjinia e preferuar: </Text>
-              {data.flatmateGender || 'Nuk është cekur'}
-            </Text>
-            <Text>
-              <Text fontWeight="bold">Mesazhi: </Text>
-              {data.description || 'Përshkrimi i listimit nuk është i disponueshëm'}
-            </Text>
-            {data.phone && (
+              <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start">
+                {data.createdAt && (
+                  <Text>
+                    <Text fontWeight="bold">Data e postimit:</Text> {formatDate(data.createdAt)}
+                  </Text>
+                )}
+              </Box>
               <Text>
-                <Text fontWeight="bold">Numri i telefonit: </Text>
-                <Text
-                  style={styles.link}
-                  accessibilityRole="link"
-                  onPress={async () => {
-                    const url = `tel:${formatKosovoPhone(data.phone)}`;
-                    const supported = await Linking.canOpenURL(url);
-                    if (supported) {
-                      Linking.openURL(url);
-                    } else {
-                      console.warn("Can't handle tel link");
-                    }
-                  }}
-                >
-                  {formatKosovoPhone(data.phone)}
-                </Text>
+                <Text fontWeight="bold">Numri i Dhomave: </Text>
+                {data.rooms || 'Nuk është cekur'}
               </Text>
-            )}
-            {isOwner && (
-              <Button
-                variant={isExpired ? 'secondary' : 'primary'}
-                disabled={isExpired}
-                onPress={() => router.push(`/edit/${data._id}`)}
-              >
-                Modifiko listimin
-              </Button>
-            )}
-          </Box>
+              <Text>
+                <Text fontWeight="bold">Numri i Cimerave: </Text>
+                {data.currentFlatmates || 'Nuk është cekur'}
+              </Text>
+              <Text>
+                <Text fontWeight="bold">Gjinia e preferuar: </Text>
+                {data.flatmateGender || 'Nuk është cekur'}
+              </Text>
+              <Text>
+                <Text fontWeight="bold">Mesazhi: </Text>
+                {data.description || 'Përshkrimi i listimit nuk është i disponueshëm'}
+              </Text>
+              {data.phone && (
+                <Text>
+                  <Text fontWeight="bold">Numri i telefonit: </Text>
+                  <Text
+                    style={styles.link}
+                    accessibilityRole="link"
+                    onPress={async () => {
+                      const url = `tel:${formatKosovoPhone(data.phone)}`;
+                      const supported = await Linking.canOpenURL(url);
+                      if (supported) {
+                        Linking.openURL(url);
+                      } else {
+                        console.warn("Can't handle tel link");
+                      }
+                    }}
+                  >
+                    {formatKosovoPhone(data.phone)}
+                  </Text>
+                </Text>
+              )}
+              {isOwner && (
+                <Button
+                  variant={isExpired ? 'secondary' : 'primary'}
+                  disabled={isExpired}
+                  onPress={() => router.push(`/edit/${data._id}`)}
+                >
+                  Modifiko listimin
+                </Button>
+              )}
+            </Box>
+          </WebView>
         </Box>
       </ScrollView>
     )

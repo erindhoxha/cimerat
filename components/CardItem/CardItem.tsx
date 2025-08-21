@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { View } from '../View/View';
 import { Image } from 'expo-image';
-import { Pressable, StyleSheet } from 'react-native';
+import { Platform, Pressable, StyleSheet } from 'react-native';
 import { Text } from '../Text';
 import { Box } from '../Box';
 import { FontAwesome } from '@expo/vector-icons';
@@ -37,6 +37,8 @@ export const CardItem = ({
 
   const isExpired = listingHasExpired(createdAt);
 
+  const isWeb = Platform.OS === 'web';
+
   return (
     <Pressable
       style={styles.cardLink}
@@ -44,25 +46,42 @@ export const CardItem = ({
     >
       <View style={styles.card}>
         <ReusableCarousel
+          style={
+            isWeb
+              ? {
+                  maxHeight: 300,
+                }
+              : undefined
+          }
           data={images}
           onProgressChange={setCarouselIndex}
           renderItem={({ item }) => {
             return (
-              <Image
-                style={styles.cardImage}
-                source={{
-                  uri: `${process.env.EXPO_PUBLIC_API_URL}${item}`,
-                }}
-                placeholder={{ blurhash: blurhash || '' }}
-                contentFit="cover"
-                transition={BLURHASH_TRANSITION}
-              />
+              <Box style={styles.cardImage}>
+                <Image
+                  style={styles.cardImage}
+                  source={{
+                    uri: `${process.env.EXPO_PUBLIC_API_URL}${item}`,
+                  }}
+                  placeholder={{ blurhash: blurhash || '' }}
+                  contentFit="cover"
+                  transition={BLURHASH_TRANSITION}
+                />
+              </Box>
             );
           }}
         />
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
-            <Box flexDirection="row" justifyContent="space-between" flex={1} gap={12} flexWrap="wrap">
+            <Box
+              flexDirection="row"
+              justifyContent="space-between"
+              flex={1}
+              gap={12}
+              style={{
+                flexWrap: 'wrap',
+              }}
+            >
               <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start">
                 <Box
                   flexDirection="row"
@@ -77,13 +96,13 @@ export const CardItem = ({
                     marginBottom: 12,
                   }}
                 >
-                  {rooms && (
+                  {rooms && rooms !== 'undefined' && (
                     <Box flexDirection="row" alignItems="center" gap={4}>
                       <Text>{rooms}</Text>
-                      <FontAwesome name="bed" size={12} />
+                      <FontAwesome name="bed" size={16} />
                     </Box>
                   )}
-                  {currentFlatmates && (
+                  {currentFlatmates && currentFlatmates !== 'undefined' && (
                     <Box
                       flexDirection="row"
                       alignItems="center"
@@ -190,6 +209,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0553',
     height: 200,
+    position: 'relative',
   },
   topCardContent: {
     flexDirection: 'column',

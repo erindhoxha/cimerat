@@ -28,7 +28,7 @@ export default function EditScreen() {
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings/${id}`, {
         method: 'PUT',
         body: formData,
-        headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Gabim gjatë ndryshimit.');

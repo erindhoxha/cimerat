@@ -11,6 +11,7 @@ import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { FieldValues } from 'react-hook-form';
 import Toast from 'react-native-toast-message';
+import { WebView } from '@/components/WebView/WebView';
 
 interface Mutation {
   userId: string | null;
@@ -105,68 +106,70 @@ export default function ProfileScreen() {
   };
   return (
     <ScrollView style={styles.container}>
-      <Box marginBottom={12}>
-        <Text fontSize="xl" fontWeight="bold">
-          Profili juaj
-        </Text>
-      </Box>
-      <Box>
-        <Box marginBottom={12} gap={12} marginTop={12}>
-          <Box flexDirection="row" gap={4}>
-            <Label>Username:</Label>
-            <Text fontWeight="bold">{data?.user?.username ?? username}</Text>
-          </Box>
-          <Box>
-            <Label>Fjalëkalimi i vjetër</Label>
-            <Input placeholder="Fjalëkalimi juaj" secureTextEntry value={oldPassword} onChangeText={setOldPassword} />
-          </Box>
-          <Box>
-            <Label>Fjalëkalimi i ri</Label>
-            <Input placeholder="Fjalëkalimi i ri" secureTextEntry value={newPassword} onChangeText={setNewPassword} />
-          </Box>
-          <Button variant="primary" onPress={onSubmitHandler}>
-            {loading ? (
-              <Box flexDirection="row" gap={4}>
-                <Text>Duke ndryshuar...</Text>
-                <ActivityIndicator size="small" color="#000" />
-              </Box>
-            ) : (
-              <Text>Modifiko të dhënat e profilit</Text>
-            )}
-          </Button>
-          {mutationError && <Text style={styles.errorText}>Error: {mutationError.message}</Text>}
-        </Box>
-        <Box gap={12} marginTop={24}>
-          <Text fontSize="md" fontWeight="bold">
-            Veprime të tjera
+      <WebView>
+        <Box marginBottom={12}>
+          <Text fontSize="xl" fontWeight="bold">
+            Profili juaj
           </Text>
-          <Button variant="tertiary" onPress={() => router.push(`/your-listings`)}>
-            Shiko listimet e mia
-          </Button>
-          <Button
-            variant="danger"
-            onPress={() => {
-              Alert.alert('Dalja', 'A jeni i sigurt që doni të dilni?', [
-                {
-                  text: 'Anulo',
-                  style: 'cancel',
-                },
-                {
-                  text: 'Dil',
-                  style: 'destructive',
-                  onPress: () => {
-                    setAuth(null, null, null);
-                    queryClient.clear();
-                    router.replace('/');
-                  },
-                },
-              ]);
-            }}
-          >
-            Dil nga profili
-          </Button>
         </Box>
-      </Box>
+        <Box>
+          <Box marginBottom={12} gap={12} marginTop={12}>
+            <Box flexDirection="row" gap={4}>
+              <Label>Username:</Label>
+              <Text fontWeight="bold">{data?.user?.username ?? username}</Text>
+            </Box>
+            <Box>
+              <Label>Fjalëkalimi i vjetër</Label>
+              <Input placeholder="Fjalëkalimi juaj" secureTextEntry value={oldPassword} onChangeText={setOldPassword} />
+            </Box>
+            <Box>
+              <Label>Fjalëkalimi i ri</Label>
+              <Input placeholder="Fjalëkalimi i ri" secureTextEntry value={newPassword} onChangeText={setNewPassword} />
+            </Box>
+            <Button variant="primary" onPress={onSubmitHandler}>
+              {loading ? (
+                <Box flexDirection="row" gap={4}>
+                  <Text>Duke ndryshuar...</Text>
+                  <ActivityIndicator size="small" color="#000" />
+                </Box>
+              ) : (
+                <Text>Modifiko të dhënat e profilit</Text>
+              )}
+            </Button>
+            {mutationError && <Text style={styles.errorText}>Error: {mutationError.message}</Text>}
+          </Box>
+          <Box gap={12} marginTop={24}>
+            <Text fontSize="md" fontWeight="bold">
+              Veprime të tjera
+            </Text>
+            <Button variant="tertiary" onPress={() => router.push(`/your-listings`)}>
+              Shiko listimet e mia
+            </Button>
+            <Button
+              variant="danger"
+              onPress={() => {
+                Alert.alert('Dalja', 'A jeni i sigurt që doni të dilni?', [
+                  {
+                    text: 'Anulo',
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'Dil',
+                    style: 'destructive',
+                    onPress: () => {
+                      setAuth(null, null, null);
+                      queryClient.clear();
+                      router.replace('/');
+                    },
+                  },
+                ]);
+              }}
+            >
+              Dil nga profili
+            </Button>
+          </Box>
+        </Box>
+      </WebView>
     </ScrollView>
   );
 }

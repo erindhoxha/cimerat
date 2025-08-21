@@ -10,6 +10,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
+import { WebView } from '@/components/WebView/WebView';
 
 export default function TabTwoScreen() {
   const { token } = useAuth();
@@ -41,51 +42,53 @@ export default function TabTwoScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      {isLoggedIn && (
-        <Box gap={12}>
-          <Text fontSize="xl" fontWeight="bold">
-            Listimet e mia
-          </Text>
-          <Link href="/create" asChild>
-            <Button>
-              <Text>Krijo një listim të ri</Text>
-            </Button>
-          </Link>
-        </Box>
-      )}
-      {!isLoggedIn && (
-        <Box marginTop={24} gap={12} style={styles.centeredBox}>
-          <Box>
-            <FontAwesome name="exclamation" size={48} color={Colors.danger} />
-          </Box>
-          <Text fontSize="xl" fontWeight="bold">
-            Nuk jeni të kyçur
-          </Text>
-          <Text style={styles.text}>Ju lutemi, kyçuni për të krijuar listime ose për të parë listimet tuaja.</Text>
-          <Link href="/login" asChild>
-            <Button style={styles.fullWidthButton}>
-              <Text>Kyçu</Text>
-            </Button>
-          </Link>
-        </Box>
-      )}
-      {(isLoading || isRefetching) && (
-        <Box marginTop={24}>
-          <Loading />
-        </Box>
-      )}
-      {isLoggedIn && !isLoading && (
-        <Box marginTop={24}>
-          {!!data?.length ? (
-            data.map((item) => <HorizontalCardItem item={item} router={router} key={item._id} />)
-          ) : (
-            <Text style={styles.emptyText}>
-              Nuk keni asnjë listim të krijuar. Shtoni një listim të ri duke klikuar në butonin "Krijo" në skedën e
-              sipërme.
+      <WebView>
+        {isLoggedIn && (
+          <Box gap={12}>
+            <Text fontSize="xl" fontWeight="bold">
+              Listimet e mia
             </Text>
-          )}
-        </Box>
-      )}
+            <Link href="/create" asChild>
+              <Button>
+                <Text>Krijo një listim të ri</Text>
+              </Button>
+            </Link>
+          </Box>
+        )}
+        {!isLoggedIn && (
+          <Box marginTop={24} gap={12} style={styles.centeredBox}>
+            <Box>
+              <FontAwesome name="exclamation" size={48} color={Colors.danger} />
+            </Box>
+            <Text fontSize="xl" fontWeight="bold">
+              Nuk jeni të kyçur
+            </Text>
+            <Text style={styles.text}>Ju lutemi, kyçuni për të krijuar listime ose për të parë listimet tuaja.</Text>
+            <Link href="/login" asChild>
+              <Button style={styles.fullWidthButton}>
+                <Text>Kyçu</Text>
+              </Button>
+            </Link>
+          </Box>
+        )}
+        {(isLoading || isRefetching) && (
+          <Box marginTop={24}>
+            <Loading />
+          </Box>
+        )}
+        {isLoggedIn && !isLoading && (
+          <Box marginTop={24}>
+            {!!data?.length ? (
+              data.map((item) => <HorizontalCardItem item={item} router={router} key={item._id} />)
+            ) : (
+              <Text style={styles.emptyText}>
+                Nuk keni asnjë listim të krijuar. Shtoni një listim të ri duke klikuar në butonin "Krijo" në skedën e
+                sipërme.
+              </Text>
+            )}
+          </Box>
+        )}
+      </WebView>
     </ScrollView>
   );
 }

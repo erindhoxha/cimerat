@@ -1,6 +1,6 @@
-import { FlatList, Platform, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { FlatList, Platform, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { CardItem } from '@/components/CardItem/CardItem';
 import { useRouter } from 'expo-router';
@@ -19,6 +19,8 @@ import { MultiSelect } from 'react-native-element-dropdown';
 import { Pill } from '@/components/Pill/Pill';
 import Input from '@/components/Input';
 import { useAuth } from '@/context/AuthContext';
+import { View } from '@/components/View';
+import { WebView } from '@/components/WebView/WebView';
 
 const PAGE_SIZE = 20;
 
@@ -157,236 +159,241 @@ export default function TabOneScreen() {
     return 1;
   }, [width, isWeb]);
 
+  const Component = isWeb ? ScrollView : View;
+
   return (
-    <Box style={[styles.container]}>
-      <FlatList
-        data={listings}
-        progressViewOffset={-5}
-        numColumns={numColumns}
-        key={numColumns}
-        renderItem={({ item }) => <CardItem {...item} key={item.id} />}
-        contentContainerStyle={styles.contentContainerStyle}
-        onEndReached={() => {
-          if (hasNextPage && !isFetchingNextPage) fetchNextPage();
-        }}
-        onEndReachedThreshold={0.5}
-        refreshing={isLoading}
-        onRefresh={refetch}
-        columnWrapperStyle={isWeb && numColumns > 1 && { gap: 24 }}
-        ListFooterComponent={
-          isFetchingNextPage ? (
-            <Box marginVertical={16}>
-              <Loading />
-            </Box>
-          ) : null
-        }
-        ListEmptyComponent={() =>
-          isLoading ? (
-            <Box marginTop={24}>
-              <Loading />
-            </Box>
-          ) : (
-            <Box marginTop={24}>
-              <Text>Asnjë rezultat.</Text>
-            </Box>
-          )
-        }
-        ListHeaderComponent={() => (
-          <Box gap={12}>
-            {isLoggedIn && (
-              <Text fontSize="lg" fontWeight="bold">
-                <Text fontWeight="regular">Përshëndetje</Text>, {username}
-              </Text>
-            )}
-            <Box flex={1} flexDirection="row" gap={12}>
-              <Box flex={1}>
-                <Label>Qyteti</Label>
-                <MultiSelect
-                  style={dropdownStyles.multiSelectStyle}
-                  data={cities.map((c) => ({ label: c, value: c }))}
-                  labelField="label"
-                  valueField="value"
-                  placeholder="Zgjedh Qytetet"
-                  placeholderStyle={dropdownStyles.placeholderStyle}
-                  value={selectedCities}
-                  onChange={(value) => {
-                    setSelectedCities(value);
-                    if (value.length === 0) {
-                      setSelectedNeighborhoods([]);
-                    }
-                  }}
-                  showsVerticalScrollIndicator
-                  renderRightIcon={() => (
-                    <Box marginRight={12}>
-                      <FontAwesome name="chevron-down" size={16} color={Colors.gray} />
-                    </Box>
-                  )}
-                  renderSelectedItem={(item, unSelect) => (
-                    <TouchableOpacity
-                      onPress={unSelect}
-                      style={{
-                        marginTop: 4,
-                        marginRight: 4,
-                      }}
-                    >
-                      <Pill title={item.label} iconLeft={<FontAwesome name="times" size={12} color="#000" />} />
-                    </TouchableOpacity>
-                  )}
-                  renderInputSearch={(onSearch) => (
-                    <Box padding={12}>
-                      <Input autoFocus placeholder="Kërko lagjet..." onChangeText={onSearch} />
-                    </Box>
-                  )}
-                  search
-                  searchPlaceholder="Kërko qytetet..."
-                />
+    <Component style={[styles.container]}>
+      <WebView>
+        <FlatList
+          scrollEnabled
+          data={listings}
+          progressViewOffset={-5}
+          numColumns={numColumns}
+          key={numColumns}
+          renderItem={({ item }) => <CardItem {...item} key={item.id} />}
+          contentContainerStyle={styles.contentContainerStyle}
+          onEndReached={() => {
+            if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+          }}
+          onEndReachedThreshold={0.5}
+          refreshing={isLoading}
+          onRefresh={refetch}
+          columnWrapperStyle={isWeb && numColumns > 1 && { gap: 24 }}
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <Box marginVertical={16}>
+                <Loading />
               </Box>
-              <Box flex={1}>
-                <Label>Lagja</Label>
-                <MultiSelect
-                  style={[
-                    dropdownStyles.multiSelectStyle,
-                    selectedCities.length === 0 && dropdownStyles.disabledMultiSelectStyle,
-                  ]}
-                  showsVerticalScrollIndicator
-                  data={
-                    selectedCities.length > 0
-                      ? selectedCities.flatMap((city) =>
-                          (neighborhoods[city] || []).map((n) => ({ label: n, value: n })),
-                        )
-                      : []
-                  }
-                  renderRightIcon={() => (
-                    <Box marginRight={12}>
-                      <FontAwesome name="chevron-down" size={16} color={Colors.gray} />
-                    </Box>
-                  )}
-                  labelField="label"
-                  valueField="value"
-                  disable={selectedCities.length === 0}
-                  placeholder="Zgjedh Lagjet"
-                  placeholderStyle={dropdownStyles.placeholderStyle}
-                  value={selectedNeighborhoods}
-                  onChange={setSelectedNeighborhoods}
-                  dropdownPosition="bottom"
-                  renderInputSearch={(onSearch) => (
-                    <Box padding={12}>
-                      <Input autoFocus placeholder="Kërko lagjet..." onChangeText={onSearch} />
-                    </Box>
-                  )}
-                  selectedStyle={dropdownStyles.dropdownItemSelected}
-                  renderSelectedItem={(item, unSelect) => (
-                    <TouchableOpacity
-                      onPress={unSelect}
-                      style={{
-                        marginTop: 4,
-                        marginRight: 4,
-                      }}
-                    >
-                      <Pill title={item.label} iconLeft={<FontAwesome name="times" size={12} color="#000" />} />
-                    </TouchableOpacity>
-                  )}
-                  search
-                  searchPlaceholder="Kërko lagjet..."
-                />
+            ) : null
+          }
+          ListEmptyComponent={() =>
+            isLoading ? (
+              <Box marginTop={24}>
+                <Loading />
               </Box>
-            </Box>
-            <Box>
-              <Label>Çmimi për muaj</Label>
+            ) : (
+              <Box marginTop={24}>
+                <Text>Asnjë rezultat.</Text>
+              </Box>
+            )
+          }
+          ListHeaderComponent={() => (
+            <Box gap={12}>
+              {isLoggedIn && (
+                <Text fontSize="lg" fontWeight="bold">
+                  <Text fontWeight="regular">Përshëndetje</Text>, {username}
+                </Text>
+              )}
               <Box flex={1} flexDirection="row" gap={12}>
-                <Box flex={1} style={styles.flexShrink}>
-                  <SelectDropdown
-                    data={cmimi}
-                    onSelect={(selectedItem) => {
-                      setSelectedPriceFrom((prev) => {
-                        if (prev === selectedItem) {
-                          return null;
-                        }
-                        return selectedItem;
-                      });
-                      if (selectedPriceTo && selectedItem > selectedPriceTo) {
-                        setSelectedPriceTo(null);
+                <Box flex={1}>
+                  <Label>Qyteti</Label>
+                  <MultiSelect
+                    style={dropdownStyles.multiSelectStyle}
+                    data={cities.map((c) => ({ label: c, value: c }))}
+                    labelField="label"
+                    valueField="value"
+                    placeholder="Zgjedh Qytetet"
+                    placeholderStyle={dropdownStyles.placeholderStyle}
+                    value={selectedCities}
+                    onChange={(value) => {
+                      setSelectedCities(value);
+                      if (value.length === 0) {
+                        setSelectedNeighborhoods([]);
                       }
                     }}
-                    defaultValue={selectedPriceFrom}
-                    renderButton={(_, isOpened) => (
-                      <>
-                        <SelectButton
-                          title={(selectedPriceFrom && 'Nga ' + selectedPriceFrom + '€') || ''}
-                          isOpened={isOpened}
-                          placeholder="Nga"
-                        />
-                      </>
+                    showsVerticalScrollIndicator
+                    renderRightIcon={() => (
+                      <Box marginRight={12}>
+                        <FontAwesome name="chevron-down" size={16} color={Colors.gray} />
+                      </Box>
                     )}
-                    renderItem={(item, _, isSelected) => (
-                      <>
-                        <SelectItem item={item} isSelected={isSelected} />
-                      </>
+                    renderSelectedItem={(item, unSelect) => (
+                      <TouchableOpacity
+                        onPress={unSelect}
+                        style={{
+                          marginTop: 4,
+                          marginRight: 4,
+                        }}
+                      >
+                        <Pill title={item.label} iconLeft={<FontAwesome name="times" size={12} color="#000" />} />
+                      </TouchableOpacity>
                     )}
-                    showsVerticalScrollIndicator={false}
-                    dropdownStyle={dropdownStyles.dropdownMenuStyle}
+                    renderInputSearch={(onSearch) => (
+                      <Box padding={12}>
+                        <Input autoFocus placeholder="Kërko lagjet..." onChangeText={onSearch} />
+                      </Box>
+                    )}
+                    search
+                    searchPlaceholder="Kërko qytetet..."
                   />
                 </Box>
-                <Box flex={1} style={styles.flexShrink}>
-                  <SelectDropdown
-                    data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
-                    onSelect={(selectedItem) => {
-                      setSelectedPriceTo((prev) => {
-                        if (prev === selectedItem) {
-                          return null;
-                        }
-                        return selectedItem;
-                      });
-                    }}
-                    defaultValue={selectedPriceTo}
-                    renderButton={(_, isOpened) => (
-                      <>
-                        <SelectButton
-                          title={(selectedPriceTo && 'Deri në ' + selectedPriceTo + '€') || ''}
-                          isOpened={isOpened}
-                          placeholder="Deri në"
-                        />
-                      </>
+                <Box flex={1}>
+                  <Label>Lagja</Label>
+                  <MultiSelect
+                    style={[
+                      dropdownStyles.multiSelectStyle,
+                      selectedCities.length === 0 && dropdownStyles.disabledMultiSelectStyle,
+                    ]}
+                    showsVerticalScrollIndicator
+                    data={
+                      selectedCities.length > 0
+                        ? selectedCities.flatMap((city) =>
+                            (neighborhoods[city] || []).map((n) => ({ label: n, value: n })),
+                          )
+                        : []
+                    }
+                    renderRightIcon={() => (
+                      <Box marginRight={12}>
+                        <FontAwesome name="chevron-down" size={16} color={Colors.gray} />
+                      </Box>
                     )}
-                    renderItem={(item, _, isSelected) => (
-                      <>
-                        <SelectItem item={item} isSelected={isSelected} />
-                      </>
+                    labelField="label"
+                    valueField="value"
+                    disable={selectedCities.length === 0}
+                    placeholder="Zgjedh Lagjet"
+                    placeholderStyle={dropdownStyles.placeholderStyle}
+                    value={selectedNeighborhoods}
+                    onChange={setSelectedNeighborhoods}
+                    dropdownPosition="bottom"
+                    renderInputSearch={(onSearch) => (
+                      <Box padding={12}>
+                        <Input autoFocus placeholder="Kërko lagjet..." onChangeText={onSearch} />
+                      </Box>
                     )}
-                    showsVerticalScrollIndicator={false}
-                    dropdownStyle={dropdownStyles.dropdownMenuStyle}
+                    selectedStyle={dropdownStyles.dropdownItemSelected}
+                    renderSelectedItem={(item, unSelect) => (
+                      <TouchableOpacity
+                        onPress={unSelect}
+                        style={{
+                          marginTop: 4,
+                          marginRight: 4,
+                        }}
+                      >
+                        <Pill title={item.label} iconLeft={<FontAwesome name="times" size={12} color="#000" />} />
+                      </TouchableOpacity>
+                    )}
+                    search
+                    searchPlaceholder="Kërko lagjet..."
                   />
                 </Box>
               </Box>
-            </Box>
-            <Box flexDirection="row" justifyContent="space-between" alignItems="center">
-              <Text
-                style={{
-                  width: showFilter ? '75%' : '100%',
-                }}
-              >
-                Listimet janë renditur sipas datës së krijimit.
-              </Text>
-              {showFilter && (
-                <Box flexDirection="row">
-                  <Text
-                    style={styles.filter}
-                    onPress={() => {
-                      setSelectedCities([]);
-                      setSelectedNeighborhoods([]);
-                      setSelectedPriceFrom(null);
-                      setSelectedPriceTo(null);
-                    }}
-                  >
-                    Pastro filtrat
-                  </Text>
+              <Box>
+                <Label>Çmimi për muaj</Label>
+                <Box flex={1} flexDirection="row" gap={12}>
+                  <Box flex={1} style={styles.flexShrink}>
+                    <SelectDropdown
+                      data={cmimi}
+                      onSelect={(selectedItem) => {
+                        setSelectedPriceFrom((prev) => {
+                          if (prev === selectedItem) {
+                            return null;
+                          }
+                          return selectedItem;
+                        });
+                        if (selectedPriceTo && selectedItem > selectedPriceTo) {
+                          setSelectedPriceTo(null);
+                        }
+                      }}
+                      defaultValue={selectedPriceFrom}
+                      renderButton={(_, isOpened) => (
+                        <>
+                          <SelectButton
+                            title={(selectedPriceFrom && 'Nga ' + selectedPriceFrom + '€') || ''}
+                            isOpened={isOpened}
+                            placeholder="Nga"
+                          />
+                        </>
+                      )}
+                      renderItem={(item, _, isSelected) => (
+                        <>
+                          <SelectItem item={item} isSelected={isSelected} />
+                        </>
+                      )}
+                      showsVerticalScrollIndicator={false}
+                      dropdownStyle={dropdownStyles.dropdownMenuStyle}
+                    />
+                  </Box>
+                  <Box flex={1} style={styles.flexShrink}>
+                    <SelectDropdown
+                      data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
+                      onSelect={(selectedItem) => {
+                        setSelectedPriceTo((prev) => {
+                          if (prev === selectedItem) {
+                            return null;
+                          }
+                          return selectedItem;
+                        });
+                      }}
+                      defaultValue={selectedPriceTo}
+                      renderButton={(_, isOpened) => (
+                        <>
+                          <SelectButton
+                            title={(selectedPriceTo && 'Deri në ' + selectedPriceTo + '€') || ''}
+                            isOpened={isOpened}
+                            placeholder="Deri në"
+                          />
+                        </>
+                      )}
+                      renderItem={(item, _, isSelected) => (
+                        <>
+                          <SelectItem item={item} isSelected={isSelected} />
+                        </>
+                      )}
+                      showsVerticalScrollIndicator={false}
+                      dropdownStyle={dropdownStyles.dropdownMenuStyle}
+                    />
+                  </Box>
                 </Box>
-              )}
+              </Box>
+              <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+                <Text
+                  style={{
+                    width: showFilter ? '75%' : '100%',
+                  }}
+                >
+                  Listimet janë renditur sipas datës së krijimit.
+                </Text>
+                {showFilter && (
+                  <Box flexDirection="row">
+                    <Text
+                      style={styles.filter}
+                      onPress={() => {
+                        setSelectedCities([]);
+                        setSelectedNeighborhoods([]);
+                        setSelectedPriceFrom(null);
+                        setSelectedPriceTo(null);
+                      }}
+                    >
+                      Pastro filtrat
+                    </Text>
+                  </Box>
+                )}
+              </Box>
             </Box>
-          </Box>
-        )}
-      />
-    </Box>
+          )}
+        />
+      </WebView>
+    </Component>
   );
 }
 

@@ -44,13 +44,14 @@ export function ReusableCarousel<T>({
   const isCarousel = data.length > 1;
 
   return (
-    <View style={style}>
+    <View>
       <Carousel
         ref={ref}
         width={carouselWidth}
         height={carouselHeight}
         defaultIndex={defaultIndex}
         data={data}
+        style={style}
         onProgressChange={(offsetProgress, absoluteProgress) => {
           progresSharedValue.value = absoluteProgress;
           onProgressChange?.(absoluteProgress);
