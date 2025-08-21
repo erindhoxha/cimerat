@@ -13,6 +13,7 @@ export const WebView: React.FC<WebViewProps> = ({ children }) => {
         isWeb && {
           maxWidth: 1028,
           width: '100%',
+          paddingHorizontal: 20,
           marginLeft: 'auto',
           marginRight: 'auto',
           minHeight: '100%',

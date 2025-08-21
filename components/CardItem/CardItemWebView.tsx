@@ -15,7 +15,7 @@ import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '../Button';
 
-export const CardItem = ({
+export const CardItemWebView = ({
   city,
   neighborhood,
   images,
@@ -34,56 +34,53 @@ export const CardItem = ({
   const { userId } = useAuth();
 
   const isOwner = user?._id === userId;
-
   const isExpired = listingHasExpired(createdAt);
-
   const isWeb = Platform.OS === 'web';
 
   return (
     <Pressable
       style={styles.cardLink}
-      onPress={() => router.push({ pathname: `/(item)/[item]`, params: { imageIndex: carouselIndex, item: _id } })}
+      onPress={() =>
+        router.push({
+          pathname: `/(item)/[item]`,
+          params: { imageIndex: carouselIndex, item: _id },
+        })
+      }
     >
       <View style={styles.card}>
-        <ReusableCarousel
-          style={
-            isWeb
-              ? {
-                  alignSelf: 'flex-start',
-                  maxHeight: 300,
-                }
-              : undefined
-          }
-          data={images}
-          onProgressChange={setCarouselIndex}
-          renderItem={({ item }) => {
-            return (
-              <Box style={styles.cardImage}>
-                <Image
-                  style={styles.cardImage}
-                  source={{
-                    uri: `${process.env.EXPO_PUBLIC_API_URL}${item}`,
-                  }}
-                  placeholder={{ blurhash: blurhash || '' }}
-                  contentFit="cover"
-                  transition={BLURHASH_TRANSITION}
-                />
-              </Box>
-            );
-          }}
-        />
+        {/* Left side image */}
+        <Box style={styles.imageWrapper}>
+          <ReusableCarousel
+            style={
+              isWeb
+                ? {
+                    alignSelf: 'flex-start',
+                    maxHeight: 180,
+                    maxWidth: 220,
+                  }
+                : undefined
+            }
+            data={images}
+            onProgressChange={setCarouselIndex}
+            renderItem={({ item }) => (
+              <Image
+                style={styles.cardImage}
+                source={{
+                  uri: `${process.env.EXPO_PUBLIC_API_URL}${item}`,
+                }}
+                placeholder={{ blurhash: blurhash || '' }}
+                contentFit="cover"
+                transition={BLURHASH_TRANSITION}
+              />
+            )}
+          />
+        </Box>
+
+        {/* Right side content */}
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
-            <Box
-              flexDirection="row"
-              justifyContent="space-between"
-              flex={1}
-              gap={12}
-              style={{
-                flexWrap: 'wrap',
-              }}
-            >
-              <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start">
+            <Box flexDirection="row" justifyContent="space-between" flex={1} gap={12} style={{ flexWrap: 'wrap' }}>
+              <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start" style={{ flexShrink: 1 }}>
                 <Box
                   flexDirection="row"
                   alignItems="center"
@@ -104,13 +101,7 @@ export const CardItem = ({
                     </Box>
                   )}
                   {currentFlatmates && currentFlatmates !== 'undefined' && (
-                    <Box
-                      flexDirection="row"
-                      alignItems="center"
-                      style={{
-                        gap: 4,
-                      }}
-                    >
+                    <Box flexDirection="row" alignItems="center" style={{ gap: 4 }}>
                       <Text>{currentFlatmates}</Text>
                       <FontAwesome name="user" size={16} />
                     </Box>
@@ -140,13 +131,16 @@ export const CardItem = ({
                   <Text style={styles.cardPrice}>{price}€ për muaj</Text>
                 )}
               </Box>
+
               <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-end">
                 {createdAt && <Text>{formatDate(createdAt)}</Text>}
               </Box>
             </Box>
+
             <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
               {description}
             </Text>
+
             {isOwner && (
               <Box flexDirection="row" gap={8} marginTop={12}>
                 <Button
@@ -158,6 +152,7 @@ export const CardItem = ({
                 </Button>
               </Box>
             )}
+
             {user.verified && (
               <Box flexDirection="row" gap={8} marginTop={12}>
                 <Pill
@@ -176,12 +171,12 @@ export const CardItem = ({
 
 const styles = StyleSheet.create({
   card: {
-    marginVertical: 16,
     width: '100%',
     borderWidth: 1,
     borderRadius: 16,
     overflow: 'hidden',
     borderColor: Colors.lightGray,
+    flexDirection: 'row', // horizontal
   },
   expiredText: {
     fontSize: 14,
@@ -193,24 +188,22 @@ const styles = StyleSheet.create({
     width: '100%',
     flex: 1,
   },
-  cardInnerContent: {
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    flexDirection: 'column',
-    flex: 1,
-    height: 'auto',
-  },
   cardContent: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     padding: 16,
+    flex: 1,
+  },
+  imageWrapper: {
+    width: 180,
+    height: 180,
+    overflow: 'hidden',
   },
   cardImage: {
-    flex: 1,
+    width: '100%',
+    height: '100%',
     backgroundColor: '#0553',
-    height: 200,
-    position: 'relative',
   },
   topCardContent: {
     flexDirection: 'column',
@@ -228,6 +221,6 @@ const styles = StyleSheet.create({
   cardSubtitle: {
     fontSize: 14,
     fontWeight: '400',
-    marginTop: 16,
+    marginTop: 12,
   },
 });

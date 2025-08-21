@@ -9,7 +9,8 @@ import { useRouter } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 import { TextInput } from 'react-native-gesture-handler/lib/typescript/components/GestureComponents';
-import { ActivityIndicator, StyleSheet } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet } from 'react-native';
+import { WebView } from '@/components/WebView/WebView';
 
 export default function RegisterScreen() {
   const {
@@ -57,96 +58,102 @@ export default function RegisterScreen() {
     await registerMutation({ username: data.username, password: data.password });
   };
 
+  const isWeb = Platform.OS === 'web';
+
   return (
     <Box padding={20} flex={1} style={styles.container}>
-      <Box alignItems="center" marginBottom={16}>
-        <Box style={styles.dragLine} />
-      </Box>
-      <Box marginBottom={12}>
-        <Text fontSize="xl" fontWeight="bold">
-          Regjistrohu
-        </Text>
-      </Box>
-      <Box gap={12}>
-        <Box>
-          <Controller
-            control={control}
-            render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
-              <>
-                <Input
-                  ref={ref}
-                  label="Emri i përdoruesit"
-                  required
-                  placeholder="Emri i përdoruesit"
-                  autoCapitalize="none"
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  autoFocus
-                  returnKeyType="next"
-                  onSubmitEditing={() => {
-                    passwordInputRef.current?.focus();
-                  }}
-                  value={value}
-                />
-                {error && <Text style={styles.errorText}>{error.message}</Text>}
-              </>
-            )}
-            name="username"
-            rules={{
-              required: true,
-              pattern: {
-                value: /^[a-zA-Z0-9]+$/,
-                message: 'Lejohen vetëm shkronja dhe numra, pa hapësira apo karaktere të veçanta.',
-              },
-            }}
-          />
-        </Box>
-        <Box>
-          <Controller
-            control={control}
-            name="password"
-            rules={{ required: true }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                placeholder="Fjalëkalimi"
-                label="Fjalëkalimi"
-                required
-                ref={passwordInputRef}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                secureTextEntry
-                autoCapitalize="none"
-                value={value}
-                returnKeyType="done"
-                onSubmitEditing={handleSubmit(onSubmitHandler)}
-              />
-            )}
-          />
-          {errors.password && <Text style={styles.errorText}>Fjalëkalimi është i detyrueshëm</Text>}
-        </Box>
-        <Button onPress={handleSubmit(onSubmitHandler)} disabled={isPending || isSubmitting}>
-          {isPending && isSubmitting ? <ActivityIndicator color="#fff" /> : <Text>Regjistrohu</Text>}
-        </Button>
-        {isError && (
-          <Text style={styles.errorText}>{error instanceof Error ? error.message : 'Gabim gjatë kyçjes'}</Text>
+      <WebView>
+        {!isWeb && (
+          <Box alignItems="center" marginBottom={16}>
+            <Box style={styles.dragLine} />
+          </Box>
         )}
-        <Button variant="tertiary" onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>Kthehu</Text>
-        </Button>
-      </Box>
-      <Box marginTop={12} gap={12}>
-        <Text>
-          Keni një llogari?{' '}
-          <Text
-            onPress={() => {
-              router.replace('/login');
-            }}
-            style={styles.linkText}
-          >
-            Kyçuni këtu
+        <Box marginBottom={12}>
+          <Text fontSize="xl" fontWeight="bold">
+            Regjistrohu
           </Text>
-        </Text>
-      </Box>
+        </Box>
+        <Box gap={12}>
+          <Box>
+            <Controller
+              control={control}
+              render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
+                <>
+                  <Input
+                    ref={ref}
+                    label="Emri i përdoruesit"
+                    required
+                    placeholder="Emri i përdoruesit"
+                    autoCapitalize="none"
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    autoFocus
+                    returnKeyType="next"
+                    onSubmitEditing={() => {
+                      passwordInputRef.current?.focus();
+                    }}
+                    value={value}
+                  />
+                  {error && <Text style={styles.errorText}>{error.message}</Text>}
+                </>
+              )}
+              name="username"
+              rules={{
+                required: true,
+                pattern: {
+                  value: /^[a-zA-Z0-9]+$/,
+                  message: 'Lejohen vetëm shkronja dhe numra, pa hapësira apo karaktere të veçanta.',
+                },
+              }}
+            />
+          </Box>
+          <Box>
+            <Controller
+              control={control}
+              name="password"
+              rules={{ required: true }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="Fjalëkalimi"
+                  label="Fjalëkalimi"
+                  required
+                  ref={passwordInputRef}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  secureTextEntry
+                  autoCapitalize="none"
+                  value={value}
+                  returnKeyType="done"
+                  onSubmitEditing={handleSubmit(onSubmitHandler)}
+                />
+              )}
+            />
+            {errors.password && <Text style={styles.errorText}>Fjalëkalimi është i detyrueshëm</Text>}
+          </Box>
+          <Button onPress={handleSubmit(onSubmitHandler)} disabled={isPending || isSubmitting}>
+            {isPending && isSubmitting ? <ActivityIndicator color="#fff" /> : <Text>Regjistrohu</Text>}
+          </Button>
+          {isError && (
+            <Text style={styles.errorText}>{error instanceof Error ? error.message : 'Gabim gjatë kyçjes'}</Text>
+          )}
+          <Button variant="tertiary" onPress={() => router.back()}>
+            <Text style={styles.backButtonText}>Kthehu</Text>
+          </Button>
+        </Box>
+        <Box marginTop={12} gap={12}>
+          <Text>
+            Keni një llogari?{' '}
+            <Text
+              onPress={() => {
+                router.replace('/login');
+              }}
+              style={styles.linkText}
+            >
+              Kyçuni këtu
+            </Text>
+          </Text>
+        </Box>
+      </WebView>
     </Box>
   );
 }

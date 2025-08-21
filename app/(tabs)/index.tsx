@@ -21,6 +21,7 @@ import Input from '@/components/Input';
 import { useAuth } from '@/context/AuthContext';
 import { View } from '@/components/View';
 import { WebView } from '@/components/WebView/WebView';
+import { CardItemWebView } from '@/components/CardItem/CardItemWebView';
 
 const PAGE_SIZE = 20;
 
@@ -154,12 +155,14 @@ export default function TabOneScreen() {
 
   const numColumns = useMemo(() => {
     if (!isWeb) return 1;
-    if (width >= 1200) return 3;
-    if (width >= 800) return 2;
+    if (width >= 1200) return 1;
+    if (width >= 800) return 1;
     return 1;
   }, [width, isWeb]);
 
   const Component = isWeb ? ScrollView : View;
+
+  console.log(numColumns);
 
   return (
     <Component style={[styles.container]}>
@@ -170,15 +173,38 @@ export default function TabOneScreen() {
           progressViewOffset={-5}
           numColumns={numColumns}
           key={numColumns}
-          renderItem={({ item }) => <CardItem {...item} key={item.id} />}
-          contentContainerStyle={styles.contentContainerStyle}
+          renderItem={({ item }) => (
+            <Box
+              style={
+                isWeb && numColumns > 1
+                  ? {
+                      flex: 1,
+                      maxWidth: `${100 / numColumns}%`,
+                      flexBasis: `${100 / numColumns}%`,
+                      boxSizing: 'border-box',
+                    }
+                  : { width: '100%', paddingVertical: 8 }
+              }
+            >
+              {isWeb ? <CardItemWebView {...item} /> : <CardItem {...item} />}
+            </Box>
+          )}
+          contentContainerStyle={[
+            styles.contentContainerStyle,
+            !isWeb && {
+              padding: 20,
+            },
+            isWeb && {
+              paddingTop: 20,
+            },
+          ]}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) fetchNextPage();
           }}
           onEndReachedThreshold={0.5}
           refreshing={isLoading}
           onRefresh={refetch}
-          columnWrapperStyle={isWeb && numColumns > 1 && { gap: 24 }}
+          columnWrapperStyle={isWeb && numColumns > 1 && { gap: 12 }}
           ListFooterComponent={
             isFetchingNextPage ? (
               <Box marginVertical={16}>
@@ -403,7 +429,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   contentContainerStyle: {
-    padding: 20,
     paddingBottom: 80,
   },
   flexShrink: {

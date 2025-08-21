@@ -23,6 +23,7 @@ import { genders } from '@/constants/Genders';
 import { numriIDhomave } from '@/constants/NumberOfRooms';
 import { cimerat } from '@/constants/NumberOfCimera';
 import { useQueryClient } from '@tanstack/react-query';
+import { WebView } from '../WebView/WebView';
 
 interface ListingFormProps {
   defaultValues?: Partial<Listing>;
@@ -136,21 +137,9 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
     ]);
   };
 
-  const isWeb = Platform.OS === 'web';
-
   return (
     <ScrollView style={styles.container}>
-      <Box
-        style={
-          isWeb && {
-            maxWidth: 1028,
-            width: '100%',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            minHeight: '100%',
-          }
-        }
-      >
+      <WebView>
         <Box marginBottom={20}>
           <Text fontSize="xl" fontWeight="bold">
             {isEditing ? 'Modifiko Listimin' : 'Krijo Listimin'}
@@ -306,7 +295,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             {previewImage && <Image source={{ uri: previewImage }} style={styles.previewImage} contentFit="contain" />}
           </Pressable>
         </Modal>
-      </Box>
+      </WebView>
     </ScrollView>
   );
 }

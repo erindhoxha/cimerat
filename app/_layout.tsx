@@ -2,7 +2,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Colors from '@/constants/Colors';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import { Link, Stack } from 'expo-router';
+import { Link, Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { Platform, Pressable, StyleSheet, TouchableOpacity, useColorScheme, useWindowDimensions } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -58,6 +58,80 @@ export default function RootLayout() {
   );
 }
 
+interface CustomHeaderProps {
+  isWeb: boolean;
+  isLoggedIn: boolean;
+  openDrawer: () => void;
+  closeDrawer: () => void;
+  isOpen: boolean;
+}
+
+function CustomHeader({ isWeb, isLoggedIn, openDrawer, closeDrawer, isOpen }: CustomHeaderProps) {
+  const router = useRouter();
+  return (
+    <Box
+      style={{
+        width: '100%',
+        backgroundColor: Colors.yellow,
+        height: 56,
+        justifyContent: 'center',
+      }}
+    >
+      <Box
+        style={
+          isWeb
+            ? {
+                maxWidth: 1028,
+                paddingHorizontal: 20,
+                width: '100%',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                height: 56,
+              }
+            : {
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                height: 56,
+                width: '100%',
+              }
+        }
+      >
+        {router.canGoBack() && (
+          <Pressable onPress={() => router.back()} style={styles.backButton}>
+            <FontAwesome name="chevron-left" size={16} color={Colors.text} /> <Text fontSize="md">Kthehu</Text>
+          </Pressable>
+        )}
+        <Text style={styles.logo}>Cimerat</Text>
+        <Box flexDirection="row" alignItems="center" gap={12}>
+          <Box>
+            {isLoggedIn ? (
+              <Link href="/profile" asChild>
+                <TouchableOpacity>
+                  <FontAwesome name="user-circle-o" size={24} color={Colors.text} />
+                </TouchableOpacity>
+              </Link>
+            ) : (
+              <Link href="/login" asChild>
+                <TouchableOpacity>
+                  <FontAwesome name="user-circle-o" size={24} color={Colors.text} />
+                </TouchableOpacity>
+              </Link>
+            )}
+          </Box>
+          <Pressable onPress={isOpen ? closeDrawer : openDrawer} style={styles.hamburgerMenu}>
+            <FontAwesome name={isOpen ? 'close' : 'navicon'} size={24} color={Colors.text} />
+          </Pressable>
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
 function RootLayoutNav() {
   const { openDrawer, closeDrawer, isOpen } = useDrawer();
 
@@ -74,14 +148,25 @@ function RootLayoutNav() {
         headerTintColor: Colors.text,
         headerTitleStyle: styles.headerTitleStyle,
         headerBackTitle: 'Back',
+        ...(isWeb && {
+          header: () => (
+            <CustomHeader
+              isWeb={isWeb}
+              isLoggedIn={isLoggedIn}
+              openDrawer={openDrawer}
+              closeDrawer={closeDrawer}
+              isOpen={isOpen}
+            />
+          ),
+        }),
         headerTitle: () => <Text style={styles.logo}>Cimerat</Text>,
         headerRight: () => (
           <Box
-            style={styles.headerRightBox}
             gap={12}
             flexDirection="row"
             alignItems="flex-end"
             justifyContent="flex-end"
+            marginRight={isWeb ? 12 : 0}
           >
             <Box>
               {isLoggedIn ? (
@@ -149,13 +234,15 @@ const styles = StyleSheet.create({
   headerTitleStyle: {
     fontWeight: 'bold',
   },
-  headerRightBox: {
-    width: 'auto',
-  },
   sideIcon: {},
   hamburgerMenu: {
     display: 'flex',
     alignContent: 'center',
     justifyContent: 'center',
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
 });
