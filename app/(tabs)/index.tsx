@@ -145,10 +145,12 @@ export default function TabOneScreen() {
   }
 
   const showFilter =
-    selectedPriceFrom !== null ||
-    selectedPriceTo !== null ||
+    (selectedPriceFrom !== null && selectedPriceFrom !== undefined) ||
+    (selectedPriceTo !== null && selectedPriceTo !== undefined) ||
     selectedCities.length > 0 ||
     selectedNeighborhoods.length > 0;
+
+  console.log(showFilter, selectedPriceFrom, selectedPriceTo, selectedCities, selectedNeighborhoods);
 
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === 'web';
@@ -166,7 +168,7 @@ export default function TabOneScreen() {
 
   return (
     <Component style={[styles.container]}>
-      <WebView>
+      <WebView noPadding>
         <FlatList
           scrollEnabled
           data={listings}
@@ -183,21 +185,15 @@ export default function TabOneScreen() {
                       flexBasis: `${100 / numColumns}%`,
                       boxSizing: 'border-box',
                     }
-                  : { width: '100%', paddingVertical: 8 }
+                  : isWeb
+                  ? { width: '100%', paddingVertical: 8 }
+                  : {}
               }
             >
-              {isWeb ? <CardItemWebView {...item} /> : <CardItem {...item} />}
+              {isWeb && width > 768 ? <CardItemWebView {...item} /> : <CardItem {...item} />}
             </Box>
           )}
-          contentContainerStyle={[
-            styles.contentContainerStyle,
-            !isWeb && {
-              padding: 20,
-            },
-            isWeb && {
-              paddingTop: 20,
-            },
-          ]}
+          contentContainerStyle={[styles.contentContainerStyle]}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) fetchNextPage();
           }}
@@ -235,6 +231,14 @@ export default function TabOneScreen() {
                   <Label>Qyteti</Label>
                   <MultiSelect
                     style={dropdownStyles.multiSelectStyle}
+                    containerStyle={
+                      isWeb
+                        ? {
+                            maxHeight: 300,
+                            overflow: 'auto',
+                          }
+                        : undefined
+                    }
                     data={cities.map((c) => ({ label: c, value: c }))}
                     labelField="label"
                     valueField="value"
@@ -280,6 +284,14 @@ export default function TabOneScreen() {
                       dropdownStyles.multiSelectStyle,
                       selectedCities.length === 0 && dropdownStyles.disabledMultiSelectStyle,
                     ]}
+                    containerStyle={
+                      isWeb
+                        ? {
+                            maxHeight: 300,
+                            overflow: 'auto',
+                          }
+                        : undefined
+                    }
                     showsVerticalScrollIndicator
                     data={
                       selectedCities.length > 0
@@ -332,7 +344,7 @@ export default function TabOneScreen() {
                       onSelect={(selectedItem) => {
                         setSelectedPriceFrom((prev) => {
                           if (prev === selectedItem) {
-                            return null;
+                            return undefined;
                           }
                           return selectedItem;
                         });
@@ -355,7 +367,7 @@ export default function TabOneScreen() {
                           <SelectItem item={item} isSelected={isSelected} />
                         </>
                       )}
-                      showsVerticalScrollIndicator={false}
+                      showsVerticalScrollIndicator={true}
                       dropdownStyle={dropdownStyles.dropdownMenuStyle}
                     />
                   </Box>
@@ -365,7 +377,7 @@ export default function TabOneScreen() {
                       onSelect={(selectedItem) => {
                         setSelectedPriceTo((prev) => {
                           if (prev === selectedItem) {
-                            return null;
+                            return undefined;
                           }
                           return selectedItem;
                         });
@@ -427,9 +439,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+    padding: 0,
   },
   contentContainerStyle: {
     paddingBottom: 80,
+    padding: 20,
   },
   flexShrink: {
     flexShrink: 1,

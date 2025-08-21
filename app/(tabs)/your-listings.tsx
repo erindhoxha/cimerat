@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import Colors from '@/constants/Colors';
 import { Link, useRouter } from 'expo-router';
 import { HorizontalCardItem } from '@/components/HorizontalCardItem/HorizontalCardItem';
@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
 import { WebView } from '@/components/WebView/WebView';
+import { useEffect, useState } from 'react';
 
 export default function TabTwoScreen() {
   const { token } = useAuth();
@@ -40,8 +41,21 @@ export default function TabTwoScreen() {
     return <Text>Error: {error.message}</Text>;
   }
 
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    setAuthChecked(true);
+  }, [token]);
+
+  if (!authChecked) {
+    return <Loading />;
+  }
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={() => listings.refetch()} />}
+    >
       <WebView>
         {isLoggedIn && (
           <Box gap={12}>
@@ -55,7 +69,12 @@ export default function TabTwoScreen() {
             </Link>
           </Box>
         )}
-        {!isLoggedIn && (
+        {(isLoading || isRefetching) && (
+          <Box marginTop={24}>
+            <Loading />
+          </Box>
+        )}
+        {!isLoggedIn && listings.isFetched && (
           <Box marginTop={24} gap={12} style={styles.centeredBox}>
             <Box>
               <FontAwesome name="exclamation" size={48} color={Colors.danger} />
@@ -71,11 +90,7 @@ export default function TabTwoScreen() {
             </Link>
           </Box>
         )}
-        {(isLoading || isRefetching) && (
-          <Box marginTop={24}>
-            <Loading />
-          </Box>
-        )}
+
         {isLoggedIn && !isLoading && (
           <Box marginTop={24}>
             {!!data?.length ? (

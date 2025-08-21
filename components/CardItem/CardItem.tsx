@@ -176,7 +176,7 @@ export const CardItem = ({
 
 const styles = StyleSheet.create({
   card: {
-    marginVertical: 16,
+    marginVertical: 12,
     width: '100%',
     borderWidth: 1,
     borderRadius: 16,

@@ -3,7 +3,7 @@ import { Button } from '@/components/Button';
 import { useAuth } from '@/context/AuthContext';
 import { Text } from '@/components/Text';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import Input from '@/components/Input';
 import Label from '@/components/Label';
 import { useState } from 'react';
@@ -21,6 +21,7 @@ interface Mutation {
 }
 
 export default function ProfileScreen() {
+  const queryClient = useQueryClient();
   const { token, userId, setAuth } = useAuth();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -28,7 +29,7 @@ export default function ProfileScreen() {
 
   const router = useRouter();
 
-  const { data, error, status } = useQuery({
+  const { data, error, status, refetch } = useQuery({
     queryKey: ['user'],
     enabled: !!token,
     queryFn: async () => {
@@ -78,8 +79,6 @@ export default function ProfileScreen() {
     );
   }
 
-  const queryClient = useQueryClient();
-
   const {
     user: { username },
   } = data;
@@ -105,7 +104,7 @@ export default function ProfileScreen() {
     );
   };
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}>
       <WebView>
         <Box marginBottom={12}>
           <Text fontSize="xl" fontWeight="bold">

@@ -49,6 +49,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 24,
+    overflow: 'auto',
   },
   dropdownItemStyle: {
     flexDirection: 'row',

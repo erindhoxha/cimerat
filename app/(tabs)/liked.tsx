@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import Colors from '@/constants/Colors';
 import { Link, useRouter } from 'expo-router';
 import { HorizontalCardItem } from '@/components/HorizontalCardItem/HorizontalCardItem';
@@ -41,45 +41,50 @@ export default function Liked() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <WebView>
-        {!isLoggedIn ? (
-          <Box marginTop={24} gap={12} style={styles.centeredBox}>
-            <Box>
-              <FontAwesome name="exclamation" size={48} color={Colors.danger} />
+    <ScrollView
+      style={[styles.container]}
+      refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={() => listings.refetch()} />}
+    >
+      <Box padding={20}>
+        <WebView>
+          {!isLoggedIn && listings.isFetched ? (
+            <Box marginTop={24} gap={12} style={styles.centeredBox}>
+              <Box>
+                <FontAwesome name="exclamation" size={48} color={Colors.danger} />
+              </Box>
+              <Text fontSize="xl" fontWeight="bold">
+                Nuk jeni të kyçur
+              </Text>
+              <Text style={styles.text}>Ju lutemi, kyçuni për të krijuar listime ose për të parë listimet tuaja.</Text>
+              <Link href="/login" asChild>
+                <Button style={styles.fullWidthButton}>
+                  <Text>Kyçu</Text>
+                </Button>
+              </Link>
             </Box>
-            <Text fontSize="xl" fontWeight="bold">
-              Nuk jeni të kyçur
-            </Text>
-            <Text style={styles.text}>Ju lutemi, kyçuni për të krijuar listime ose për të parë listimet tuaja.</Text>
-            <Link href="/login" asChild>
-              <Button style={styles.fullWidthButton}>
-                <Text>Kyçu</Text>
-              </Button>
-            </Link>
-          </Box>
-        ) : (
-          <Box gap={12}>
-            <Text fontSize="xl" fontWeight="bold">
-              Listimet e preferuara
-            </Text>
-          </Box>
-        )}
-        {(isLoading || isRefetching) && (
-          <Box marginTop={24}>
-            <Loading />
-          </Box>
-        )}
-        {isLoggedIn && !isLoading && (
-          <Box marginTop={24}>
-            {!!data?.length ? (
-              data.map((item) => <HorizontalCardItem item={item} router={router} key={item._id} />)
-            ) : (
-              <Text style={styles.emptyText}>Nuk keni asnjë listim të ruajtur.</Text>
-            )}
-          </Box>
-        )}
-      </WebView>
+          ) : (
+            <Box gap={12}>
+              <Text fontSize="xl" fontWeight="bold">
+                Listimet e preferuara
+              </Text>
+            </Box>
+          )}
+          {(isLoading || isRefetching) && (
+            <Box marginTop={24}>
+              <Loading />
+            </Box>
+          )}
+          {isLoggedIn && !isLoading && (
+            <Box marginTop={24}>
+              {!!data?.length ? (
+                data.map((item) => <HorizontalCardItem item={item} router={router} key={item._id} />)
+              ) : (
+                <Text style={styles.emptyText}>Nuk keni asnjë listim të ruajtur.</Text>
+              )}
+            </Box>
+          )}
+        </WebView>
+      </Box>
     </ScrollView>
   );
 }
@@ -87,7 +92,6 @@ export default function Liked() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#fff',
   },
   text: {
