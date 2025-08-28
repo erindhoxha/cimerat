@@ -1,6 +1,14 @@
 import { Image as ExpoImage } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
+import {
+  ActivityIndicator,
+  Linking,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  useWindowDimensions,
+} from 'react-native';
 import { Text } from '@/components/Text';
 import { Box } from '@/components/Box';
 import { useAuth } from '@/context/AuthContext';
@@ -22,6 +30,7 @@ import { createPortal } from 'react-dom';
 export default function ItemDetailScreen() {
   const { item, imageIndex } = useLocalSearchParams();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const isMobile = useWindowDimensions().width < 768;
 
   const { token, userId } = useAuth();
 
@@ -124,26 +133,27 @@ export default function ItemDetailScreen() {
   const liked = userData?.user?.likedListings?.includes(data?._id as unknown as Listing);
 
   const isWeb = Platform.OS === 'web';
+  const isSingle = data?.images.length === 1;
+
   return (
     data && (
       <ScrollView style={styles.scrollViewContainer} contentContainerStyle={styles.contentContainer}>
         <WebView noPadding>
-          {isWeb ? (
+          {isWeb && !isMobile ? (
             <Box
               style={{
                 width: '100%',
                 flexDirection: 'row',
                 flexWrap: 'wrap',
                 gap: 8,
+                padding: isSingle ? 0 : 8,
               }}
             >
               {data.images?.map((img: string, index: number) => {
                 const isLast = index === data.images.length - 1;
-                const isSingle = data.images.length === 1;
-
                 return (
                   <Pressable
-                    key={index}
+                    key={img.toString() + index}
                     onPress={() => setLightboxIndex(index)}
                     style={{ flexBasis: isLast || isSingle ? '100%' : '32%', flexGrow: 1 }}
                   >
@@ -151,7 +161,7 @@ export default function ItemDetailScreen() {
                       style={{
                         width: '100%',
                         height: isLast || isSingle ? 320 : 200,
-                        borderRadius: 8, // softer radius
+                        borderRadius: isSingle ? 0 : 8, // softer radius
                       }}
                       source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${img}` }}
                       placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
@@ -172,6 +182,7 @@ export default function ItemDetailScreen() {
               defaultIndex={typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) : 0}
               renderItem={({ item, index }) => (
                 <ExpoImage
+                  key={index}
                   style={styles.cardImage}
                   source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${item}` }}
                   placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
@@ -182,7 +193,13 @@ export default function ItemDetailScreen() {
             />
           )}
           <Box flex={1} paddingHorizontal={20} gap={12}>
-            <Box flexDirection="column" justifyContent="space-between" gap={4} marginTop={20} alignItems="flex-start">
+            <Box
+              flexDirection="column"
+              justifyContent="space-between"
+              gap={4}
+              marginTop={isSingle ? 20 : 12}
+              alignItems="flex-start"
+            >
               {data.user.verified && (
                 <Box flexDirection="row" gap={8} marginBottom={8}>
                   <Pill

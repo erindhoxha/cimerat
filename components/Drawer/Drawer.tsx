@@ -74,7 +74,6 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
   if (!visible) return null;
 
   const isWeb = Platform.OS === 'web';
-  const isMobile = Dimensions.get('window').width < 768;
 
   const offsetLeft = 0;
 

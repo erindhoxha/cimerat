@@ -6,12 +6,11 @@ import Colors from '@/constants/Colors';
 import { useState, useEffect } from 'react';
 
 export const DownloadBanner = () => {
-  if (Platform.OS !== 'web') return null;
-
   const { width } = useWindowDimensions();
+  const [hide, setHide] = useState(true);
   const isMobile = width < 768;
 
-  const [hide, setHide] = useState(true);
+  if (Platform.OS !== 'web') return null;
 
   useEffect(() => {
     // Check localStorage on mount

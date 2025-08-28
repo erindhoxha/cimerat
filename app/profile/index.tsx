@@ -106,7 +106,6 @@ export default function ProfileScreen() {
           setFormError(error.message);
         },
         onSuccess(data) {
-          console.log('SUCCESS!');
           Toast.show({ type: 'success', text1: 'Përdoruesi u përditësua me sukses' });
           router.push('/');
         },

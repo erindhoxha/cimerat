@@ -158,8 +158,6 @@ export default function TabOneScreen() {
     selectedCities.length > 0 ||
     selectedNeighborhoods.length > 0;
 
-  console.log(showFilter, selectedPriceFrom, selectedPriceTo, selectedCities, selectedNeighborhoods);
-
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === 'web';
 

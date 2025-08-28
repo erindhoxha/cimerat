@@ -35,8 +35,6 @@ export default function TabTwoScreen() {
     },
   });
 
-  console.log('AAA');
-
   const { data, error, isLoading, isRefetching } = listings;
 
   if (error) {
@@ -56,8 +54,6 @@ export default function TabTwoScreen() {
   const isWeb = Platform.OS === 'web';
   const { width } = Dimensions.get('window');
   const isDesktop = width > 768;
-
-  console.log(isDesktop, !isWeb);
 
   if (isLoading || isRefetching) {
     return <Loading />;

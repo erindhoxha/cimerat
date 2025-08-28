@@ -48,16 +48,18 @@ export const CardItemWebView = ({
       }
     >
       <View style={[styles.card, isOwner && styles.ownerCard]}>
-        <Image
-          style={styles.cardImage}
-          source={{
-            uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
-          }}
-          placeholder={{ blurhash: blurhash || '' }}
-          contentFit="cover"
-          transition={BLURHASH_TRANSITION}
-        />
-
+        <Box style={styles.cardBox}>
+          <Image
+            style={styles.cardImage}
+            source={{
+              uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
+            }}
+            placeholder={{ blurhash: blurhash || '' }}
+            contentFit="cover"
+            transition={BLURHASH_TRANSITION}
+          />
+          {images?.length > 1 && <Text style={styles.imageCounter}>+{images.length - 1} foto</Text>}
+        </Box>
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
             <Box flexDirection="row" justifyContent="space-between" flex={1} gap={12} style={{ flexWrap: 'wrap' }}>
@@ -166,6 +168,17 @@ const styles = StyleSheet.create({
     borderColor: Colors.yellow,
     borderWidth: 2,
   },
+  imageCounter: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    backgroundColor: Colors.yellow,
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    fontSize: 12,
+    zIndex: 5,
+  },
   expiredText: {
     fontSize: 14,
     fontWeight: 'bold',
@@ -188,10 +201,14 @@ const styles = StyleSheet.create({
     height: 180,
     overflow: 'hidden',
   },
-  cardImage: {
+  cardBox: {
     width: 180,
     height: 'auto',
     backgroundColor: '#0553',
+  },
+  cardImage: {
+    width: '100%',
+    height: '100%',
   },
   topCardContent: {
     flexDirection: 'column',

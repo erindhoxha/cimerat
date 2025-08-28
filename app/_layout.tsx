@@ -26,6 +26,8 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
+  const isMobile = useWindowDimensions().width < 768;
+
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
@@ -70,7 +72,7 @@ export default function RootLayout() {
                 height: '100%',
               }}
             >
-              <DownloadBanner />
+              {!isMobile && <DownloadBanner />}
               <DrawerProvider>
                 <RootLayoutNav />
               </DrawerProvider>
