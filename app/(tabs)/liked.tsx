@@ -90,7 +90,12 @@ export default function Liked() {
                 ),
               )
             ) : (
-              <Text style={styles.emptyText}>Nuk keni asnjë listim të ruajtur.</Text>
+              <Box flexDirection="column">
+                <Text style={styles.emptyText}>Nuk keni asnjë listim të ruajtur.</Text>
+                <Button variant="tertiary" onPress={() => router.push('/')}>
+                  Shikoni listimet e tjera
+                </Button>
+              </Box>
             )}
           </Box>
         )}
@@ -114,7 +119,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   emptyText: {
-    marginBottom: 24,
+    marginBottom: 12,
   },
   separator: {
     marginBottom: 12,

@@ -16,9 +16,12 @@ import Colors from '@/constants/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Toast from 'react-native-toast-message';
 import { WebView } from '@/components/WebView/WebView';
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export default function ItemDetailScreen() {
   const { item, imageIndex } = useLocalSearchParams();
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const { token, userId } = useAuth();
 
@@ -123,17 +126,7 @@ export default function ItemDetailScreen() {
   const isWeb = Platform.OS === 'web';
   return (
     data && (
-      <ScrollView
-        style={styles.scrollViewContainer}
-        contentContainerStyle={
-          isWeb && {
-            minHeight: '100%',
-            justifyContent: 'flex-start',
-            alignItems: 'flex-start',
-            flexDirection: 'column',
-          }
-        }
-      >
+      <ScrollView style={styles.scrollViewContainer} contentContainerStyle={styles.contentContainer}>
         <WebView noPadding>
           {isWeb ? (
             <Box
@@ -149,13 +142,16 @@ export default function ItemDetailScreen() {
                 const isSingle = data.images.length === 1;
 
                 return (
-                  <Pressable key={index} style={{ flexBasis: isLast || isSingle ? '100%' : '32%', flexGrow: 1 }}>
+                  <Pressable
+                    key={index}
+                    onPress={() => setLightboxIndex(index)}
+                    style={{ flexBasis: isLast || isSingle ? '100%' : '32%', flexGrow: 1 }}
+                  >
                     <ExpoImage
                       style={{
                         width: '100%',
                         height: isLast || isSingle ? 320 : 200,
-                        borderRadius: 0, // softer radius
-                        objectFit: 'cover',
+                        borderRadius: 8, // softer radius
                       }}
                       source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${img}` }}
                       placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
@@ -306,6 +302,36 @@ export default function ItemDetailScreen() {
             )}
           </Box>
         </WebView>
+        {lightboxIndex !== null &&
+          createPortal(
+            <Pressable
+              onPress={() => setLightboxIndex(null)}
+              style={{
+                position: 'fixed', // works on web
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'rgba(0,0,0,0.4)',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 9999,
+              }}
+            >
+              <ExpoImage
+                style={{
+                  width: '90%',
+                  height: '80%',
+                  borderRadius: 24,
+                  overflow: 'hidden',
+                }}
+                contentFit="contain"
+                source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${data.images[lightboxIndex]}` }}
+              />
+              <Text style={{ color: 'white', marginTop: 10 }}>(prek kudo për të mbyllur)</Text>
+            </Pressable>,
+            document.body,
+          )}
       </ScrollView>
     )
   );
@@ -317,6 +343,12 @@ const styles = StyleSheet.create({
     height: '100%',
     aspectRatio: 2,
     marginBottom: 20,
+  },
+  contentContainer: {
+    minHeight: '100%',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexDirection: 'column',
   },
   container: {
     flex: 1,

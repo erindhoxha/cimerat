@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { FieldValues } from 'react-hook-form';
 import Toast from 'react-native-toast-message';
 import { WebView } from '@/components/WebView/WebView';
+import { json } from 'zod';
 
 interface Mutation {
   userId: string | null;
@@ -26,6 +27,7 @@ export default function ProfileScreen() {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -39,7 +41,8 @@ export default function ProfileScreen() {
         },
       });
       if (!res.ok) {
-        throw new Error('Failed to fetch user data');
+        // Instead of throwing, return a rejected promise
+        return Promise.reject((await res.json()) || 'Gabim gjatë përditësimit. Ju lutemi provoni përsëri.');
       }
       return res.json();
     },
@@ -57,7 +60,8 @@ export default function ProfileScreen() {
       });
       const json = await res.json();
       if (!res.ok) {
-        throw new Error(json.error || 'Gabim gjatë kyçjes. Ju lutemi provoni përsëri.');
+        // Instead of throwing, return a rejected promise
+        return Promise.reject('Gabim gjatë përditësimit. Ju lutemi provoni përsëri.');
       }
       return json;
     },
@@ -71,19 +75,22 @@ export default function ProfileScreen() {
     );
   }
 
-  if (error) {
-    return (
-      <Box flex={1} justifyContent="center" alignItems="center">
-        <Text>Error: {error.message}</Text>
-      </Box>
-    );
-  }
-
   const {
     user: { username },
   } = data;
 
   const onSubmitHandler = async (data: FieldValues) => {
+    setFormError(null);
+
+    // Validation: oldPassword and newPassword must not be empty
+    if (!oldPassword.trim() || !newPassword.trim()) {
+      setFormError('Ju lutemi plotësoni të gjitha fushat.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setFormError('Fjalëkalimi i ri duhet të ketë të paktën 6 karaktere.');
+      return;
+    }
     setLoading(true);
     await updateMutation(
       {
@@ -92,8 +99,14 @@ export default function ProfileScreen() {
         oldPassword,
         password: newPassword,
       },
+
       {
+        onError: (error) => {
+          console.error('Error', error);
+          setFormError(error.message);
+        },
         onSuccess(data) {
+          console.log('SUCCESS!');
           Toast.show({ type: 'success', text1: 'Përdoruesi u përditësua me sukses' });
           router.push('/');
         },
@@ -142,7 +155,10 @@ export default function ProfileScreen() {
                 <Text>Modifiko të dhënat e profilit</Text>
               )}
             </Button>
-            {mutationError && <Text style={styles.errorText}>Error: {mutationError.message}</Text>}
+            {formError && <Text style={styles.errorText}>{formError}</Text>}
+            {mutationError && (
+              <Text style={styles.errorText}>Gabim gjatë përditësimit. Ju lutemi provoni përsëri.</Text>
+            )}
           </Box>
           <Box gap={12} marginTop={24}>
             <Text fontSize="md" fontWeight="bold">
@@ -154,21 +170,30 @@ export default function ProfileScreen() {
             <Button
               variant="danger"
               onPress={() => {
-                Alert.alert('Dalja', 'A jeni i sigurt që doni të dilni?', [
-                  {
-                    text: 'Anulo',
-                    style: 'cancel',
-                  },
-                  {
-                    text: 'Dil',
-                    style: 'destructive',
-                    onPress: () => {
-                      setAuth(null, null, null);
-                      queryClient.clear();
-                      router.replace('/');
+                if (isWeb) {
+                  const confirmed = window.confirm('A jeni i sigurt që doni të dilni?');
+                  if (confirmed) {
+                    setAuth(null, null, null);
+                    queryClient.clear();
+                    router.replace('/');
+                  }
+                } else {
+                  Alert.alert('Dalja', 'A jeni i sigurt që doni të dilni?', [
+                    {
+                      text: 'Anulo',
+                      style: 'cancel',
                     },
-                  },
-                ]);
+                    {
+                      text: 'Dil',
+                      style: 'destructive',
+                      onPress: () => {
+                        setAuth(null, null, null);
+                        queryClient.clear();
+                        router.replace('/');
+                      },
+                    },
+                  ]);
+                }
               }}
             >
               Dil nga profili

@@ -7,6 +7,7 @@ import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { styles } from './styles';
+import Colors from '@/constants/Colors';
 
 interface DropdownFieldProps {
   control: Control<any>;
@@ -97,7 +98,7 @@ export function DropdownField({
             searchInputStyle={styles.searchInputStyle}
             renderButton={(_: any, isOpened: boolean) => {
               return (
-                <>
+                <Box style={styles.dropdownRenderedButtonStyle}>
                   <SelectValue
                     value={value === 'undefined' ? undefined : value}
                     title={value === 'undefined' ? undefined : value ?? placeholder ?? ''}
@@ -106,7 +107,7 @@ export function DropdownField({
                     disabled={disabled}
                     error={error}
                   />
-                </>
+                </Box>
               );
             }}
             renderItem={(item: string, _: number, isSelected: boolean) => (

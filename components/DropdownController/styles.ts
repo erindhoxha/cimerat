@@ -11,6 +11,7 @@ export const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     padding: 14,
+    cursor: 'pointer',
   },
   dropdownItemSelected: {
     backgroundColor: Colors.yellow,
@@ -49,7 +50,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 24,
-    overflow: 'auto',
+    overflow: 'scroll',
   },
   dropdownItemStyle: {
     flexDirection: 'row',
@@ -57,6 +58,10 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 12,
+  },
+  dropdownRenderedButtonStyle: {
+    outlineColor: Colors.yellow,
+    borderRadius: 12,
   },
   dropdownItemTxtStyle: {
     flex: 1,
