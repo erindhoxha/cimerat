@@ -138,7 +138,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <WebView>
         <Box marginBottom={20}>
           <Text fontSize="xl" fontWeight="bold">
@@ -167,6 +167,9 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             search
             searchPlaceHolder="Kërko qytetin..."
             searchPlaceHolderColor="#6c757d"
+            onSelect={() => {
+              setValue('neighborhood', '');
+            }}
           />
           <DropdownField
             control={control}
@@ -301,7 +304,13 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20 },
+  container: { flex: 1, height: '100%' },
+  contentContainer: {
+    minHeight: '100%',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexDirection: 'column',
+  },
   submitButton: { marginBottom: 0 },
   previewOverlay: {
     flex: 1,
@@ -314,6 +323,10 @@ const styles = StyleSheet.create({
     marginBottom: 48,
     color: Colors.danger,
     textAlign: 'center',
+  },
+  ':focus': {
+    outlineColor: '#ffcc00',
+    outlineWidth: 2,
   },
   previewImage: { width: '90%', height: '80%', borderRadius: 32 },
 });

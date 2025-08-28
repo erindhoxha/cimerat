@@ -123,33 +123,68 @@ export default function ItemDetailScreen() {
   const isWeb = Platform.OS === 'web';
   return (
     data && (
-      <ScrollView style={styles.scrollViewContainer}>
-        <WebView>
-          <ReusableCarousel
-            style={
-              isWeb
-                ? {
-                    maxHeight: 320,
-                    width: '100%',
-                  }
-                : undefined
-            }
-            data={data.images}
-            defaultIndex={typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) : 0}
-            renderItem={({ item, index }) => {
-              return (
+      <ScrollView
+        style={styles.scrollViewContainer}
+        contentContainerStyle={
+          isWeb && {
+            minHeight: '100%',
+            justifyContent: 'flex-start',
+            alignItems: 'flex-start',
+            flexDirection: 'column',
+          }
+        }
+      >
+        <WebView noPadding>
+          {isWeb ? (
+            <Box
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: 8,
+              }}
+            >
+              {data.images?.map((img: string, index: number) => {
+                const isLast = index === data.images.length - 1;
+                const isSingle = data.images.length === 1;
+
+                return (
+                  <Pressable key={index} style={{ flexBasis: isLast || isSingle ? '100%' : '32%', flexGrow: 1 }}>
+                    <ExpoImage
+                      style={{
+                        width: '100%',
+                        height: isLast || isSingle ? 320 : 200,
+                        borderRadius: 0, // softer radius
+                        objectFit: 'cover',
+                      }}
+                      source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${img}` }}
+                      placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
+                      contentFit="cover"
+                      transition={BLURHASH_TRANSITION}
+                    />
+                  </Pressable>
+                );
+              })}
+            </Box>
+          ) : (
+            <ReusableCarousel
+              style={{
+                maxHeight: 320,
+                width: '100%',
+              }}
+              data={data.images}
+              defaultIndex={typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) : 0}
+              renderItem={({ item, index }) => (
                 <ExpoImage
                   style={styles.cardImage}
-                  source={{
-                    uri: `${process.env.EXPO_PUBLIC_API_URL}${item}`,
-                  }}
+                  source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${item}` }}
                   placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
                   contentFit="cover"
                   transition={BLURHASH_TRANSITION}
                 />
-              );
-            }}
-          />
+              )}
+            />
+          )}
           <Box flex={1} paddingHorizontal={20} gap={12}>
             <Box flexDirection="column" justifyContent="space-between" gap={4} marginTop={20} alignItems="flex-start">
               {data.user.verified && (
@@ -285,8 +320,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
+    height: '100%',
   },
   expiredText: {
     fontSize: 14,
@@ -303,6 +337,8 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   scrollViewContainer: {
+    flex: 1,
+    height: '100%',
     backgroundColor: 'white',
   },
 });

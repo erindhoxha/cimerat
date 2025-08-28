@@ -3,7 +3,7 @@ import { Button } from '@/components/Button';
 import { useAuth } from '@/context/AuthContext';
 import { Text } from '@/components/Text';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, Platform, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import Input from '@/components/Input';
 import Label from '@/components/Label';
 import { useState } from 'react';
@@ -103,8 +103,15 @@ export default function ProfileScreen() {
       },
     );
   };
+
+  const isWeb = Platform.OS === 'web';
+
   return (
-    <ScrollView style={styles.container} refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}>
+    <ScrollView
+      style={[styles.container, !isWeb && { backgroundColor: 'white' }]}
+      contentContainerStyle={styles.contentContainer}
+      refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}
+    >
       <WebView>
         <Box marginBottom={12}>
           <Text fontSize="xl" fontWeight="bold">
@@ -176,8 +183,12 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
-    padding: 20,
+  },
+  contentContainer: {
+    minHeight: '100%',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexDirection: 'column',
   },
   errorText: {
     color: Colors.danger,

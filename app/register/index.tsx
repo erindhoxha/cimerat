@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 import { TextInput } from 'react-native-gesture-handler/lib/typescript/components/GestureComponents';
-import { ActivityIndicator, Platform, StyleSheet } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, StyleSheet } from 'react-native';
 import { WebView } from '@/components/WebView/WebView';
 
 export default function RegisterScreen() {
@@ -61,7 +61,7 @@ export default function RegisterScreen() {
   const isWeb = Platform.OS === 'web';
 
   return (
-    <Box padding={20} flex={1} style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <WebView>
         {!isWeb && (
           <Box alignItems="center" marginBottom={16}>
@@ -154,18 +154,19 @@ export default function RegisterScreen() {
           </Text>
         </Box>
       </WebView>
-    </Box>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    paddingTop: 24,
-    borderRadius: 32,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
+  },
+  contentContainer: {
+    minHeight: '100%',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexDirection: 'column',
   },
   dragLine: {
     height: 3,

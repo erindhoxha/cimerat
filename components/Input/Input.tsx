@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.gray,
     borderRadius: 12,
+    outlineColor: Colors.yellow,
   },
   inputMultiline: {
     height: 200,

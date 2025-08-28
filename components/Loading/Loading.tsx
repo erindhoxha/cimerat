@@ -1,6 +1,7 @@
 import { ActivityIndicator, StyleSheet } from 'react-native';
 import { Box } from '../Box';
 import { Text } from '../Text';
+import { WebView } from '../WebView/WebView';
 
 interface LoadingProps {
   title?: string;
@@ -8,10 +9,12 @@ interface LoadingProps {
 
 export const Loading: React.FC<LoadingProps> = ({ title }) => {
   return (
-    <Box style={styles.container}>
-      <ActivityIndicator />
-      <Text>{title || 'Duke ngarkuar...'}</Text>
-    </Box>
+    <WebView>
+      <Box style={styles.container}>
+        <ActivityIndicator />
+        <Text>{title || 'Duke ngarkuar...'}</Text>
+      </Box>
+    </WebView>
   );
 };
 
@@ -21,7 +24,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
-    backgroundColor: '#fff',
     gap: 12,
   },
 });

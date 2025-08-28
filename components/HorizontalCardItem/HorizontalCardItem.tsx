@@ -25,18 +25,20 @@ export const HorizontalCardItem = ({
   return (
     <View style={styles.listCard}>
       <Box style={styles.cardWrapper}>
-        <Image
-          style={styles.cardImage}
-          source={{
-            uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
-          }}
-          placeholder={{
-            blurhash: blurhash || '',
-          }}
-          contentFit="cover"
-          transition={BLURHASH_TRANSITION}
-        />
-        {images?.length > 1 && <Text style={styles.imageCounter}>+{images.length - 1} foto</Text>}
+        <Box flex={1}>
+          <Image
+            style={styles.cardImage}
+            source={{
+              uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
+            }}
+            placeholder={{
+              blurhash: blurhash || '',
+            }}
+            contentFit="cover"
+            transition={BLURHASH_TRANSITION}
+          />
+          {images?.length > 1 && <Text style={styles.imageCounter}>+{images.length - 1} foto</Text>}
+        </Box>
       </Box>
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>
@@ -89,7 +91,7 @@ const styles = StyleSheet.create({
   cardImage: {
     backgroundColor: '#0553',
     width: 100,
-    height: 140,
+    height: '100%',
     borderRadius: 10,
   },
   cardWrapper: {
@@ -115,7 +117,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   listCard: {
-    marginBottom: 24,
     flexDirection: 'row',
     borderColor: Colors.lightGray,
   },

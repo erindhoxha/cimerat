@@ -1,4 +1,4 @@
-import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { Dimensions, Platform, RefreshControl, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
 import Colors from '@/constants/Colors';
 import { Link, useRouter } from 'expo-router';
 import { HorizontalCardItem } from '@/components/HorizontalCardItem/HorizontalCardItem';
@@ -12,6 +12,7 @@ import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
 import { WebView } from '@/components/WebView/WebView';
 import { useEffect, useState } from 'react';
+import { CardItemWebView } from '@/components/CardItem/CardItemWebView';
 
 export default function TabTwoScreen() {
   const { token } = useAuth();
@@ -19,7 +20,6 @@ export default function TabTwoScreen() {
   const isLoggedIn = !!token;
 
   const listings = useQuery<Listing[]>({
-    staleTime: 0,
     queryKey: ['my-listings'],
     enabled: isLoggedIn,
     queryFn: async () => {
@@ -34,6 +34,8 @@ export default function TabTwoScreen() {
       return res.json();
     },
   });
+
+  console.log('AAA');
 
   const { data, error, isLoading, isRefetching } = listings;
 
@@ -51,9 +53,20 @@ export default function TabTwoScreen() {
     return <Loading />;
   }
 
+  const isWeb = Platform.OS === 'web';
+  const { width } = Dimensions.get('window');
+  const isDesktop = width > 768;
+
+  console.log(isDesktop, !isWeb);
+
+  if (isLoading || isRefetching) {
+    return <Loading />;
+  }
+
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, !isWeb && { backgroundColor: 'white' }]}
+      contentContainerStyle={styles.contentContainer}
       refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={() => listings.refetch()} />}
     >
       <WebView>
@@ -74,7 +87,7 @@ export default function TabTwoScreen() {
             <Loading />
           </Box>
         )}
-        {!isLoggedIn && listings.isFetched && (
+        {!isLoggedIn && (
           <Box marginTop={24} gap={12} style={styles.centeredBox}>
             <Box>
               <FontAwesome name="exclamation" size={48} color={Colors.danger} />
@@ -92,9 +105,15 @@ export default function TabTwoScreen() {
         )}
 
         {isLoggedIn && !isLoading && (
-          <Box marginTop={24}>
+          <Box marginTop={24} gap={12}>
             {!!data?.length ? (
-              data.map((item) => <HorizontalCardItem item={item} router={router} key={item._id} />)
+              data.map((item) =>
+                isWeb && isDesktop ? (
+                  <CardItemWebView {...item} key={item._id} />
+                ) : (
+                  <HorizontalCardItem item={item} router={router} key={item._id} />
+                ),
+              )
             ) : (
               <Text style={styles.emptyText}>
                 Nuk keni asnjë listim të krijuar. Shtoni një listim të ri duke klikuar në butonin "Krijo" në skedën e
@@ -111,8 +130,12 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+  },
+  contentContainer: {
+    minHeight: '100%',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexDirection: 'column',
   },
   text: {
     textAlign: 'center',
@@ -129,7 +152,7 @@ const styles = StyleSheet.create({
   },
   centeredBox: {
     height: '100%',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     width: '100%',
     flex: 1,

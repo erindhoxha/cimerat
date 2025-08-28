@@ -39,8 +39,10 @@ const TextLink = ({ label, onPress }: TextLinkProps) => {
   );
 };
 
+const DRAWER_WIDTH = SCREEN_WIDTH * 0.7;
+
 const DrawerExample = ({ open, onClose }: DrawerProps) => {
-  const animation = useRef(new Animated.Value(-SCREEN_WIDTH * 0.7)).current;
+  const animation = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const [visible, setVisible] = useState(open);
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -62,7 +64,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
       }).start();
     } else {
       Animated.timing(animation, {
-        toValue: -SCREEN_WIDTH * 0.7,
+        toValue: -DRAWER_WIDTH,
         duration: 300,
         useNativeDriver: true,
       }).start(() => setVisible(false));
@@ -74,6 +76,8 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
   const isWeb = Platform.OS === 'web';
   const isMobile = Dimensions.get('window').width < 768;
 
+  const offsetLeft = 0;
+
   return (
     <>
       <TouchableWithoutFeedback onPress={onClose}>
@@ -82,8 +86,11 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
       <Animated.View
         style={[
           styles.drawer,
-          { transform: [{ translateX: animation }], paddingTop: insets.top + 20 },
-          isWeb && { maxWidth: 400 },
+          {
+            transform: [{ translateX: animation }],
+            paddingTop: insets.top + 20,
+            left: Platform.OS === 'web' ? offsetLeft : 0,
+          },
         ]}
       >
         <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
@@ -114,7 +121,6 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
             }}
           />
         )}
-
         <Box marginBottom={48} marginTop="auto">
           {!isLoggedIn && (
             <TouchableOpacity
@@ -144,21 +150,27 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
             <TouchableOpacity
               style={styles.linkButton}
               onPress={() => {
-                Alert.alert('Dilja', 'A jeni i sigurt që doni të dilni?', [
-                  {
-                    text: 'Anulo',
-                    style: 'cancel',
-                  },
-                  {
-                    text: 'Dil',
-                    style: 'destructive',
-                    onPress: () => {
-                      onClose();
-                      setAuth(null, null, null);
-                      queryClient.clear();
+                if (isWeb) {
+                  const confirmed = window.confirm('A jeni i sigurt që doni të dilni?');
+                  if (confirmed) {
+                    onClose();
+                    setAuth(null, null, null);
+                    queryClient.clear();
+                  }
+                } else {
+                  Alert.alert('Dilja', 'A jeni i sigurt që doni të dilni?', [
+                    { text: 'Anulo', style: 'cancel' },
+                    {
+                      text: 'Dil',
+                      style: 'destructive',
+                      onPress: () => {
+                        onClose();
+                        setAuth(null, null, null);
+                        queryClient.clear();
+                      },
                     },
-                  },
-                ]);
+                  ]);
+                }
               }}
             >
               <FontAwesome name="sign-out" size={16} />
@@ -202,7 +214,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    width: SCREEN_WIDTH * 0.7,
     height: '100%',
     backgroundColor: Colors.yellow,
     paddingHorizontal: 20,
@@ -210,10 +221,11 @@ const styles = StyleSheet.create({
     elevation: 12,
     borderTopRightRadius: 20,
     borderBottomRightRadius: 20,
+    width: '70%',
+    maxWidth: 400,
   },
   drawerText: {
     padding: 10,
-    borderRadius: 8,
     marginBottom: 10,
     textAlign: 'left',
     color: 'black',

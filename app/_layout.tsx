@@ -14,6 +14,8 @@ import Toast from 'react-native-toast-message';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import DrawerProvider, { useDrawer } from '@/context/DrawerProvider';
 import { StatusBar } from 'expo-status-bar';
+import { WebView } from '@/components/WebView/WebView';
+import { DownloadBanner } from '@/components/DownloadBanner/DownloadBanner';
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',
@@ -48,9 +50,32 @@ export default function RootLayout() {
       <AuthProvider>
         <StatusBar style="dark" />
         <QueryClientProvider client={queryClient}>
-          <DrawerProvider>
-            <RootLayoutNav />
-          </DrawerProvider>
+          <Box
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden',
+              backgroundColor: 'rgba(0,0,0,0.1)',
+            }}
+          >
+            <Box
+              style={{
+                overflow: 'hidden',
+                maxWidth: 1028,
+                width: '100%',
+                backgroundColor: 'transparent',
+                height: '100%',
+              }}
+            >
+              <DownloadBanner />
+              <DrawerProvider>
+                <RootLayoutNav />
+              </DrawerProvider>
+            </Box>
+          </Box>
         </QueryClientProvider>
         <Toast position="bottom" bottomOffset={40} type="info" autoHide swipeable />
       </AuthProvider>
@@ -72,15 +97,16 @@ function CustomHeader({ isWeb, isLoggedIn, openDrawer, closeDrawer, isOpen }: Cu
     <Box
       style={{
         width: '100%',
-        backgroundColor: Colors.yellow,
         height: 56,
         justifyContent: 'center',
+        alignItems: 'center',
       }}
     >
       <Box
         style={
           isWeb
             ? {
+                backgroundColor: Colors.yellow,
                 maxWidth: 1028,
                 paddingHorizontal: 20,
                 width: '100%',
@@ -92,13 +118,7 @@ function CustomHeader({ isWeb, isLoggedIn, openDrawer, closeDrawer, isOpen }: Cu
                 justifyContent: 'space-between',
                 height: 56,
               }
-            : {
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                height: 56,
-                width: '100%',
-              }
+            : {}
         }
       >
         {router.canGoBack() && (
@@ -106,7 +126,14 @@ function CustomHeader({ isWeb, isLoggedIn, openDrawer, closeDrawer, isOpen }: Cu
             <FontAwesome name="chevron-left" size={16} color={Colors.text} /> <Text fontSize="md">Kthehu</Text>
           </Pressable>
         )}
-        <Text style={styles.logo}>Cimerat</Text>
+        <Text
+          onPress={() => {
+            isWeb && router.push('/');
+          }}
+          style={styles.logo}
+        >
+          Cimerat
+        </Text>
         <Box flexDirection="row" alignItems="center" gap={12}>
           <Box>
             {isLoggedIn ? (

@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, ActivityIndicator, Platform } from 'react-native';
+import { StyleSheet, TextInput, ActivityIndicator, Platform, ScrollView } from 'react-native';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
@@ -56,7 +56,7 @@ export default function LoginScreen() {
   const isWeb = Platform.OS === 'web';
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <WebView>
         {!isWeb && (
           <Box alignItems="center" marginBottom={16}>
@@ -135,18 +135,19 @@ export default function LoginScreen() {
           Nuk keni llogari? Regjistrohu këtu.
         </Text>
       </WebView>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    paddingTop: 24,
-    borderRadius: 32,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
+  },
+  contentContainer: {
+    minHeight: '100%',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexDirection: 'column',
   },
   dragLine: {
     height: 3,

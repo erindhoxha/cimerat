@@ -23,6 +23,7 @@ interface DropdownFieldProps {
   searchPlaceHolder?: string;
   searchPlaceHolderColor?: string;
   defaultValue?: string;
+  onSelect?: (value: string) => void;
 }
 
 interface SelectValueProps {
@@ -71,6 +72,7 @@ export function DropdownField({
   required,
   defaultValue,
   dropdownStyle,
+  onSelect,
   ...dropdownProps
 }: DropdownFieldProps) {
   return (
@@ -87,7 +89,10 @@ export function DropdownField({
         render={({ field: { onChange, value } }) => (
           <SelectDropdown
             data={options}
-            onSelect={onChange}
+            onSelect={(value) => {
+              onChange(value);
+              onSelect?.(value);
+            }}
             disabled={disabled}
             searchInputStyle={styles.searchInputStyle}
             renderButton={(_: any, isOpened: boolean) => {

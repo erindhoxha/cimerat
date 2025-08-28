@@ -1,4 +1,4 @@
-import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { Dimensions, Platform, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import Colors from '@/constants/Colors';
 import { Link, useRouter } from 'expo-router';
 import { HorizontalCardItem } from '@/components/HorizontalCardItem/HorizontalCardItem';
@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
 import { WebView } from '@/components/WebView/WebView';
+import { CardItemWebView } from '@/components/CardItem/CardItemWebView';
 
 export default function Liked() {
   const { token } = useAuth();
@@ -40,51 +41,60 @@ export default function Liked() {
     return <Text>Error: {error.message}</Text>;
   }
 
+  const isWeb = Platform.OS === 'web';
+  const { width } = Dimensions.get('window');
+  const isDesktop = width > 768;
+
   return (
     <ScrollView
-      style={[styles.container]}
-      refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={() => listings.refetch()} />}
+      style={[styles.container, !isWeb && { backgroundColor: 'white' }]}
+      contentContainerStyle={styles.contentContainer}
+      refreshControl={<RefreshControl refreshing={isRefetching && isLoading} onRefresh={() => listings.refetch()} />}
     >
-      <Box padding={20}>
-        <WebView>
-          {!isLoggedIn && listings.isFetched ? (
-            <Box marginTop={24} gap={12} style={styles.centeredBox}>
-              <Box>
-                <FontAwesome name="exclamation" size={48} color={Colors.danger} />
-              </Box>
-              <Text fontSize="xl" fontWeight="bold">
-                Nuk jeni të kyçur
-              </Text>
-              <Text style={styles.text}>Ju lutemi, kyçuni për të krijuar listime ose për të parë listimet tuaja.</Text>
-              <Link href="/login" asChild>
-                <Button style={styles.fullWidthButton}>
-                  <Text>Kyçu</Text>
-                </Button>
-              </Link>
+      <WebView>
+        {!isLoggedIn ? (
+          <Box marginTop={24} gap={12} style={styles.centeredBox}>
+            <Box>
+              <FontAwesome name="exclamation" size={48} color={Colors.danger} />
             </Box>
-          ) : (
-            <Box gap={12}>
-              <Text fontSize="xl" fontWeight="bold">
-                Listimet e preferuara
-              </Text>
-            </Box>
-          )}
-          {(isLoading || isRefetching) && (
-            <Box marginTop={24}>
-              <Loading />
-            </Box>
-          )}
-          {isLoggedIn && !isLoading && (
-            <Box marginTop={24}>
-              {!!data?.length ? (
-                data.map((item) => <HorizontalCardItem item={item} router={router} key={item._id} />)
-              ) : (
-                <Text style={styles.emptyText}>Nuk keni asnjë listim të ruajtur.</Text>
-              )}
-            </Box>
-          )}
-        </WebView>
-      </Box>
+            <Text fontSize="xl" fontWeight="bold">
+              Nuk jeni të kyçur
+            </Text>
+            <Text style={styles.text}>Ju lutemi, kyçuni për të krijuar listime ose për të parë listimet tuaja.</Text>
+            <Link href="/login" asChild>
+              <Button style={styles.fullWidthButton}>
+                <Text>Kyçu</Text>
+              </Button>
+            </Link>
+          </Box>
+        ) : (
+          <Box gap={12}>
+            <Text fontSize="xl" fontWeight="bold">
+              Listimet e preferuara
+            </Text>
+          </Box>
+        )}
+        {isLoading && (
+          <Box marginTop={24}>
+            <Loading />
+          </Box>
+        )}
+        {isLoggedIn && !isLoading && (
+          <Box marginTop={24} gap={12}>
+            {!!data?.length ? (
+              data.map((item) =>
+                isWeb && isDesktop ? (
+                  <CardItemWebView {...item} key={item._id} />
+                ) : (
+                  <HorizontalCardItem item={item} router={router} key={item._id} />
+                ),
+              )
+            ) : (
+              <Text style={styles.emptyText}>Nuk keni asnjë listim të ruajtur.</Text>
+            )}
+          </Box>
+        )}
+      </WebView>
     </ScrollView>
   );
 }
@@ -92,7 +102,13 @@ export default function Liked() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    height: '100%',
+  },
+  contentContainer: {
+    minHeight: '100%',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexDirection: 'column',
   },
   text: {
     textAlign: 'center',
@@ -109,7 +125,7 @@ const styles = StyleSheet.create({
   },
   centeredBox: {
     height: '100%',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     width: '100%',
     flex: 1,

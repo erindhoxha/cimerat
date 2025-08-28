@@ -1,4 +1,12 @@
-import { FlatList, Platform, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
+import {
+  Dimensions,
+  FlatList,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  useWindowDimensions,
+} from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
@@ -163,8 +171,6 @@ export default function TabOneScreen() {
   }, [width, isWeb]);
 
   const Component = isWeb ? ScrollView : View;
-
-  console.log(numColumns);
 
   return (
     <Component style={[styles.container]}>
@@ -341,33 +347,31 @@ export default function TabOneScreen() {
                   <Box flex={1} style={styles.flexShrink}>
                     <SelectDropdown
                       data={cmimi}
-                      onSelect={(selectedItem) => {
-                        setSelectedPriceFrom((prev) => {
-                          if (prev === selectedItem) {
-                            return undefined;
-                          }
-                          return selectedItem;
-                        });
-                        if (selectedPriceTo && selectedItem > selectedPriceTo) {
-                          setSelectedPriceTo(null);
-                        }
-                      }}
+                      onSelect={setSelectedPriceFrom}
                       defaultValue={selectedPriceFrom}
-                      renderButton={(_, isOpened) => (
-                        <>
-                          <SelectButton
-                            title={(selectedPriceFrom && 'Nga ' + selectedPriceFrom + '€') || ''}
-                            isOpened={isOpened}
-                            placeholder="Nga"
-                          />
-                        </>
-                      )}
+                      renderButton={(_, isOpened) => {
+                        return (
+                          <Box
+                            style={{
+                              outlineColor: Colors.yellow,
+                              borderRadius: 12,
+                            }}
+                          >
+                            <SelectButton
+                              title={(selectedPriceFrom && 'Nga ' + selectedPriceFrom + '€') || ''}
+                              isOpened={isOpened}
+                              placeholder="Nga"
+                            />
+                          </Box>
+                        );
+                      }}
+                      disableAutoScroll
+                      showsVerticalScrollIndicator
                       renderItem={(item, _, isSelected) => (
                         <>
                           <SelectItem item={item} isSelected={isSelected} />
                         </>
                       )}
-                      showsVerticalScrollIndicator={true}
                       dropdownStyle={dropdownStyles.dropdownMenuStyle}
                     />
                   </Box>
@@ -384,13 +388,18 @@ export default function TabOneScreen() {
                       }}
                       defaultValue={selectedPriceTo}
                       renderButton={(_, isOpened) => (
-                        <>
+                        <Input
+                          style={{
+                            outlineColor: Colors.yellow,
+                            borderRadius: 12,
+                          }}
+                        >
                           <SelectButton
                             title={(selectedPriceTo && 'Deri në ' + selectedPriceTo + '€') || ''}
                             isOpened={isOpened}
                             placeholder="Deri në"
                           />
-                        </>
+                        </Input>
                       )}
                       renderItem={(item, _, isSelected) => (
                         <>
@@ -439,7 +448,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 0,
   },
   contentContainerStyle: {
     paddingBottom: 80,
