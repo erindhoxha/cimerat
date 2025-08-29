@@ -30,6 +30,7 @@ type BoxProps = ViewProps & {
   borderTopWidth?: number;
   width?: DimensionValue;
   flexWrap?: ViewStyle['flexWrap'];
+  borderWidth?: number;
 };
 
 export default function Box({

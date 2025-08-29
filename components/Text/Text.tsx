@@ -1,6 +1,6 @@
-import { FontSizes } from "@/constants/FontSizes";
-import { FontWeights } from "@/constants/FontWeights";
-import { Text as DefaultText, TextProps } from "react-native";
+import { FontSizes } from '@/constants/FontSizes';
+import { FontWeights } from '@/constants/FontWeights';
+import { Text as DefaultText, TextProps } from 'react-native';
 
 interface TxtProps extends TextProps {
   fontSize?: keyof typeof FontSizes;
@@ -15,6 +15,7 @@ export function Text(props: TxtProps) {
         {
           fontSize: FontSizes[props.fontSize as keyof typeof FontSizes],
           fontWeight: FontWeights[props.fontWeight as keyof typeof FontWeights],
+          userSelect: 'none',
         },
         style,
       ]}

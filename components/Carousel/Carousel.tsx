@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dimensions, View, StyleProp, ViewStyle } from 'react-native';
+import { Dimensions, View, StyleProp, ViewStyle, StyleSheet } from 'react-native';
 import { useSharedValue, configureReanimatedLogger } from 'react-native-reanimated';
 import Carousel, { ICarouselInstance, Pagination } from 'react-native-reanimated-carousel';
 
@@ -64,17 +64,23 @@ export function ReusableCarousel<T>({
       />
       {isCarousel && (
         <Pagination.Custom
-          activeDotStyle={{
-            backgroundColor: 'rgba(255,255,255, 1)',
-            borderRadius: 30,
-          }}
+          activeDotStyle={styles.activeDotStyle}
           progress={progresSharedValue}
           data={data as {}[]}
-          dotStyle={{ backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: 50 }}
-          containerStyle={{ gap: 5, marginTop: 10, position: 'absolute', bottom: 12, touchAction: 'auto' }}
+          dotStyle={styles.dotStyle}
+          containerStyle={styles.containerStyle}
           onPress={onPressPagination}
         />
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  activeDotStyle: {
+    backgroundColor: 'rgba(255,255,255, 1)',
+    borderRadius: 30,
+  },
+  dotStyle: { backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: 50 },
+  containerStyle: { gap: 5, marginTop: 10, position: 'absolute', bottom: 12, touchAction: 'auto' },
+});

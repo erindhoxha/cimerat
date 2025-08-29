@@ -4,7 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { Link, Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { Platform, Pressable, StyleSheet, TouchableOpacity, useColorScheme, useWindowDimensions } from 'react-native';
+import { Platform, Pressable, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 export { ErrorBoundary } from 'expo-router';
 import 'react-native-reanimated';
@@ -14,7 +14,6 @@ import Toast from 'react-native-toast-message';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import DrawerProvider, { useDrawer } from '@/context/DrawerProvider';
 import { StatusBar } from 'expo-status-bar';
-import { WebView } from '@/components/WebView/WebView';
 import { DownloadBanner } from '@/components/DownloadBanner/DownloadBanner';
 
 export const unstable_settings = {
@@ -52,26 +51,8 @@ export default function RootLayout() {
       <AuthProvider>
         <StatusBar style="dark" />
         <QueryClientProvider client={queryClient}>
-          <Box
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '100%',
-              height: '100%',
-              overflow: 'hidden',
-              backgroundColor: 'rgba(0,0,0,0.1)',
-            }}
-          >
-            <Box
-              style={{
-                overflow: 'hidden',
-                maxWidth: 1028,
-                width: '100%',
-                backgroundColor: 'transparent',
-                height: '100%',
-              }}
-            >
+          <Box style={styles.customBackground}>
+            <Box style={styles.customLayout}>
               {!isMobile && <DownloadBanner />}
               <DrawerProvider>
                 <RootLayoutNav />
@@ -87,45 +68,21 @@ export default function RootLayout() {
 
 interface CustomHeaderProps {
   isWeb: boolean;
-  isLoggedIn: boolean;
-  openDrawer: () => void;
-  closeDrawer: () => void;
   isOpen: boolean;
+  isLoggedIn: boolean;
+  closeDrawer: () => void;
+  openDrawer: () => void;
 }
 
 function CustomHeader({ isWeb, isLoggedIn, openDrawer, closeDrawer, isOpen }: CustomHeaderProps) {
   const router = useRouter();
   return (
-    <Box
-      style={{
-        width: '100%',
-        height: 56,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <Box
-        style={
-          isWeb
-            ? {
-                backgroundColor: Colors.yellow,
-                maxWidth: 1028,
-                paddingHorizontal: 20,
-                width: '100%',
-                marginLeft: 'auto',
-                marginRight: 'auto',
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                height: 56,
-              }
-            : {}
-        }
-      >
+    <Box style={styles.customHeaderWrapper}>
+      <Box style={isWeb ? styles.customHeaderInner : {}}>
         {router.canGoBack() && (
           <Pressable onPress={() => router.back()} style={styles.backButton}>
-            <FontAwesome name="chevron-left" size={16} color={Colors.text} /> <Text fontSize="md">Kthehu</Text>
+            <FontAwesome name="chevron-left" size={16} color={Colors.text} />
+            <Text fontSize="md">Kthehu</Text>
           </Pressable>
         )}
         <Text
@@ -253,6 +210,41 @@ function RootLayoutNav() {
 }
 
 const styles = StyleSheet.create({
+  customLayout: {
+    overflow: 'hidden',
+    maxWidth: 1028,
+    width: '100%',
+    backgroundColor: 'transparent',
+    height: '100%',
+  },
+  customBackground: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+    backgroundColor: 'rgba(0,0,0,0.1)',
+  },
+  customHeaderWrapper: {
+    width: '100%',
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  customHeaderInner: {
+    backgroundColor: Colors.yellow,
+    maxWidth: 1028,
+    paddingHorizontal: 20,
+    width: '100%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: 56,
+  },
   logo: {
     fontSize: 18,
     fontWeight: 'bold',

@@ -72,11 +72,7 @@ export const CardItemWebView = ({
                     paddingVertical={4}
                     borderRadius={12}
                     gap={12}
-                    style={{
-                      borderWidth: 1,
-                      borderColor: 'rgba(0,0,0,0.1)',
-                      marginBottom: 12,
-                    }}
+                    style={styles.cardInner}
                   >
                     {rooms && rooms !== 'undefined' && (
                       <Box flexDirection="row" alignItems="center" gap={4}>
@@ -163,6 +159,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderColor: 'rgba(0,0,0,0.1)',
     flexDirection: 'row', // horizontal
+  },
+  cardInner: {
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.1)',
+    marginBottom: 12,
   },
   ownerCard: {
     borderColor: Colors.yellow,

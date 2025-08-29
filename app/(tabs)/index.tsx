@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   useWindowDimensions,
+  ViewStyle,
 } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -30,6 +31,8 @@ import { useAuth } from '@/context/AuthContext';
 import { View } from '@/components/View';
 import { WebView } from '@/components/WebView/WebView';
 import { CardItemWebView } from '@/components/CardItem/CardItemWebView';
+import { AccordionView } from '@/components/Accordion';
+import { numriIDhomave } from '@/constants/NumberOfRooms';
 
 const PAGE_SIZE = 20;
 
@@ -77,7 +80,7 @@ export default function TabOneScreen() {
   const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<string[]>([]);
   const [selectedPriceFrom, setSelectedPriceFrom] = useState<number | null>(null);
   const [selectedPriceTo, setSelectedPriceTo] = useState<number | null>(null);
-
+  const [accordionOpen, setAccordionOpen] = useState(false); // or false if you want it closed by default
   const router = useRouter();
 
   useEffect(() => {
@@ -108,6 +111,7 @@ export default function TabOneScreen() {
         if (userCity) {
           const matchedCity = cities.find((c) => c.toLowerCase() === userCity.toLowerCase());
           if (matchedCity) {
+            console.log('Amatched');
             setSelectedCities([matchedCity]);
           }
         }
@@ -237,10 +241,10 @@ export default function TabOneScreen() {
                     style={dropdownStyles.multiSelectStyle}
                     containerStyle={
                       isWeb
-                        ? {
+                        ? ({
                             maxHeight: 300,
                             overflow: 'auto',
-                          }
+                          } as unknown as ViewStyle)
                         : undefined
                     }
                     data={cities.map((c) => ({ label: c, value: c }))}
@@ -324,13 +328,7 @@ export default function TabOneScreen() {
                     )}
                     selectedStyle={dropdownStyles.dropdownItemSelected}
                     renderSelectedItem={(item, unSelect) => (
-                      <TouchableOpacity
-                        onPress={unSelect}
-                        style={{
-                          marginTop: 4,
-                          marginRight: 4,
-                        }}
-                      >
+                      <TouchableOpacity onPress={unSelect} style={styles.pillStyle}>
                         <Pill title={item.label} iconLeft={<FontAwesome name="times" size={12} color="#000" />} />
                       </TouchableOpacity>
                     )}
@@ -339,85 +337,144 @@ export default function TabOneScreen() {
                   />
                 </Box>
               </Box>
-              <Box>
-                <Label>Çmimi për muaj</Label>
-                <Box flex={1} flexDirection="row" gap={12}>
-                  <Box flex={1} style={styles.flexShrink}>
-                    <SelectDropdown
-                      data={cmimi}
-                      onSelect={setSelectedPriceFrom}
-                      defaultValue={selectedPriceFrom}
-                      renderButton={(_, isOpened) => {
-                        return (
-                          <Box
-                            style={{
-                              outlineColor: Colors.yellow,
-                              borderRadius: 12,
-                            }}
-                          >
-                            <SelectButton
-                              title={(selectedPriceFrom && 'Nga ' + selectedPriceFrom + '€') || ''}
-                              isOpened={isOpened}
-                              placeholder="Nga"
-                            />
-                          </Box>
-                        );
-                      }}
-                      disableAutoScroll
-                      showsVerticalScrollIndicator
-                      renderItem={(item, _, isSelected) => (
-                        <>
-                          <SelectItem item={item} isSelected={isSelected} />
-                        </>
-                      )}
-                      dropdownStyle={dropdownStyles.dropdownMenuStyle}
-                    />
-                  </Box>
-                  <Box flex={1} style={styles.flexShrink}>
-                    <SelectDropdown
-                      data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
-                      onSelect={(selectedItem) => {
-                        setSelectedPriceTo((prev) => {
-                          if (prev === selectedItem) {
-                            return undefined;
-                          }
-                          return selectedItem;
-                        });
-                      }}
-                      defaultValue={selectedPriceTo}
-                      renderButton={(_, isOpened) => (
-                        <Input
-                          style={{
-                            outlineColor: Colors.yellow,
-                            borderRadius: 12,
+              <AccordionView open={accordionOpen} setOpen={setAccordionOpen}>
+                <>
+                  <Box>
+                    <Label>Çmimi për muaj</Label>
+                    <Box flex={1} flexDirection="row" gap={12}>
+                      <Box flex={1} style={styles.flexShrink}>
+                        <SelectDropdown
+                          data={cmimi}
+                          onSelect={setSelectedPriceFrom}
+                          defaultValue={selectedPriceFrom}
+                          renderButton={(_, isOpened) => {
+                            return (
+                              <Box style={styles.selectDropdownStyles}>
+                                <SelectButton
+                                  title={(selectedPriceFrom && 'Nga ' + selectedPriceFrom + '€') || ''}
+                                  isOpened={isOpened}
+                                  placeholder="Nga"
+                                />
+                              </Box>
+                            );
                           }}
-                        >
-                          <SelectButton
-                            title={(selectedPriceTo && 'Deri në ' + selectedPriceTo + '€') || ''}
-                            isOpened={isOpened}
-                            placeholder="Deri në"
-                          />
-                        </Input>
-                      )}
-                      renderItem={(item, _, isSelected) => (
-                        <>
-                          <SelectItem item={item} isSelected={isSelected} />
-                        </>
-                      )}
-                      showsVerticalScrollIndicator={false}
-                      dropdownStyle={dropdownStyles.dropdownMenuStyle}
-                    />
+                          disableAutoScroll
+                          showsVerticalScrollIndicator
+                          renderItem={(item, _, isSelected) => (
+                            <>
+                              <SelectItem item={item} isSelected={isSelected} />
+                            </>
+                          )}
+                          dropdownStyle={dropdownStyles.dropdownMenuStyle}
+                        />
+                      </Box>
+                      <Box flex={1} style={styles.flexShrink}>
+                        <SelectDropdown
+                          data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
+                          onSelect={(selectedItem) => {
+                            setSelectedPriceTo((prev) => {
+                              if (prev === selectedItem) {
+                                return undefined;
+                              }
+                              return selectedItem;
+                            });
+                          }}
+                          defaultValue={selectedPriceTo}
+                          renderButton={(_, isOpened) => (
+                            <Input
+                              style={{
+                                outlineColor: Colors.yellow,
+                                borderRadius: 12,
+                              }}
+                            >
+                              <SelectButton
+                                title={(selectedPriceTo && 'Deri në ' + selectedPriceTo + '€') || ''}
+                                isOpened={isOpened}
+                                placeholder="Deri në"
+                              />
+                            </Input>
+                          )}
+                          renderItem={(item, _, isSelected) => (
+                            <>
+                              <SelectItem item={item} isSelected={isSelected} />
+                            </>
+                          )}
+                          showsVerticalScrollIndicator={false}
+                          dropdownStyle={dropdownStyles.dropdownMenuStyle}
+                        />
+                      </Box>
+                    </Box>
                   </Box>
-                </Box>
-              </Box>
-              <Box flexDirection="row" justifyContent="space-between" alignItems="center">
-                <Text
-                  style={{
-                    width: showFilter ? '75%' : '100%',
-                  }}
-                >
-                  Listimet janë renditur sipas datës së krijimit.
-                </Text>
+                  <Box>
+                    <Box flex={1} flexDirection="row" gap={12}>
+                      <Box flex={1} style={styles.flexShrink}>
+                        <Label>Numri i cimerave</Label>
+                        <SelectDropdown
+                          data={numriIDhomave}
+                          onSelect={setSelectedPriceFrom}
+                          defaultValue={selectedPriceFrom}
+                          renderButton={(_, isOpened) => {
+                            return (
+                              <Box style={styles.selectDropdownStyles}>
+                                <SelectButton
+                                  title={(selectedPriceFrom && 'Nga ' + selectedPriceFrom + '€') || ''}
+                                  isOpened={isOpened}
+                                  placeholder="Nga"
+                                />
+                              </Box>
+                            );
+                          }}
+                          disableAutoScroll
+                          showsVerticalScrollIndicator
+                          renderItem={(item, _, isSelected) => (
+                            <>
+                              <SelectItem item={item} isSelected={isSelected} />
+                            </>
+                          )}
+                          dropdownStyle={dropdownStyles.dropdownMenuStyle}
+                        />
+                      </Box>
+                      <Box flex={1} style={styles.flexShrink}>
+                        <Label>Numri i dhomave</Label>
+                        <SelectDropdown
+                          data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
+                          onSelect={(selectedItem) => {
+                            setSelectedPriceTo((prev) => {
+                              if (prev === selectedItem) {
+                                return undefined;
+                              }
+                              return selectedItem;
+                            });
+                          }}
+                          defaultValue={selectedPriceTo}
+                          renderButton={(_, isOpened) => (
+                            <Input
+                              style={{
+                                outlineColor: Colors.yellow,
+                                borderRadius: 12,
+                              }}
+                            >
+                              <SelectButton
+                                title={(selectedPriceTo && 'Deri në ' + selectedPriceTo + '€') || ''}
+                                isOpened={isOpened}
+                                placeholder="Deri në"
+                              />
+                            </Input>
+                          )}
+                          renderItem={(item, _, isSelected) => (
+                            <>
+                              <SelectItem item={item} isSelected={isSelected} />
+                            </>
+                          )}
+                          showsVerticalScrollIndicator={false}
+                          dropdownStyle={dropdownStyles.dropdownMenuStyle}
+                        />
+                      </Box>
+                    </Box>
+                  </Box>
+                </>
+              </AccordionView>
+              <Box flexDirection="row" justifyContent="flex-end" alignItems="center">
                 {showFilter && (
                   <Box flexDirection="row">
                     <Text
@@ -443,6 +500,14 @@ export default function TabOneScreen() {
 }
 
 const styles = StyleSheet.create({
+  selectDropdownStyles: {
+    outlineColor: Colors.yellow,
+    borderRadius: 12,
+  },
+  pillStyle: {
+    marginTop: 4,
+    marginRight: 4,
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',

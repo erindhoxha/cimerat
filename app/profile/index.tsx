@@ -9,10 +9,9 @@ import Label from '@/components/Label';
 import { useState } from 'react';
 import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { FieldValues } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Toast from 'react-native-toast-message';
 import { WebView } from '@/components/WebView/WebView';
-import { json } from 'zod';
 
 interface Mutation {
   userId: string | null;
@@ -20,6 +19,15 @@ interface Mutation {
   password: string;
   oldPassword: string;
 }
+
+import { isValidPhoneNumber } from 'libphonenumber-js';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const formSchema = z.object({
+  oldPassword: z.string().min(6, 'Fjalëkalimi i vjetër është i detyrueshëm, dhe duhet të ketë të paktën 6 karaktere'),
+  newPassword: z.string().min(6, 'Fjalëkalimi i ri është i detyrueshëm, dhe duhet të ketë të paktën 6 karaktere'),
+});
 
 export default function ProfileScreen() {
   const queryClient = useQueryClient();
@@ -30,6 +38,14 @@ export default function ProfileScreen() {
   const [formError, setFormError] = useState<string | null>(null);
 
   const router = useRouter();
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      oldPassword: '',
+      newPassword: '',
+    },
+  });
 
   const { data, error, status, refetch } = useQuery({
     queryKey: ['user'],
@@ -61,7 +77,9 @@ export default function ProfileScreen() {
       const json = await res.json();
       if (!res.ok) {
         // Instead of throwing, return a rejected promise
-        return Promise.reject('Gabim gjatë përditësimit. Ju lutemi provoni përsëri.');
+        return Promise.reject({
+          message: json.message || 'Gabim gjatë përditësimit. Ju lutemi provoni përsëri.',
+        });
       }
       return json;
     },
@@ -80,18 +98,6 @@ export default function ProfileScreen() {
   } = data;
 
   const onSubmitHandler = async (data: FieldValues) => {
-    setFormError(null);
-
-    // Validation: oldPassword and newPassword must not be empty
-    if (!oldPassword.trim() || !newPassword.trim()) {
-      setFormError('Ju lutemi plotësoni të gjitha fushat.');
-      return;
-    }
-    if (newPassword.length < 6) {
-      setFormError('Fjalëkalimi i ri duhet të ketë të paktën 6 karaktere.');
-      return;
-    }
-    setLoading(true);
     await updateMutation(
       {
         userId,
@@ -99,18 +105,10 @@ export default function ProfileScreen() {
         oldPassword,
         password: newPassword,
       },
-
       {
-        onError: (error) => {
-          console.error('Error', error);
-          setFormError(error.message);
-        },
         onSuccess(data) {
           Toast.show({ type: 'success', text1: 'Përdoruesi u përditësua me sukses' });
           router.push('/');
-        },
-        onSettled() {
-          setLoading(false);
         },
       },
     );
@@ -138,14 +136,38 @@ export default function ProfileScreen() {
             </Box>
             <Box>
               <Label>Fjalëkalimi i vjetër</Label>
-              <Input placeholder="Fjalëkalimi juaj" secureTextEntry value={oldPassword} onChangeText={setOldPassword} />
+              <Controller
+                control={form.control}
+                name="oldPassword"
+                render={({ field, fieldState: { error } }) => (
+                  <Input
+                    {...field}
+                    placeholder="Fjalëkalimi juaj"
+                    secureTextEntry
+                    error={error?.message}
+                    onChangeText={field.onChange}
+                  />
+                )}
+              />
             </Box>
             <Box>
               <Label>Fjalëkalimi i ri</Label>
-              <Input placeholder="Fjalëkalimi i ri" secureTextEntry value={newPassword} onChangeText={setNewPassword} />
+              <Controller
+                control={form.control}
+                name="newPassword"
+                render={({ field, fieldState: { error } }) => (
+                  <Input
+                    {...field}
+                    placeholder="Fjalëkalimi i ri"
+                    secureTextEntry
+                    error={error?.message}
+                    onChangeText={field.onChange}
+                  />
+                )}
+              />
             </Box>
-            <Button variant="primary" onPress={onSubmitHandler}>
-              {loading ? (
+            <Button variant="primary" onPress={form.handleSubmit(onSubmitHandler)} disabled={loading}>
+              {form.formState.isSubmitting ? (
                 <Box flexDirection="row" gap={4}>
                   <Text>Duke ndryshuar...</Text>
                   <ActivityIndicator size="small" color="#000" />
@@ -155,9 +177,7 @@ export default function ProfileScreen() {
               )}
             </Button>
             {formError && <Text style={styles.errorText}>{formError}</Text>}
-            {mutationError && (
-              <Text style={styles.errorText}>Gabim gjatë përditësimit. Ju lutemi provoni përsëri.</Text>
-            )}
+            {mutationError && <Text style={styles.errorText}>{mutationError.message}</Text>}
           </Box>
           <Box gap={12} marginTop={24}>
             <Text fontSize="md" fontWeight="bold">

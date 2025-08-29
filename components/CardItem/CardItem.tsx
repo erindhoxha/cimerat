@@ -74,15 +74,7 @@ export const CardItem = ({
         />
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
-            <Box
-              flexDirection="row"
-              justifyContent="space-between"
-              flex={1}
-              gap={12}
-              style={{
-                flexWrap: 'wrap',
-              }}
-            >
+            <Box flexDirection="row" justifyContent="space-between" flex={1} gap={12} flexWrap="wrap">
               <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start">
                 <Box
                   flexDirection="row"
@@ -91,11 +83,9 @@ export const CardItem = ({
                   paddingVertical={4}
                   borderRadius={24}
                   gap={12}
-                  style={{
-                    borderWidth: 1,
-                    borderColor: Colors.gray,
-                    marginBottom: 12,
-                  }}
+                  borderColor={Colors.gray}
+                  marginBottom={12}
+                  borderWidth={1}
                 >
                   {rooms && rooms !== 'undefined' && (
                     <Box flexDirection="row" alignItems="center" gap={4}>
@@ -104,13 +94,7 @@ export const CardItem = ({
                     </Box>
                   )}
                   {currentFlatmates && currentFlatmates !== 'undefined' && (
-                    <Box
-                      flexDirection="row"
-                      alignItems="center"
-                      style={{
-                        gap: 4,
-                      }}
-                    >
+                    <Box flexDirection="row" alignItems="center" gap={4}>
                       <Text>{currentFlatmates}</Text>
                       <FontAwesome name="user" size={16} />
                     </Box>
