@@ -183,15 +183,6 @@ export default function ItemDetailScreen() {
 
         <Box flex={1} paddingHorizontal={20} gap={12}>
           <Box flexDirection="column" gap={4} marginTop={isSingle ? 20 : 12} alignItems="flex-start">
-            {data.user.verified && (
-              <Box flexDirection="row" gap={8} marginBottom={8}>
-                <Pill
-                  title="Personi i verifikuar"
-                  variant="yellow"
-                  iconLeft={<FontAwesome name="check" size={12} color="#000" />}
-                />
-              </Box>
-            )}
             <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="100%">
               <Box style={styles.contentInner}>
                 <Text>
