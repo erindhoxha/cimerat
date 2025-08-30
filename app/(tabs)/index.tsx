@@ -12,7 +12,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { CardItem } from '@/components/CardItem/CardItem';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Box } from '@/components/Box';
 import Label from '@/components/Label/Label';
 import { Text } from '@/components/Text';
@@ -521,8 +521,8 @@ export default function TabOneScreen() {
                   </Box>
                 </>
               </AccordionView>
-              <Box flexDirection="row" justifyContent="flex-end" alignItems="center">
-                {showFilter && (
+              {showFilter && (
+                <Box flexDirection="row" justifyContent="flex-end" alignItems="center">
                   <Box flexDirection="row">
                     <Text
                       style={styles.filter}
@@ -539,8 +539,8 @@ export default function TabOneScreen() {
                       Pastro filtrat
                     </Text>
                   </Box>
-                )}
-              </Box>
+                </Box>
+              )}
             </Box>
           )}
         />

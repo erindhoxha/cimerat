@@ -44,21 +44,21 @@ export function ReusableCarousel<T>({
   const isCarousel = data.length > 1;
 
   return (
-    <View>
+    <View style={{ touchAction: 'pan-y' }}>
       <Carousel
         ref={ref}
         width={carouselWidth}
         height={carouselHeight}
         defaultIndex={defaultIndex}
         data={data}
-        style={style}
-        onProgressChange={(offsetProgress, absoluteProgress) => {
+        onProgressChange={(_, absoluteProgress) => {
           progresSharedValue.value = absoluteProgress;
           onProgressChange?.(absoluteProgress);
         }}
         onConfigurePanGesture={(panGesture) => {
           panGesture.activeOffsetX([-10, 10]);
         }}
+        style={[style]}
         enabled={isCarousel}
         renderItem={({ item, index }) => renderItem({ item, index })}
       />

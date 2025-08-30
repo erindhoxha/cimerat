@@ -101,7 +101,6 @@ export default function ProfileScreen() {
   } = data;
 
   const onSubmitHandler = async (data: FieldValues) => {
-    console.log(data);
     await updateMutation(
       {
         userId,
@@ -188,7 +187,6 @@ export default function ProfileScreen() {
             }}
             visible={modalOpen}
             onRequestClose={() => {
-              console.log('CLosing');
               setModalOpen(!modalOpen);
             }}
             transparent={true}

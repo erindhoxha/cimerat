@@ -1,19 +1,22 @@
-import { useRouter } from 'expo-router';
-import { View } from '../View/View';
-import { Image } from 'expo-image';
+import { useState } from 'react';
 import { Platform, Pressable, StyleSheet } from 'react-native';
-import { Text } from '../Text';
-import { Box } from '../Box';
+import { useRouter } from 'expo-router';
+import { Image } from 'expo-image';
 import { FontAwesome } from '@expo/vector-icons';
+
+import { View } from '../View/View';
+import { Box } from '../Box';
+import { Text } from '../Text';
 import { Pill } from '../Pill/Pill';
-import Colors from '@/constants/Colors';
+import { Button } from '../Button';
+import { ReusableCarousel } from '@/components/Carousel/Carousel';
+import { NewCarousel } from '../NewCarousel/NewCarousel';
+
+import { useAuth } from '@/context/AuthContext';
 import { formatDate, listingHasExpired } from '@/utils';
 import { Listing } from '@/types';
+import Colors from '@/constants/Colors';
 import { BLURHASH_TRANSITION } from '@/constants/global';
-import { ReusableCarousel } from '@/components/Carousel/Carousel';
-import { useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { Button } from '../Button';
 
 export const CardItem = ({
   city,
@@ -34,103 +37,122 @@ export const CardItem = ({
   const { userId } = useAuth();
 
   const isOwner = user?._id === userId;
-
   const isExpired = listingHasExpired(createdAt);
-
   const isWeb = Platform.OS === 'web';
+
+  const CarouselComponent = isWeb ? NewCarousel : ReusableCarousel;
 
   return (
     <Pressable
       style={styles.cardLink}
-      onPress={() => router.push({ pathname: `/(item)/[item]`, params: { imageIndex: carouselIndex, item: _id } })}
+      onPress={() =>
+        router.push({
+          pathname: `/(item)/[item]`,
+          params: { imageIndex: carouselIndex, item: _id },
+        })
+      }
     >
       <View style={styles.card}>
-        <ReusableCarousel
-          style={
-            isWeb
-              ? {
-                  alignSelf: 'flex-start',
-                  maxHeight: 300,
-                }
-              : undefined
-          }
+        <CarouselComponent
+          style={isWeb ? styles.webCarousel : undefined}
           data={images}
           onProgressChange={setCarouselIndex}
-          renderItem={({ item }) => {
-            return (
-              <Box style={styles.cardImage}>
-                <Image
-                  style={styles.cardImage}
-                  source={{
-                    uri: `${process.env.EXPO_PUBLIC_API_URL}${item}`,
-                  }}
-                  placeholder={{ blurhash: blurhash || '' }}
-                  contentFit="cover"
-                  transition={BLURHASH_TRANSITION}
-                />
-              </Box>
-            );
-          }}
+          renderItem={({ item }) => (
+            <Box style={styles.cardImage}>
+              <Image
+                style={styles.cardImage}
+                source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${item}` }}
+                placeholder={{ blurhash: blurhash || '' }}
+                contentFit="cover"
+                transition={BLURHASH_TRANSITION}
+              />
+            </Box>
+          )}
         />
+
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
-            <Box flexDirection="row" justifyContent="space-between" flex={1} gap={12} flexWrap="wrap">
-              <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start">
-                <Box
-                  flexDirection="row"
-                  alignItems="center"
-                  paddingHorizontal={8}
-                  paddingVertical={4}
-                  borderRadius={24}
-                  gap={12}
-                  borderColor={Colors.gray}
-                  marginBottom={12}
-                  borderWidth={1}
-                >
+            <Box
+              flexDirection="row"
+              justifyContent="space-between"
+              flex={1}
+              gap={12}
+              flexWrap="wrap"
+              style={isWeb && styles.webTopBox}
+            >
+              <Box
+                flexDirection="column"
+                justifyContent="flex-start"
+                alignItems="flex-start"
+                style={isWeb && styles.webColumnBox}
+              >
+                <Box style={styles.featuresBox}>
                   {rooms && rooms !== 'undefined' && (
-                    <Box flexDirection="row" alignItems="center" gap={4}>
+                    <Box style={styles.featureItem}>
                       <Text>{rooms}</Text>
                       <FontAwesome name="bed" size={16} />
                     </Box>
                   )}
                   {currentFlatmates && currentFlatmates !== 'undefined' && (
-                    <Box flexDirection="row" alignItems="center" gap={4}>
+                    <Box style={styles.featureItem}>
                       <Text>{currentFlatmates}</Text>
                       <FontAwesome name="user" size={16} />
                     </Box>
                   )}
                   {flatmateGender === 'Mashkull' ? (
-                    <Box flexDirection="row" alignItems="center" gap={4}>
+                    <Box style={styles.featureItem}>
                       <Text>M</Text>
                       <FontAwesome name="male" size={16} />
                     </Box>
                   ) : flatmateGender === 'Femër' ? (
-                    <Box flexDirection="row" alignItems="center" gap={4}>
+                    <Box style={styles.featureItem}>
                       <Text>F</Text>
                       <FontAwesome name="female" size={16} />
                     </Box>
                   ) : (
-                    <Box flexDirection="row" alignItems="center" gap={4}>
+                    <Box style={styles.featureItem}>
                       <Text>M/F</Text>
                       <FontAwesome name="male" size={16} />
                       <FontAwesome name="female" size={16} />
                     </Box>
                   )}
                 </Box>
-                <Text style={styles.cardTitle}>{city + ', ' + neighborhood}</Text>
-                {isExpired ? (
+
+                {isWeb ? (
+                  <Box style={styles.webHeaderRow}>
+                    <Text style={styles.cardTitle}>
+                      {city}, {neighborhood}
+                    </Text>
+                    <Box flexDirection="column" alignItems="flex-end">
+                      {createdAt && <Text>{formatDate(createdAt)}</Text>}
+                    </Box>
+                  </Box>
+                ) : (
+                  <>
+                    <Text style={styles.cardTitle}>
+                      {city}, {neighborhood}
+                    </Text>
+                    {isExpired ? (
+                      <Text style={styles.expiredText}>❌ Skaduar</Text>
+                    ) : (
+                      <Text style={styles.cardPrice}>{price}€ për muaj</Text>
+                    )}
+                  </>
+                )}
+              </Box>
+
+              {!isWeb &&
+                (isExpired ? (
                   <Text style={styles.expiredText}>❌ Skaduar</Text>
                 ) : (
                   <Text style={styles.cardPrice}>{price}€ për muaj</Text>
-                )}
-              </Box>
-              <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-end">
-                {createdAt && <Text>{formatDate(createdAt)}</Text>}
-              </Box>
+                ))}
             </Box>
+
             <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
               {description}
             </Text>
+
             {isOwner && (
               <Box flexDirection="row" gap={8} marginTop={12}>
                 <Button
@@ -142,6 +164,7 @@ export const CardItem = ({
                 </Button>
               </Box>
             )}
+
             {user.verified && (
               <Box flexDirection="row" gap={8} marginTop={12}>
                 <Pill
@@ -167,22 +190,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderColor: Colors.lightGray,
   },
-  expiredText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: 'red',
-    marginTop: 4,
-  },
   cardLink: {
     width: '100%',
     flex: 1,
-  },
-  cardInnerContent: {
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    flexDirection: 'column',
-    flex: 1,
-    height: 'auto',
   },
   cardContent: {
     flexDirection: 'row',
@@ -194,6 +204,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0553',
     height: 200,
+    width: '100%',
     position: 'relative',
   },
   topCardContent: {
@@ -209,9 +220,48 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 4,
   },
+  expiredText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: 'red',
+    marginTop: 4,
+  },
   cardSubtitle: {
     fontSize: 14,
     fontWeight: '400',
     marginTop: 16,
+  },
+  featuresBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 24,
+    gap: 12,
+    borderColor: Colors.gray,
+    marginBottom: 12,
+    borderWidth: 1,
+  },
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  webCarousel: {
+    alignSelf: 'flex-start',
+    maxHeight: 300,
+    touchAction: 'auto',
+  },
+  webTopBox: {
+    flexWrap: 'wrap',
+  },
+  webColumnBox: {
+    width: '100%',
+  },
+  webHeaderRow: {
+    width: '100%',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
   },
 });

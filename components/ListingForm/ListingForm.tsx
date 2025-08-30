@@ -107,8 +107,6 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
     }
   };
 
-  console.log(errors);
-
   const selectedCity = watch('city');
 
   const onFormError = () => {
@@ -283,7 +281,6 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
           }}
           visible={modalOpen}
           onRequestClose={() => {
-            console.log('CLosing');
             setModalOpen(!modalOpen);
           }}
           transparent={true}

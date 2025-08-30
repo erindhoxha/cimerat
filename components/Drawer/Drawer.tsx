@@ -154,7 +154,6 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
             }}
             visible={modalOpen}
             onRequestClose={() => {
-              console.log('CLosing');
               setModalOpen(!modalOpen);
             }}
             transparent={true}
