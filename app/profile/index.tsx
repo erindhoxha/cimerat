@@ -3,7 +3,7 @@ import { Button } from '@/components/Button';
 import { useAuth } from '@/context/AuthContext';
 import { Text } from '@/components/Text';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ActivityIndicator, Alert, Platform, RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Platform, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import Input from '@/components/Input';
 import Label from '@/components/Label';
 import { useState } from 'react';
@@ -12,6 +12,9 @@ import { useRouter } from 'expo-router';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Toast from 'react-native-toast-message';
 import { WebView } from '@/components/WebView/WebView';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FontAwesome } from '@expo/vector-icons';
 
 interface Mutation {
   userId: string | null;
@@ -19,10 +22,6 @@ interface Mutation {
   password: string;
   oldPassword: string;
 }
-
-import { isValidPhoneNumber } from 'libphonenumber-js';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 const formSchema = z.object({
   oldPassword: z.string().min(6, 'Fjalëkalimi i vjetër është i detyrueshëm, dhe duhet të ketë të paktën 6 karaktere'),
@@ -32,10 +31,7 @@ const formSchema = z.object({
 export default function ProfileScreen() {
   const queryClient = useQueryClient();
   const { token, userId, setAuth } = useAuth();
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const router = useRouter();
 
@@ -47,7 +43,7 @@ export default function ProfileScreen() {
     },
   });
 
-  const { data, error, status, refetch } = useQuery({
+  const { data, error, status } = useQuery({
     queryKey: ['user'],
     enabled: !!token,
     queryFn: async () => {
@@ -57,14 +53,20 @@ export default function ProfileScreen() {
         },
       });
       if (!res.ok) {
-        // Instead of throwing, return a rejected promise
-        return Promise.reject((await res.json()) || 'Gabim gjatë përditësimit. Ju lutemi provoni përsëri.');
+        return Promise.reject(
+          (await res.json()) ||
+            'Gabim gjatë përditësimit. Mund te jetë se fjalëkalimi juaj është i gabuar. Ju lutemi provoni përsëri.',
+        );
       }
       return res.json();
     },
   });
 
-  const { mutateAsync: updateMutation, error: mutationError } = useMutation({
+  const {
+    mutateAsync: updateMutation,
+    error: mutationError,
+    isPending,
+  } = useMutation({
     mutationFn: async (variables: Mutation) => {
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/edit-user`, {
         headers: {
@@ -76,9 +78,10 @@ export default function ProfileScreen() {
       });
       const json = await res.json();
       if (!res.ok) {
-        // Instead of throwing, return a rejected promise
         return Promise.reject({
-          message: json.message || 'Gabim gjatë përditësimit. Ju lutemi provoni përsëri.',
+          message:
+            json.message ||
+            'Gabim gjatë përditësimit. Mund te jetë se fjalëkalimi juaj është i gabuar. Ju lutemi provoni përsëri',
         });
       }
       return json;
@@ -98,12 +101,13 @@ export default function ProfileScreen() {
   } = data;
 
   const onSubmitHandler = async (data: FieldValues) => {
+    console.log(data);
     await updateMutation(
       {
         userId,
         username: data?.user?.username ?? username,
-        oldPassword,
-        password: newPassword,
+        oldPassword: data.oldPassword,
+        password: data.newPassword,
       },
       {
         onSuccess(data) {
@@ -120,7 +124,6 @@ export default function ProfileScreen() {
     <ScrollView
       style={[styles.container, !isWeb && { backgroundColor: 'white' }]}
       contentContainerStyle={styles.contentContainer}
-      refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}
     >
       <WebView>
         <Box marginBottom={12}>
@@ -166,7 +169,7 @@ export default function ProfileScreen() {
                 )}
               />
             </Box>
-            <Button variant="primary" onPress={form.handleSubmit(onSubmitHandler)} disabled={loading}>
+            <Button variant="primary" onPress={form.handleSubmit(onSubmitHandler)} disabled={isPending}>
               {form.formState.isSubmitting ? (
                 <Box flexDirection="row" gap={4}>
                   <Text>Duke ndryshuar...</Text>
@@ -176,9 +179,103 @@ export default function ProfileScreen() {
                 <Text>Modifiko të dhënat e profilit</Text>
               )}
             </Button>
-            {formError && <Text style={styles.errorText}>{formError}</Text>}
             {mutationError && <Text style={styles.errorText}>{mutationError.message}</Text>}
+            {error && <Text style={styles.errorText}>{error.message}</Text>}
           </Box>
+          <Modal
+            onDismiss={() => {
+              setModalOpen(false);
+            }}
+            visible={modalOpen}
+            onRequestClose={() => {
+              console.log('CLosing');
+              setModalOpen(!modalOpen);
+            }}
+            transparent={true}
+            presentationStyle="overFullScreen"
+          >
+            <TouchableOpacity
+              onPressOut={() => setModalOpen(false)}
+              onPressIn={() => undefined}
+              activeOpacity={1}
+              style={{
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'rgba(0,0,0,0.5)',
+              }}
+            >
+              <TouchableOpacity
+                activeOpacity={1}
+                style={{
+                  maxWidth: '90%',
+                  backgroundColor: 'white',
+                  padding: 24,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 12,
+                  marginTop: 120,
+                  alignSelf: 'center',
+                }}
+              >
+                <Box marginBottom={8}>
+                  <FontAwesome name="question" size={32} />
+                </Box>
+                <Text
+                  fontSize="lg"
+                  fontWeight="bold"
+                  style={{
+                    textAlign: 'center',
+                  }}
+                >
+                  A jeni të sigurtë që dëshironi të dilni nga aplikacioni?
+                </Text>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    marginTop: 12,
+                  }}
+                >
+                  Mund te hyni perseri ne cdo moment duke u kycur me kredencialet tuaja.
+                </Text>
+                <Box
+                  marginTop={12}
+                  gap={12}
+                  flexDirection="row"
+                  width="100%"
+                  justifyContent="center"
+                  alignItems="center"
+                  style={{
+                    position: 'relative',
+                  }}
+                >
+                  <Button
+                    style={{
+                      flex: 1,
+                    }}
+                    variant="tertiary"
+                    onPress={() => {
+                      setModalOpen(false);
+                    }}
+                  >
+                    <Text>Jo, anulo</Text>
+                  </Button>
+                  <Button
+                    style={{
+                      flex: 1,
+                    }}
+                    variant="danger"
+                    onPress={() => {
+                      setAuth(null, null, null);
+                      queryClient.clear();
+                      router.replace('/');
+                    }}
+                  >
+                    <Text>Po, dil</Text>
+                  </Button>
+                </Box>
+              </TouchableOpacity>
+            </TouchableOpacity>
+          </Modal>
           <Box gap={12} marginTop={24}>
             <Text fontSize="md" fontWeight="bold">
               Veprime të tjera
@@ -186,35 +283,7 @@ export default function ProfileScreen() {
             <Button variant="tertiary" onPress={() => router.push(`/your-listings`)}>
               Shiko listimet e mia
             </Button>
-            <Button
-              variant="danger"
-              onPress={() => {
-                if (isWeb) {
-                  const confirmed = window.confirm('A jeni i sigurt që doni të dilni?');
-                  if (confirmed) {
-                    setAuth(null, null, null);
-                    queryClient.clear();
-                    router.replace('/');
-                  }
-                } else {
-                  Alert.alert('Dalja', 'A jeni i sigurt që doni të dilni?', [
-                    {
-                      text: 'Anulo',
-                      style: 'cancel',
-                    },
-                    {
-                      text: 'Dil',
-                      style: 'destructive',
-                      onPress: () => {
-                        setAuth(null, null, null);
-                        queryClient.clear();
-                        router.replace('/');
-                      },
-                    },
-                  ]);
-                }
-              }}
-            >
+            <Button variant="danger" onPress={() => setModalOpen(true)}>
               Dil nga profili
             </Button>
           </Box>

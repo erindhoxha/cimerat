@@ -327,10 +327,10 @@ export default function TabOneScreen() {
                     ]}
                     containerStyle={
                       isWeb
-                        ? {
+                        ? ({
                             maxHeight: 300,
                             overflow: 'auto',
-                          }
+                          } as unknown as ViewStyle)
                         : undefined
                     }
                     showsVerticalScrollIndicator

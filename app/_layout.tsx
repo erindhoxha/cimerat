@@ -121,11 +121,15 @@ function CustomHeader({ isWeb, isLoggedIn, openDrawer, closeDrawer, isOpen }: Cu
 function RootLayoutNav() {
   const { openDrawer, closeDrawer, isOpen } = useDrawer();
 
-  const { token } = useAuth();
+  const { token, loading } = useAuth();
 
   const isWeb = Platform.OS === 'web';
 
   const isLoggedIn = !!token;
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <Stack

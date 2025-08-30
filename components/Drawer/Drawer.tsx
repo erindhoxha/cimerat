@@ -11,6 +11,7 @@ import {
   Keyboard,
   Alert,
   Platform,
+  Modal,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { View } from '@/components/View/View';
@@ -18,6 +19,7 @@ import { Box } from '../Box';
 import { Text } from '../Text';
 import { useAuth } from '../../context/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
+import { Button } from '../Button';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -44,6 +46,7 @@ const DRAWER_WIDTH = SCREEN_WIDTH * 0.7;
 const DrawerExample = ({ open, onClose }: DrawerProps) => {
   const animation = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const [visible, setVisible] = useState(open);
+  const [modalOpen, setModalOpen] = useState(false);
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -145,33 +148,103 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
               <Text fontWeight="medium">Kyçu</Text>
             </TouchableOpacity>
           )}
-          {isLoggedIn && (
+          <Modal
+            onDismiss={() => {
+              setModalOpen(false);
+            }}
+            visible={modalOpen}
+            onRequestClose={() => {
+              console.log('CLosing');
+              setModalOpen(!modalOpen);
+            }}
+            transparent={true}
+            presentationStyle="overFullScreen"
+          >
             <TouchableOpacity
-              style={styles.linkButton}
-              onPress={() => {
-                if (isWeb) {
-                  const confirmed = window.confirm('A jeni i sigurt që doni të dilni?');
-                  if (confirmed) {
-                    onClose();
-                    setAuth(null, null, null);
-                    queryClient.clear();
-                  }
-                } else {
-                  Alert.alert('Dilja', 'A jeni i sigurt që doni të dilni?', [
-                    { text: 'Anulo', style: 'cancel' },
-                    {
-                      text: 'Dil',
-                      style: 'destructive',
-                      onPress: () => {
-                        onClose();
-                        setAuth(null, null, null);
-                        queryClient.clear();
-                      },
-                    },
-                  ]);
-                }
+              onPressOut={() => setModalOpen(false)}
+              onPressIn={() => undefined}
+              activeOpacity={1}
+              style={{
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'rgba(0,0,0,0.5)',
               }}
             >
+              <TouchableOpacity
+                activeOpacity={1}
+                style={{
+                  maxWidth: '90%',
+                  backgroundColor: 'white',
+                  padding: 24,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 12,
+                  marginTop: 120,
+                  alignSelf: 'center',
+                }}
+              >
+                <Box marginBottom={8}>
+                  <FontAwesome name="question" size={32} />
+                </Box>
+                <Text
+                  fontSize="lg"
+                  fontWeight="bold"
+                  style={{
+                    textAlign: 'center',
+                  }}
+                >
+                  A jeni të sigurtë që dëshironi të dilni nga aplikacioni?
+                </Text>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    marginTop: 12,
+                  }}
+                >
+                  Mund te hyni perseri ne cdo moment duke u kycur me kredencialet tuaja.
+                </Text>
+                <Box
+                  marginTop={12}
+                  gap={12}
+                  flexDirection="row"
+                  width="100%"
+                  justifyContent="center"
+                  alignItems="center"
+                  style={{
+                    position: 'relative',
+                  }}
+                >
+                  <Button
+                    style={{
+                      flex: 1,
+                    }}
+                    variant="tertiary"
+                    onPress={() => {
+                      setModalOpen(false);
+                    }}
+                  >
+                    <Text>Jo, anulo</Text>
+                  </Button>
+                  <Button
+                    style={{
+                      flex: 1,
+                    }}
+                    variant="danger"
+                    onPress={() => {
+                      onClose();
+                      setAuth(null, null, null);
+                      queryClient.clear();
+                      setModalOpen(false);
+                    }}
+                  >
+                    <Text>Po, dil</Text>
+                  </Button>
+                </Box>
+              </TouchableOpacity>
+            </TouchableOpacity>
+          </Modal>
+          {isLoggedIn && (
+            <TouchableOpacity style={styles.linkButton} onPress={() => setModalOpen(true)}>
               <FontAwesome name="sign-out" size={16} />
               <Text fontWeight="medium">Dil</Text>
             </TouchableOpacity>

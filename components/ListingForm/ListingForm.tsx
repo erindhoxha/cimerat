@@ -5,7 +5,16 @@ import { Text } from '@/components/Text';
 import { cities } from '@/constants/Cities';
 import { neighborhoods } from '@/constants/Neighborhoods';
 import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator, Alert, Modal, Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -24,6 +33,7 @@ import { numriIDhomave } from '@/constants/NumberOfRooms';
 import { cimerat } from '@/constants/NumberOfCimera';
 import { useQueryClient } from '@tanstack/react-query';
 import { WebView } from '../WebView/WebView';
+import { FontAwesome } from '@expo/vector-icons';
 
 interface ListingFormProps {
   defaultValues?: Partial<Listing>;
@@ -39,6 +49,8 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [mediaLibraryPermission, requestMediaLibraryPermission] = ImagePicker.useMediaLibraryPermissions();
   const [imageError, setImageError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { token } = useAuth();
 
@@ -108,38 +120,6 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
   };
 
   const client = useQueryClient();
-
-  const handleDelete = async () => {
-    Alert.alert('Fshije listimin', 'A jeni të sigurt që doni të fshini këtë listim?', [
-      {
-        text: 'Anulo',
-        style: 'cancel',
-      },
-      {
-        text: 'Fshi',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings/${defaultValues?._id}`, {
-              method: 'DELETE',
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            if (!res.ok) throw new Error('Failed to delete listing');
-            Toast.show({ type: 'success', text1: 'Listimi u fshi me sukses' });
-            client.invalidateQueries({
-              queryKey: ['listings'],
-            });
-            router.dismissAll();
-            router.push('/your-listings');
-          } catch (error) {
-            Toast.show({ type: 'error', text1: 'Gabim gjatë fshirjes së listimit' });
-          }
-        },
-      },
-    ]);
-  };
-
-  console.log('Form values', watch());
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -292,11 +272,121 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             )}
           </Button>
           {isEditing && (
-            <Text style={styles.deleteButton} onPress={handleDelete}>
+            <Button variant="danger" style={styles.deleteButton} onPress={() => setModalOpen(true)}>
               Fshi Listimin
-            </Text>
+            </Button>
           )}
         </Box>
+        <Modal
+          onDismiss={() => {
+            setModalOpen(false);
+          }}
+          visible={modalOpen}
+          onRequestClose={() => {
+            console.log('CLosing');
+            setModalOpen(!modalOpen);
+          }}
+          transparent={true}
+          presentationStyle="overFullScreen"
+        >
+          <TouchableOpacity
+            onPressOut={() => setModalOpen(false)}
+            onPressIn={() => undefined}
+            activeOpacity={1}
+            style={{
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'rgba(0,0,0,0.5)',
+            }}
+          >
+            <TouchableOpacity
+              activeOpacity={1}
+              style={{
+                maxWidth: '90%',
+                backgroundColor: 'white',
+                padding: 24,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 12,
+                marginTop: 120,
+                alignSelf: 'center',
+              }}
+            >
+              <Box marginBottom={8}>
+                <FontAwesome name="question" size={32} />
+              </Box>
+              <Text
+                fontSize="lg"
+                fontWeight="bold"
+                style={{
+                  textAlign: 'center',
+                }}
+              >
+                A jeni të sigurtë që dëshironi të fshini këtë listim?
+              </Text>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  marginTop: 12,
+                }}
+              >
+                Listimi do të fshihet përgjithmonë dhe nuk do të jetë më i disponueshëm për përdoruesit e tjerë.
+              </Text>
+              <Box
+                marginTop={12}
+                gap={12}
+                flexDirection="row"
+                width="100%"
+                justifyContent="center"
+                alignItems="center"
+                style={{
+                  position: 'relative',
+                }}
+              >
+                <Button
+                  style={{
+                    flex: 1,
+                  }}
+                  variant="tertiary"
+                  onPress={() => {
+                    setModalOpen(false);
+                  }}
+                >
+                  <Text>Jo, anulo</Text>
+                </Button>
+                <Button
+                  style={{
+                    flex: 1,
+                  }}
+                  variant="danger"
+                  disabled={loading}
+                  onPress={async () => {
+                    try {
+                      setLoading(true);
+                      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings/${defaultValues?._id}`, {
+                        method: 'DELETE',
+                        headers: { Authorization: `Bearer ${token}` },
+                      });
+                      if (!res.ok) throw new Error('Failed to delete listing');
+                      Toast.show({ type: 'success', text1: 'Listimi u fshi me sukses' });
+                      client.invalidateQueries({
+                        queryKey: ['listings'],
+                      });
+                      router.dismissAll();
+                      router.push('/your-listings');
+                    } catch (error) {
+                      Toast.show({ type: 'error', text1: 'Gabim gjatë fshirjes së listimit' });
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                >
+                  <Text>{loading ? 'Duke fshirë...' : 'Po, fshije'}</Text>
+                </Button>
+              </Box>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </Modal>
         <Modal visible={!!previewImage} transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>
           <Pressable style={styles.previewOverlay} onPress={() => setPreviewImage(null)}>
             {previewImage && <Image source={{ uri: previewImage }} style={styles.previewImage} contentFit="contain" />}

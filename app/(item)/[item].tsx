@@ -1,4 +1,4 @@
-import { Image as ExpoImage } from 'expo-image';
+import { Image as ExpoImage, Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ActivityIndicator,
@@ -8,6 +8,7 @@ import {
   ScrollView,
   StyleSheet,
   useWindowDimensions,
+  ViewStyle,
 } from 'react-native';
 import { Text } from '@/components/Text';
 import { Box } from '@/components/Box';
@@ -172,9 +173,9 @@ export default function ItemDetailScreen() {
         </Pressable>
         {/* Thumbnails */}
         <Box style={{ flex: 1, gap: 8, flexDirection: 'column', height: '100%' }}>
-          {thumbs.map((img, idx) => (
+          {thumbs.map((img: Image, idx: number) => (
             <Pressable
-              key={img + idx}
+              key={idx}
               onPress={() => setLightboxIndex(idx + 1)}
               style={{
                 flex: 1,
@@ -259,13 +260,15 @@ export default function ItemDetailScreen() {
                 <Pressable
                   key={img.toString() + index}
                   onPress={() => setLightboxIndex(index)}
-                  style={{
-                    width,
-                    height,
-                    borderRadius,
-                    overflow: 'hidden',
-                    backgroundColor: '#eee',
-                  }}
+                  style={
+                    {
+                      width,
+                      height,
+                      borderRadius,
+                      overflow: 'hidden',
+                      backgroundColor: '#eee',
+                    } as unknown as ViewStyle
+                  }
                 >
                   <ExpoImage
                     style={{
