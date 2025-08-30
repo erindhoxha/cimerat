@@ -36,6 +36,7 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#ccc',
+    outline: Colors.yellow,
     fontSize: 14,
   },
   dropdownButtonErrorStyle: {
