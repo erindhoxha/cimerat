@@ -12,7 +12,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { CardItem } from '@/components/CardItem/CardItem';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { Box } from '@/components/Box';
 import Label from '@/components/Label/Label';
 import { Text } from '@/components/Text';
@@ -238,8 +238,25 @@ export default function TabOneScreen() {
                 <Loading />
               </Box>
             ) : (
-              <Box marginTop={0}>
-                <Text>Asnjë rezultat.</Text>
+              <Box
+                marginTop={0}
+                width="auto"
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  paddingTop: 24,
+                  gap: 12,
+                }}
+              >
+                <FontAwesome name="frown-o" size={32} color={Colors.yellow} />
+                <Text
+                  style={{
+                    textAlign: 'center',
+                  }}
+                >
+                  Asnjë rezultat. Ju lutem provoni me filtera tjera ose provoni më vonë.
+                </Text>
               </Box>
             )
           }

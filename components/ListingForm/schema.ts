@@ -20,7 +20,8 @@ const formSchema = z.object({
         name: z.string().min(1, 'Emri i fotos është i detyrueshëm'),
       }),
     )
-    .min(1, 'Duhet të ngarkoni së paku një foto'),
+    .min(1, 'Duhet të ngarkoni së paku një foto')
+    .max(10, 'Mund të ngarkoni deri në 10 foto'),
   flatmateGender: z.string().optional(),
   currentFlatmates: z.string().optional(),
   rooms: z.string().optional(),

@@ -95,6 +95,8 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
     }
   };
 
+  console.log(errors);
+
   const selectedCity = watch('city');
 
   const onFormError = () => {
@@ -157,7 +159,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
               setImages(newImages);
               setValue('images', newImages);
             }}
-            error={imageError}
+            error={imageError || errors.images?.message}
           />
           <DropdownField
             control={control}

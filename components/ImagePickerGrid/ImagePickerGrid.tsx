@@ -24,7 +24,7 @@ export const ImagePickerGrid: React.FC<ImagePickerGridProps> = ({ images, onPick
   return (
     <Box>
       <Label>
-        Fotografitë e listimit<Text style={styles.asterisk}>*</Text>
+        Fotografitë e listimit (deri në 10 fotografi)<Text style={styles.asterisk}>*</Text>
       </Label>
       <Button
         variant="tertiary"
@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: Colors.danger,
     marginTop: 8,
+    marginBottom: 8,
     fontSize: 12,
   },
   gridWrap: {
