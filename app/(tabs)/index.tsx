@@ -116,7 +116,6 @@ export default function TabOneScreen() {
         if (userCity) {
           const matchedCity = cities.find((c) => c.toLowerCase() === userCity.toLowerCase());
           if (matchedCity) {
-            console.log('Amatched');
             setSelectedCities([matchedCity]);
           }
         }

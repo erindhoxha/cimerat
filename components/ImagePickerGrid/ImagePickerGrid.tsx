@@ -62,14 +62,15 @@ export const ImagePickerGrid: React.FC<ImagePickerGridProps> = ({ images, onPick
 
 const styles = StyleSheet.create({
   errorText: {
-    color: 'red',
+    color: Colors.danger,
     marginTop: 8,
+    fontSize: 12,
   },
   gridWrap: {
     flexWrap: 'wrap',
   },
   asterisk: {
-    color: 'red',
+    color: Colors.danger,
   },
   trashIcon: {
     position: 'absolute',

@@ -137,6 +137,8 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
     ]);
   };
 
+  console.log('Form values', watch());
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <WebView>
@@ -304,12 +306,13 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, height: '100%' },
+  container: { flex: 1, height: '100%', backgroundColor: 'white' },
   contentContainer: {
     minHeight: '100%',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     flexDirection: 'column',
+    backgroundColor: 'white',
   },
   submitButton: { marginBottom: 0 },
   previewOverlay: {

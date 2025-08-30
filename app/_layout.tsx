@@ -264,6 +264,7 @@ const styles = StyleSheet.create({
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingVertical: 12,
     gap: 4,
   },
 });

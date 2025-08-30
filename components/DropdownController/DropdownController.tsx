@@ -77,7 +77,7 @@ export function DropdownField({
   ...dropdownProps
 }: DropdownFieldProps) {
   return (
-    <Box flex={1}>
+    <Box>
       <Label>
         {label}
         {required && <Text style={styles.asterisk}>*</Text>}
@@ -96,6 +96,7 @@ export function DropdownField({
             }}
             disabled={disabled}
             searchInputStyle={styles.searchInputStyle}
+            searchInputTxtStyle={{ color: '#000', outline: 'transparent' }}
             renderButton={(_: any, isOpened: boolean) => {
               return (
                 <Box style={styles.dropdownRenderedButtonStyle}>

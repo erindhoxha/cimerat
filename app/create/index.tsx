@@ -10,7 +10,7 @@ export default function CreateScreen() {
   const { token } = useAuth();
 
   const onSubmit = async (data: Omit<Listing, '_id' | 'user' | 'createdAt' | 'updatedAt'>, images: ImageType[]) => {
-    const formData = buildListingFormData(data, images);
+    const formData = await buildListingFormData(data, images);
 
     try {
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings`, {

@@ -31,14 +31,21 @@ router.get('/my-listings', requireAuth, async (req, res) => {
 
 router.post('/listings', requireAuth, upload.array('images'), async (req, res) => {
   const { city, neighborhood, description, price, phone, rooms, flatmateGender, currentFlatmates } = req.body;
+
+  console.log('FILES', req.files);
   const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
 
   if (!city || !neighborhood || !description || !price || !phone || imagePaths.length === 0) {
+    console.log('MISSING FIELDS', { city, neighborhood, description, price, phone, imagePaths });
     return res.status(400).json({ error: 'All fields are required' });
   }
 
   const firstBlurhash = req.files.length > 0 ? await getBlurhash(req.files[0].path) : null;
+  console.log('FIRST BLURHASH', firstBlurhash);
   const blurhashes = await Promise.all(req.files.map((file) => getBlurhash(file.path)));
+  console.log('BLURHASHES', blurhashes);
+
+  console.log(req.body, 'BODY');
 
   try {
     const listing = new Listing({
@@ -80,16 +87,21 @@ router.delete('/listings/:id', requireAuth, async (req, res) => {
 });
 
 router.put('/listings/:id', requireAuth, upload.array('images'), async (req, res) => {
+  console.log('EDITING');
   const { id } = req.params;
   const { city, neighborhood, description, price, phone, rooms, flatmateGender, currentFlatmates } = req.body;
   const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
 
+  console.log(req.body, 'BODY');
+
   if (!city || !neighborhood || !description || !price || !phone || imagePaths.length === 0) {
+    console.log('REQUIRED FIELDS', { city, neighborhood, description, price, phone, imagePaths });
     return res.status(400).json({ error: 'All fields are required' });
   }
 
   const listing = await Listing.findById(id);
   if (!listing) {
+    console.log('NOT FOUND');
     return res.status(404).json({ error: 'Listing not found' });
   }
 

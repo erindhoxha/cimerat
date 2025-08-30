@@ -12,22 +12,22 @@ export const DownloadBanner = () => {
 
   if (Platform.OS !== 'web') return null;
 
-  useEffect(() => {
-    // Check localStorage on mount
-    if (typeof window !== 'undefined') {
-      const hidden = localStorage.getItem('dl');
-      setHide(hidden === 'true');
-    }
-  }, []);
+  // useEffect(() => {
+  //   // Check localStorage on mount
+  //   if (typeof window !== 'undefined') {
+  //     const hidden = localStorage.getItem('dl');
+  //     setHide(hidden === 'true');
+  //   }
+  // }, []);
 
-  const handleHide = () => {
-    setHide(true);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('dl', 'true');
-    }
-  };
+  // const handleHide = () => {
+  //   setHide(true);
+  //   if (typeof window !== 'undefined') {
+  //     localStorage.setItem('dl', 'true');
+  //   }
+  // };
 
-  if (hide) return null;
+  // if (hide) return null;
 
   return (
     <Box style={[styles.banner, isMobile && styles.mobileBanner]}>
@@ -46,9 +46,9 @@ export const DownloadBanner = () => {
         <FontAwesome name="android" size={20} color="#fff" />
         <Text style={styles.storeButtonText}>Shkarko në Google Play</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleHide} style={[styles.closeButton, isMobile && styles.closeMobileButton]}>
+      {/* <TouchableOpacity onPress={handleHide} style={[styles.closeButton, isMobile && styles.closeMobileButton]}>
         <FontAwesome name="close" size={18} color={Colors.text} />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </Box>
   );
 };
