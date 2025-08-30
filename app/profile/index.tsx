@@ -3,7 +3,7 @@ import { Button } from '@/components/Button';
 import { useAuth } from '@/context/AuthContext';
 import { Text } from '@/components/Text';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ActivityIndicator, Alert, Modal, Platform, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Modal, Platform, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import Input from '@/components/Input';
 import Label from '@/components/Label';
 import { useState } from 'react';
@@ -109,7 +109,7 @@ export default function ProfileScreen() {
         password: data.newPassword,
       },
       {
-        onSuccess(data) {
+        onSuccess() {
           Toast.show({ type: 'success', text1: 'Përdoruesi u përditësua me sukses' });
           router.push('/');
         },
@@ -121,7 +121,7 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView
-      style={[styles.container, !isWeb && { backgroundColor: 'white' }]}
+      style={[styles.container, !isWeb && styles.nonWebBackground]}
       contentContainerStyle={styles.contentContainer}
     >
       <WebView>
@@ -182,57 +182,26 @@ export default function ProfileScreen() {
             {error && <Text style={styles.errorText}>{error.message}</Text>}
           </Box>
           <Modal
-            onDismiss={() => {
-              setModalOpen(false);
-            }}
+            onDismiss={() => setModalOpen(false)}
             visible={modalOpen}
-            onRequestClose={() => {
-              setModalOpen(!modalOpen);
-            }}
-            transparent={true}
+            onRequestClose={() => setModalOpen(!modalOpen)}
+            transparent
             presentationStyle="overFullScreen"
           >
             <TouchableOpacity
               onPressOut={() => setModalOpen(false)}
               onPressIn={() => undefined}
               activeOpacity={1}
-              style={{
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'rgba(0,0,0,0.5)',
-              }}
+              style={styles.modalOverlay}
             >
-              <TouchableOpacity
-                activeOpacity={1}
-                style={{
-                  maxWidth: '90%',
-                  backgroundColor: 'white',
-                  padding: 24,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 12,
-                  marginTop: 120,
-                  alignSelf: 'center',
-                }}
-              >
+              <TouchableOpacity activeOpacity={1} style={styles.modalContent}>
                 <Box marginBottom={8}>
                   <FontAwesome name="question" size={32} />
                 </Box>
-                <Text
-                  fontSize="lg"
-                  fontWeight="bold"
-                  style={{
-                    textAlign: 'center',
-                  }}
-                >
+                <Text fontSize="lg" fontWeight="bold" style={styles.modalTitle}>
                   A jeni të sigurtë që dëshironi të dilni nga aplikacioni?
                 </Text>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    marginTop: 12,
-                  }}
-                >
+                <Text style={styles.modalDescription}>
                   Mund te hyni perseri ne cdo moment duke u kycur me kredencialet tuaja.
                 </Text>
                 <Box
@@ -242,25 +211,13 @@ export default function ProfileScreen() {
                   width="100%"
                   justifyContent="center"
                   alignItems="center"
-                  style={{
-                    position: 'relative',
-                  }}
+                  style={styles.modalActions}
                 >
-                  <Button
-                    style={{
-                      flex: 1,
-                    }}
-                    variant="tertiary"
-                    onPress={() => {
-                      setModalOpen(false);
-                    }}
-                  >
+                  <Button style={styles.flexOne} variant="tertiary" onPress={() => setModalOpen(false)}>
                     <Text>Jo, anulo</Text>
                   </Button>
                   <Button
-                    style={{
-                      flex: 1,
-                    }}
+                    style={styles.flexOne}
                     variant="danger"
                     onPress={() => {
                       setAuth(null, null, null);
@@ -295,6 +252,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  nonWebBackground: {
+    backgroundColor: 'white',
+  },
   contentContainer: {
     minHeight: '100%',
     justifyContent: 'flex-start',
@@ -305,16 +265,32 @@ const styles = StyleSheet.create({
     color: Colors.danger,
     marginTop: 4,
   },
-  linkButton: {
-    padding: 12,
+  modalOverlay: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    maxWidth: '90%',
     backgroundColor: 'white',
-    borderRadius: 12,
-    flexDirection: 'row',
+    padding: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    gap: 6,
-    borderColor: 'white',
-    marginBottom: 12,
+    borderRadius: 12,
+    marginTop: 120,
+    alignSelf: 'center',
+  },
+  modalTitle: {
+    textAlign: 'center',
+  },
+  modalDescription: {
+    textAlign: 'center',
+    marginTop: 12,
+  },
+  modalActions: {
+    position: 'relative',
+  },
+  flexOne: {
+    flex: 1,
   },
 });

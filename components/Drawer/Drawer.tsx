@@ -9,7 +9,6 @@ import {
   Animated,
   Dimensions,
   Keyboard,
-  Alert,
   Platform,
   Modal,
 } from 'react-native';
@@ -22,6 +21,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '../Button';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
+const DRAWER_WIDTH = SCREEN_WIDTH * 0.7;
 
 interface DrawerProps {
   open: boolean;
@@ -33,17 +33,13 @@ interface TextLinkProps {
   onPress: () => void;
 }
 
-const TextLink = ({ label, onPress }: TextLinkProps) => {
-  return (
-    <Text style={styles.drawerText} onPress={onPress}>
-      {label}
-    </Text>
-  );
-};
+const TextLink = ({ label, onPress }: TextLinkProps) => (
+  <Text style={styles.drawerText} onPress={onPress}>
+    {label}
+  </Text>
+);
 
-const DRAWER_WIDTH = SCREEN_WIDTH * 0.7;
-
-const DrawerExample = ({ open, onClose }: DrawerProps) => {
+const Drawer = ({ open, onClose }: DrawerProps) => {
   const animation = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const [visible, setVisible] = useState(open);
   const [modalOpen, setModalOpen] = useState(false);
@@ -51,9 +47,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
   const router = useRouter();
 
   const { token, setAuth } = useAuth();
-
   const isLoggedIn = !!token;
-
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -76,8 +70,6 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
 
   if (!visible) return null;
 
-  const isWeb = Platform.OS === 'web';
-
   const offsetLeft = 0;
 
   return (
@@ -96,8 +88,9 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
         ]}
       >
         <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
-          <FontAwesome name="close" size={24} style={{ height: 24, width: 24, textAlign: 'center' }} />
+          <FontAwesome name="close" size={24} style={styles.closeIconInner} />
         </TouchableOpacity>
+
         <TextLink
           label="Faqja kryesore"
           onPress={() => {
@@ -123,6 +116,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
             }}
           />
         )}
+
         <Box marginBottom={48} marginTop="auto">
           {!isLoggedIn && (
             <TouchableOpacity
@@ -148,86 +142,36 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
               <Text fontWeight="medium">Kyçu</Text>
             </TouchableOpacity>
           )}
+
           <Modal
-            onDismiss={() => {
-              setModalOpen(false);
-            }}
+            onDismiss={() => setModalOpen(false)}
             visible={modalOpen}
-            onRequestClose={() => {
-              setModalOpen(!modalOpen);
-            }}
-            transparent={true}
+            onRequestClose={() => setModalOpen(!modalOpen)}
+            transparent
             presentationStyle="overFullScreen"
           >
             <TouchableOpacity
               onPressOut={() => setModalOpen(false)}
               onPressIn={() => undefined}
               activeOpacity={1}
-              style={{
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'rgba(0,0,0,0.5)',
-              }}
+              style={styles.modalOverlay}
             >
-              <TouchableOpacity
-                activeOpacity={1}
-                style={{
-                  maxWidth: '90%',
-                  backgroundColor: 'white',
-                  padding: 24,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 12,
-                  marginTop: 120,
-                  alignSelf: 'center',
-                }}
-              >
+              <TouchableOpacity activeOpacity={1} style={styles.modalContent}>
                 <Box marginBottom={8}>
                   <FontAwesome name="question" size={32} />
                 </Box>
-                <Text
-                  fontSize="lg"
-                  fontWeight="bold"
-                  style={{
-                    textAlign: 'center',
-                  }}
-                >
+                <Text fontSize="lg" fontWeight="bold" style={styles.modalTitle}>
                   A jeni të sigurtë që dëshironi të dilni nga aplikacioni?
                 </Text>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    marginTop: 12,
-                  }}
-                >
+                <Text style={styles.modalSubtitle}>
                   Mund te hyni perseri ne cdo moment duke u kycur me kredencialet tuaja.
                 </Text>
-                <Box
-                  marginTop={12}
-                  gap={12}
-                  flexDirection="row"
-                  width="100%"
-                  justifyContent="center"
-                  alignItems="center"
-                  style={{
-                    position: 'relative',
-                  }}
-                >
-                  <Button
-                    style={{
-                      flex: 1,
-                    }}
-                    variant="tertiary"
-                    onPress={() => {
-                      setModalOpen(false);
-                    }}
-                  >
+                <Box style={styles.modalButtonRow}>
+                  <Button style={styles.modalButton} variant="tertiary" onPress={() => setModalOpen(false)}>
                     <Text>Jo, anulo</Text>
                   </Button>
                   <Button
-                    style={{
-                      flex: 1,
-                    }}
+                    style={styles.modalButton}
                     variant="danger"
                     onPress={() => {
                       onClose();
@@ -242,6 +186,7 @@ const DrawerExample = ({ open, onClose }: DrawerProps) => {
               </TouchableOpacity>
             </TouchableOpacity>
           </Modal>
+
           {isLoggedIn && (
             <TouchableOpacity style={styles.linkButton} onPress={() => setModalOpen(true)}>
               <FontAwesome name="sign-out" size={16} />
@@ -281,6 +226,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  closeIconInner: {
+    height: 24,
+    width: 24,
+    textAlign: 'center',
+  },
   drawer: {
     position: 'absolute',
     top: 0,
@@ -304,6 +254,40 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '500',
   },
+  modalOverlay: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    maxWidth: '90%',
+    backgroundColor: 'white',
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    marginTop: 120,
+    alignSelf: 'center',
+  },
+  modalTitle: {
+    textAlign: 'center',
+  },
+  modalSubtitle: {
+    textAlign: 'center',
+    marginTop: 12,
+  },
+  modalButtonRow: {
+    marginTop: 12,
+    gap: 12,
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  modalButton: {
+    flex: 1,
+  },
 });
 
-export default DrawerExample;
+export default Drawer;

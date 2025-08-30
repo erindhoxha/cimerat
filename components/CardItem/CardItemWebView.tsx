@@ -10,7 +10,6 @@ import Colors from '@/constants/Colors';
 import { formatDate, listingHasExpired } from '@/utils';
 import { Listing } from '@/types';
 import { BLURHASH_TRANSITION } from '@/constants/global';
-import { ReusableCarousel } from '@/components/Carousel/Carousel';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '../Button';
@@ -35,7 +34,6 @@ export const CardItemWebView = ({
 
   const isOwner = user?._id === userId;
   const isExpired = listingHasExpired(createdAt);
-  const isWeb = Platform.OS === 'web';
 
   return (
     <Pressable
@@ -51,53 +49,44 @@ export const CardItemWebView = ({
         <Box style={styles.cardBox}>
           <Image
             style={styles.cardImage}
-            source={{
-              uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
-            }}
+            source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}` }}
             placeholder={{ blurhash: blurhash || '' }}
             contentFit="cover"
             transition={BLURHASH_TRANSITION}
           />
           {images?.length > 1 && <Text style={styles.imageCounter}>+{images.length - 1} foto</Text>}
         </Box>
+
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
-            <Box flexDirection="row" justifyContent="space-between" flex={1} gap={12} style={{ flexWrap: 'wrap' }}>
-              <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start" style={{ flexShrink: 1 }}>
-                <Box flexDirection="row" gap={12}>
-                  <Box
-                    flexDirection="row"
-                    alignItems="center"
-                    paddingHorizontal={8}
-                    paddingVertical={4}
-                    borderRadius={12}
-                    gap={12}
-                    style={styles.cardInner}
-                  >
+            <Box style={styles.metaRow}>
+              <Box style={styles.metaLeft}>
+                <Box style={styles.metaTags}>
+                  <Box style={styles.cardInner}>
                     {rooms && rooms !== 'undefined' && (
-                      <Box flexDirection="row" alignItems="center" gap={4}>
+                      <Box style={styles.metaItem}>
                         <Text>{rooms}</Text>
                         <FontAwesome name="bed" size={16} />
                       </Box>
                     )}
                     {currentFlatmates && currentFlatmates !== 'undefined' && (
-                      <Box flexDirection="row" alignItems="center" style={{ gap: 4 }}>
+                      <Box style={styles.metaItem}>
                         <Text>{currentFlatmates}</Text>
                         <FontAwesome name="user" size={16} />
                       </Box>
                     )}
                     {flatmateGender === 'Mashkull' ? (
-                      <Box flexDirection="row" alignItems="center" gap={4}>
+                      <Box style={styles.metaItem}>
                         <Text>M</Text>
                         <FontAwesome name="male" size={16} />
                       </Box>
                     ) : flatmateGender === 'Femër' ? (
-                      <Box flexDirection="row" alignItems="center" gap={4}>
+                      <Box style={styles.metaItem}>
                         <Text>F</Text>
                         <FontAwesome name="female" size={16} />
                       </Box>
                     ) : (
-                      <Box flexDirection="row" alignItems="center" gap={4}>
+                      <Box style={styles.metaItem}>
                         <Text>M/F</Text>
                         <FontAwesome name="male" size={16} />
                         <FontAwesome name="female" size={16} />
@@ -105,7 +94,7 @@ export const CardItemWebView = ({
                     )}
                   </Box>
 
-                  <Box>{isOwner && <Pill title="Listimi yt" />}</Box>
+                  {isOwner && <Pill title="Listimi yt" />}
                 </Box>
 
                 <Text style={styles.cardTitle}>{city + ', ' + neighborhood}</Text>
@@ -117,7 +106,7 @@ export const CardItemWebView = ({
                 )}
               </Box>
 
-              <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-end" gap={12}>
+              <Box style={styles.ownerActions}>
                 {createdAt && <Text>{formatDate(createdAt)}</Text>}
                 {isOwner && (
                   <Button
@@ -136,7 +125,7 @@ export const CardItemWebView = ({
             </Text>
 
             {user.verified && (
-              <Box flexDirection="row" gap={8} marginTop={12}>
+              <Box style={styles.verifiedWrapper}>
                 <Pill
                   title="Personi i verifikuar"
                   variant="yellow"
@@ -158,16 +147,20 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
     borderColor: 'rgba(0,0,0,0.1)',
-    flexDirection: 'row', // horizontal
-  },
-  cardInner: {
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.1)',
-    marginBottom: 12,
+    flexDirection: 'row',
   },
   ownerCard: {
     borderColor: Colors.yellow,
     borderWidth: 2,
+  },
+  cardBox: {
+    width: 180,
+    height: 'auto',
+    backgroundColor: '#0553',
+  },
+  cardImage: {
+    width: '100%',
+    height: '100%',
   },
   imageCounter: {
     position: 'absolute',
@@ -180,12 +173,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     zIndex: 5,
   },
-  expiredText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: 'red',
-    marginTop: 4,
-  },
   cardLink: {
     width: '100%',
     flex: 1,
@@ -197,20 +184,6 @@ const styles = StyleSheet.create({
     padding: 12,
     flex: 1,
   },
-  imageWrapper: {
-    width: 180,
-    height: 180,
-    overflow: 'hidden',
-  },
-  cardBox: {
-    width: 180,
-    height: 'auto',
-    backgroundColor: '#0553',
-  },
-  cardImage: {
-    width: '100%',
-    height: '100%',
-  },
   topCardContent: {
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -220,6 +193,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
+  expiredText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: 'red',
+    marginTop: 4,
+  },
   cardPrice: {
     fontSize: 14,
     marginTop: 4,
@@ -227,6 +206,50 @@ const styles = StyleSheet.create({
   cardSubtitle: {
     fontSize: 14,
     fontWeight: '400',
+    marginTop: 12,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flex: 1,
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  metaLeft: {
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexShrink: 1,
+  },
+  metaTags: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  cardInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.1)',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    gap: 12,
+    marginBottom: 12,
+  },
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  ownerActions: {
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    gap: 12,
+  },
+  verifiedWrapper: {
+    flexDirection: 'row',
+    gap: 8,
     marginTop: 12,
   },
 });

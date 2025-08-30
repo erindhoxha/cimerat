@@ -1,53 +1,47 @@
 const express = require('express');
-const Listing = require('../models/Listing');
-const router = express.Router();
 const multer = require('multer');
-const requireAuth = require('../middlewares/requireAuthentication');
 const sharp = require('sharp');
 const { encode } = require('blurhash');
 
+const Listing = require('../models/Listing');
+const requireAuth = require('../middlewares/requireAuthentication');
+
+const router = express.Router();
+const upload = multer({ dest: 'uploads/' });
+
+// Helper to generate blurhash
 async function getBlurhash(imagePath) {
-  const image = await sharp(imagePath)
+  const { data, info } = await sharp(imagePath)
     .raw()
     .ensureAlpha()
     .resize(32, 32, { fit: 'inside' })
     .toBuffer({ resolveWithObject: true });
 
-  const { data, info } = image;
   return encode(new Uint8ClampedArray(data), info.width, info.height, 4, 4);
 }
 
-const upload = multer({ dest: 'uploads/' });
-
+// Get current user's listings
 router.get('/my-listings', requireAuth, async (req, res) => {
   try {
     const listings = await Listing.find({ user: req.user._id }).sort({ createdAt: -1 }).populate('user', 'username');
-    return res.status(200).json(listings);
+    res.status(200).json(listings);
   } catch (error) {
-    console.error('Error fetching user listings:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
+// Create a new listing
 router.post('/listings', requireAuth, upload.array('images'), async (req, res) => {
   const { city, neighborhood, description, price, phone, rooms, flatmateGender, currentFlatmates } = req.body;
-
-  console.log('FILES', req.files);
-  const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
-
-  if (!city || !neighborhood || !description || !price || !phone || imagePaths.length === 0) {
-    console.log('MISSING FIELDS', { city, neighborhood, description, price, phone, imagePaths });
-    return res.status(400).json({ error: 'All fields are required' });
+  if (!city || !neighborhood || !description || !price || !phone || !req.files?.length) {
+    return res.status(400).json({ error: 'All fields are required and at least one image must be uploaded' });
   }
 
-  const firstBlurhash = req.files.length > 0 ? await getBlurhash(req.files[0].path) : null;
-  console.log('FIRST BLURHASH', firstBlurhash);
-  const blurhashes = await Promise.all(req.files.map((file) => getBlurhash(file.path)));
-  console.log('BLURHASHES', blurhashes);
-
-  console.log(req.body, 'BODY');
-
   try {
+    const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
+    const blurhashes = await Promise.all(req.files.map((file) => getBlurhash(file.path)));
+
     const listing = new Listing({
       city,
       neighborhood,
@@ -55,121 +49,96 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
       price,
       images: imagePaths,
       phone,
-      blurhash: firstBlurhash,
-      blurhashes: blurhashes,
-      rooms: rooms,
-      flatmateGender: flatmateGender,
-      currentFlatmates: currentFlatmates,
+      blurhash: blurhashes[0] || null,
+      blurhashes,
+      rooms,
+      flatmateGender,
+      currentFlatmates,
       user: req.user._id,
     });
 
     await listing.save();
-    return res.status(201).json({ message: 'Listing created successfully', listing });
+    res.status(201).json({ message: 'Listing created successfully', listing });
   } catch (error) {
-    console.error('Error creating listing:', error);
-    return res.status(422).json({ error: 'Error creating listing. Please try again.' });
+    console.error(error);
+    res.status(422).json({ error: 'Error creating listing. Please try again.' });
   }
 });
 
+// Delete a listing
 router.delete('/listings/:id', requireAuth, async (req, res) => {
-  const { id } = req.params;
-
   try {
-    const listing = await Listing.findByIdAndDelete(id);
-    if (!listing) {
-      return res.status(404).json({ error: 'Listing not found' });
-    }
-    return res.status(200).json({ message: 'Listing deleted successfully' });
+    const listing = await Listing.findByIdAndDelete(req.params.id);
+    if (!listing) return res.status(404).json({ error: 'Listing not found' });
+    res.status(200).json({ message: 'Listing deleted successfully' });
   } catch (error) {
-    console.error('Error deleting listing:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
+// Update a listing
 router.put('/listings/:id', requireAuth, upload.array('images'), async (req, res) => {
-  console.log('EDITING');
-  const { id } = req.params;
   const { city, neighborhood, description, price, phone, rooms, flatmateGender, currentFlatmates } = req.body;
-  const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
 
-  console.log(req.body, 'BODY');
-
-  if (!city || !neighborhood || !description || !price || !phone || imagePaths.length === 0) {
-    console.log('REQUIRED FIELDS', { city, neighborhood, description, price, phone, imagePaths });
-    return res.status(400).json({ error: 'All fields are required' });
+  if (!city || !neighborhood || !description || !price || !phone || !req.files?.length) {
+    return res.status(400).json({ error: 'All fields are required and at least one image must be uploaded' });
   }
-
-  const listing = await Listing.findById(id);
-  if (!listing) {
-    console.log('NOT FOUND');
-    return res.status(404).json({ error: 'Listing not found' });
-  }
-
-  if (listing.user.toString() !== req.user._id.toString()) {
-    return res.status(403).json({ error: 'You are not allowed to edit this listing.' });
-  }
-
-  const firstBlurhash = req.files.length > 0 ? await getBlurhash(req.files[0].path) : null;
-  const blurhashes = await Promise.all(req.files.map((file) => getBlurhash(file.path)));
 
   try {
-    const listing = await Listing.findByIdAndUpdate(
-      id,
-      {
-        city,
-        neighborhood,
-        description,
-        price,
-        images: imagePaths,
-        phone,
-        blurhash: firstBlurhash,
-        blurhashes: blurhashes,
-        rooms: rooms,
-        flatmateGender: flatmateGender,
-        currentFlatmates: currentFlatmates,
-      },
-      { new: true },
-    );
-
-    if (!listing) {
-      return res.status(404).json({ error: 'Listing not found' });
+    const listing = await Listing.findById(req.params.id);
+    if (!listing) return res.status(404).json({ error: 'Listing not found' });
+    if (listing.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'You are not allowed to edit this listing' });
     }
+
+    const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
+    const blurhashes = await Promise.all(req.files.map((file) => getBlurhash(file.path)));
+
+    Object.assign(listing, {
+      city,
+      neighborhood,
+      description,
+      price,
+      images: imagePaths,
+      phone,
+      blurhash: blurhashes[0] || null,
+      blurhashes,
+      rooms,
+      flatmateGender,
+      currentFlatmates,
+    });
 
     await listing.save();
-    return res.status(200).json({ message: 'Listing updated successfully', listing });
+    res.status(200).json({ message: 'Listing updated successfully', listing });
   } catch (error) {
-    console.error('Error updating listing:', error);
-    return res.status(422).json({ error: 'Error updating listing. Please try again.' });
+    console.error(error);
+    res.status(422).json({ error: 'Error updating listing. Please try again.' });
   }
 });
 
+// Get all listings with filters
 router.get('/listings', async (req, res) => {
   try {
     const {
       city,
       neighborhood,
       priceFrom,
+      priceTo,
       numberOfRooms,
       numberOfFlatmates,
-      priceTo,
       limit = 20,
       skip = 0,
     } = req.query;
     const filter = {};
-    if (city) {
-      // Handles both single and multiple cities
-      filter.city = Array.isArray(city) ? { $in: city } : city;
-    }
-    if (neighborhood) {
-      // Handles both single and multiple neighborhoods
-      filter.neighborhood = Array.isArray(neighborhood) ? { $in: neighborhood } : neighborhood;
-    }
+
+    if (city) filter.city = Array.isArray(city) ? { $in: city } : city;
+    if (neighborhood) filter.neighborhood = Array.isArray(neighborhood) ? { $in: neighborhood } : neighborhood;
     if (priceFrom || priceTo) {
       filter.price = {};
       if (priceFrom) filter.price.$gte = Number(priceFrom);
       if (priceTo) filter.price.$lte = Number(priceTo);
     }
-    console.log(numberOfRooms, numberOfFlatmates);
     if (numberOfRooms) filter.rooms = numberOfRooms;
     if (numberOfFlatmates) filter.currentFlatmates = numberOfFlatmates;
 
@@ -178,24 +147,24 @@ router.get('/listings', async (req, res) => {
       .skip(Number(skip))
       .limit(Number(limit))
       .populate('user', 'username');
+
     const total = await Listing.countDocuments(filter);
-    return res.status(200).json({ listings, total });
+    res.status(200).json({ listings, total });
   } catch (error) {
-    console.error('Error fetching listings:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
+// Get a single listing
 router.get('/listing/:id', async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id).populate('user', 'username');
-    if (!listing) {
-      return res.status(404).json({ error: 'Listing not found' });
-    }
-    return res.status(200).json(listing);
+    if (!listing) return res.status(404).json({ error: 'Listing not found' });
+    res.status(200).json(listing);
   } catch (error) {
-    console.error('Error fetching listing:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

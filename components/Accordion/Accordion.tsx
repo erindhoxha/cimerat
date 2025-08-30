@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Text } from '../Text';
@@ -23,28 +23,12 @@ export function AccordionView({
   return (
     <View>
       <TouchableOpacity onPress={() => setOpen(!open)}>
-        <Box style={[styles.accordionHeader, !open && { borderBottomRightRadius: 8, borderBottomLeftRadius: 8 }]}>
+        <Box style={[styles.accordionHeader, !open && styles.accordionHeaderClosed]}>
           <Text style={styles.headerText}>{!open ? title : closedTitle}</Text>
-          <FontAwesome name={open ? 'chevron-up' : 'chevron-down'} size={12} color="#333" />
+          <FontAwesome name={open ? 'chevron-up' : 'chevron-down'} size={12} color={Colors.text} />
         </Box>
       </TouchableOpacity>
-      {open && (
-        <Box
-          gap={12}
-          padding={12}
-          borderTopWidth={0}
-          borderColor={Colors.gray}
-          style={{
-            borderBottomRightRadius: 8,
-            borderBottomLeftRadius: 8,
-            backgroundColor: Colors.white,
-            borderWidth: 1,
-            borderColor: Colors.gray,
-          }}
-        >
-          {children}
-        </Box>
-      )}
+      {open && <Box style={styles.accordionContent}>{children}</Box>}
     </View>
   );
 }
@@ -61,7 +45,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
+  accordionHeaderClosed: {
+    borderBottomRightRadius: 8,
+    borderBottomLeftRadius: 8,
+  },
   headerText: {
     fontWeight: '500',
+  },
+  accordionContent: {
+    gap: 12,
+    padding: 12,
+    borderTopWidth: 0,
+    borderWidth: 1,
+    borderColor: Colors.gray,
+    borderBottomRightRadius: 8,
+    borderBottomLeftRadius: 8,
+    backgroundColor: Colors.white,
   },
 });

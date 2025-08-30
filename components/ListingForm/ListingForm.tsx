@@ -5,16 +5,7 @@ import { Text } from '@/components/Text';
 import { cities } from '@/constants/Cities';
 import { neighborhoods } from '@/constants/Neighborhoods';
 import { Controller, useForm } from 'react-hook-form';
-import {
-  ActivityIndicator,
-  Alert,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -53,6 +44,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { token } = useAuth();
+  const client = useQueryClient();
 
   const {
     control,
@@ -110,14 +102,9 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
   const selectedCity = watch('city');
 
   const onFormError = () => {
-    if (images.length === 0) {
-      setImageError('Duhet të ngarkoni së paku një foto');
-    } else {
-      setImageError(null);
-    }
+    if (images.length === 0) setImageError('Duhet të ngarkoni së paku një foto');
+    else setImageError(null);
   };
-
-  const client = useQueryClient();
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -139,6 +126,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             }}
             error={imageError || errors.images?.message}
           />
+
           <DropdownField
             control={control}
             name="city"
@@ -149,10 +137,9 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             search
             searchPlaceHolder="Kërko qytetin..."
             searchPlaceHolderColor="#6c757d"
-            onSelect={() => {
-              setValue('neighborhood', '');
-            }}
+            onSelect={() => setValue('neighborhood', '')}
           />
+
           <DropdownField
             control={control}
             name="neighborhood"
@@ -165,6 +152,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             searchPlaceHolder="Kërko lagjën..."
             searchPlaceHolderColor="#6c757d"
           />
+
           <Controller
             control={control}
             name="description"
@@ -181,6 +169,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
               />
             )}
           />
+
           <Controller
             control={control}
             name="price"
@@ -194,22 +183,17 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
                 keyboardType="numeric"
                 inputMode="numeric"
                 error={errors.price?.message}
-                onChangeText={(text) => {
-                  const numericValue = text.replace(/[^0-9]/g, '');
-                  onChange(numericValue);
-                }}
+                onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ''))}
               />
             )}
           />
+
           <Controller
             control={control}
             name="phone"
             rules={{
               required: 'Numri i telefonit është i detyrueshëm',
-              validate: (value) =>
-                isValidPhoneNumber(value, 'XK') // XK = Kosovo
-                  ? true
-                  : 'Numri duhet të jetë valid për Kosovë',
+              validate: (value) => isValidPhoneNumber(value, 'XK') || 'Numri duhet të jetë valid për Kosovë',
             }}
             render={({ field: { onChange, value } }) => (
               <Input
@@ -221,13 +205,11 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
                 keyboardType="phone-pad"
                 inputMode="numeric"
                 error={errors.phone?.message}
-                onChangeText={(text) => {
-                  const numericValue = text.replace(/[^0-9+]/g, '');
-                  onChange(numericValue);
-                }}
+                onChangeText={(text) => onChange(text.replace(/[^0-9+]/g, ''))}
               />
             )}
           />
+
           <DropdownField
             control={control}
             name="flatmateGender"
@@ -237,6 +219,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             defaultValue={genders[2]}
             error={errors.flatmateGender?.message}
           />
+
           <DropdownField
             control={control}
             name="currentFlatmates"
@@ -245,6 +228,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             placeholder="Zgjedh numrin"
             error={errors.currentFlatmates?.message}
           />
+
           <DropdownField
             control={control}
             name="rooms"
@@ -253,6 +237,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             placeholder="Zgjedh numrin"
             error={errors.rooms?.message}
           />
+
           <Button
             variant="primary"
             style={styles.submitButton}
@@ -269,64 +254,31 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
               'Krijo Listimin'
             )}
           </Button>
+
           {isEditing && (
             <Button variant="danger" style={styles.deleteButton} onPress={() => setModalOpen(true)}>
               Fshi Listimin
             </Button>
           )}
         </Box>
+
+        {/* Delete Confirmation Modal */}
         <Modal
-          onDismiss={() => {
-            setModalOpen(false);
-          }}
           visible={modalOpen}
-          onRequestClose={() => {
-            setModalOpen(!modalOpen);
-          }}
-          transparent={true}
+          onDismiss={() => setModalOpen(false)}
+          onRequestClose={() => setModalOpen(!modalOpen)}
+          transparent
           presentationStyle="overFullScreen"
         >
-          <TouchableOpacity
-            onPressOut={() => setModalOpen(false)}
-            onPressIn={() => undefined}
-            activeOpacity={1}
-            style={{
-              width: '100%',
-              height: '100%',
-              backgroundColor: 'rgba(0,0,0,0.5)',
-            }}
-          >
-            <TouchableOpacity
-              activeOpacity={1}
-              style={{
-                maxWidth: '90%',
-                backgroundColor: 'white',
-                padding: 24,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 12,
-                marginTop: 120,
-                alignSelf: 'center',
-              }}
-            >
+          <TouchableOpacity onPressOut={() => setModalOpen(false)} activeOpacity={1} style={styles.modalOverlay}>
+            <TouchableOpacity activeOpacity={1} style={styles.modalContent}>
               <Box marginBottom={8}>
                 <FontAwesome name="question" size={32} />
               </Box>
-              <Text
-                fontSize="lg"
-                fontWeight="bold"
-                style={{
-                  textAlign: 'center',
-                }}
-              >
+              <Text fontSize="lg" fontWeight="bold" style={styles.modalTitle}>
                 A jeni të sigurtë që dëshironi të fshini këtë listim?
               </Text>
-              <Text
-                style={{
-                  textAlign: 'center',
-                  marginTop: 12,
-                }}
-              >
+              <Text style={styles.modalSubtitle}>
                 Listimi do të fshihet përgjithmonë dhe nuk do të jetë më i disponueshëm për përdoruesit e tjerë.
               </Text>
               <Box
@@ -336,25 +288,13 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
                 width="100%"
                 justifyContent="center"
                 alignItems="center"
-                style={{
-                  position: 'relative',
-                }}
+                style={styles.modalButtonRow}
               >
-                <Button
-                  style={{
-                    flex: 1,
-                  }}
-                  variant="tertiary"
-                  onPress={() => {
-                    setModalOpen(false);
-                  }}
-                >
+                <Button style={styles.flex1} variant="tertiary" onPress={() => setModalOpen(false)}>
                   <Text>Jo, anulo</Text>
                 </Button>
                 <Button
-                  style={{
-                    flex: 1,
-                  }}
+                  style={styles.flex1}
                   variant="danger"
                   disabled={loading}
                   onPress={async () => {
@@ -366,9 +306,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
                       });
                       if (!res.ok) throw new Error('Failed to delete listing');
                       Toast.show({ type: 'success', text1: 'Listimi u fshi me sukses' });
-                      client.invalidateQueries({
-                        queryKey: ['listings'],
-                      });
+                      client.invalidateQueries({ queryKey: ['listings'] });
                       router.dismissAll();
                       router.push('/your-listings');
                     } catch (error) {
@@ -384,6 +322,8 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             </TouchableOpacity>
           </TouchableOpacity>
         </Modal>
+
+        {/* Preview Image Modal */}
         <Modal visible={!!previewImage} transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>
           <Pressable style={styles.previewOverlay} onPress={() => setPreviewImage(null)}>
             {previewImage && <Image source={{ uri: previewImage }} style={styles.previewImage} contentFit="contain" />}
@@ -404,21 +344,38 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   submitButton: { marginBottom: 0 },
-  previewOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   deleteButton: {
     marginTop: 12,
     marginBottom: 48,
     color: Colors.danger,
     textAlign: 'center',
   },
-  ':focus': {
-    outlineColor: '#ffcc00',
-    outlineWidth: 2,
+  previewOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   previewImage: { width: '90%', height: '80%', borderRadius: 32 },
+  modalOverlay: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    maxWidth: '90%',
+    backgroundColor: 'white',
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    marginTop: 120,
+    alignSelf: 'center',
+  },
+  modalTitle: { textAlign: 'center' },
+  modalSubtitle: { textAlign: 'center', marginTop: 12 },
+  modalButtonRow: { position: 'relative' },
+  flex1: { flex: 1 },
 });
