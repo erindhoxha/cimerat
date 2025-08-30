@@ -93,17 +93,16 @@ export const CardItemWebView = ({
                       </Box>
                     )}
                   </Box>
-
                   {isOwner && <Pill title="Listimi yt" />}
                 </Box>
-
-                <Text style={styles.cardTitle}>{city + ', ' + neighborhood}</Text>
-
-                {isExpired ? (
-                  <Text style={styles.expiredText}>❌ Skaduar</Text>
-                ) : (
-                  <Text style={styles.cardPrice}>{price}€ për muaj</Text>
-                )}
+                <Box>
+                  <Text style={styles.cardTitle}>{city + ', ' + neighborhood}</Text>
+                  {isExpired ? (
+                    <Text style={styles.expiredText}>❌ Skaduar</Text>
+                  ) : (
+                    <Text style={styles.cardPrice}>{price}€ për muaj</Text>
+                  )}
+                </Box>
               </Box>
 
               <Box style={styles.ownerActions}>
@@ -220,10 +219,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     flexShrink: 1,
+    gap: 8,
   },
   metaTags: {
     flexDirection: 'row',
     gap: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cardInner: {
     flexDirection: 'row',
@@ -234,7 +236,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     gap: 12,
-    marginBottom: 12,
   },
   metaItem: {
     flexDirection: 'row',

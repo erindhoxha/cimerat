@@ -49,7 +49,7 @@ export const styles = StyleSheet.create({
   dropdownMenuStyle: {
     borderRadius: 8,
     paddingHorizontal: 8,
-    paddingVertical: 24,
+    paddingVertical: 12,
     overflow: 'scroll',
   },
   dropdownItemStyle: {

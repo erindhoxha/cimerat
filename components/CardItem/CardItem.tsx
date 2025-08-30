@@ -183,7 +183,7 @@ export const CardItem = ({
 
 const styles = StyleSheet.create({
   card: {
-    marginVertical: 12,
+    marginVertical: 0,
     width: '100%',
     borderWidth: 1,
     borderRadius: 16,

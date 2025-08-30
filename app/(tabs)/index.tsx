@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   FlatList,
   Platform,
   ScrollView,
@@ -211,7 +210,7 @@ export default function TabOneScreen() {
                     }
                   : isWeb
                   ? { width: '100%', paddingVertical: 8 }
-                  : {}
+                  : { gap: 12, paddingVertical: 8 }
               }
             >
               {isWeb && width > 768 ? <CardItemWebView {...item} /> : <CardItem {...item} />}
@@ -398,7 +397,6 @@ export default function TabOneScreen() {
                               </Box>
                             );
                           }}
-                          disableAutoScroll
                           showsVerticalScrollIndicator
                           renderItem={(item, _, isSelected) => (
                             <>
