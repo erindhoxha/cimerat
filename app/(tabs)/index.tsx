@@ -33,6 +33,7 @@ import { WebView } from '@/components/WebView/WebView';
 import { CardItemWebView } from '@/components/CardItem/CardItemWebView';
 import { AccordionView } from '@/components/Accordion';
 import { numriIDhomave } from '@/constants/NumberOfRooms';
+import { cimerat } from '@/constants/NumberOfCimera';
 
 const PAGE_SIZE = 20;
 
@@ -80,6 +81,10 @@ export default function TabOneScreen() {
   const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<string[]>([]);
   const [selectedPriceFrom, setSelectedPriceFrom] = useState<number | null>(null);
   const [selectedPriceTo, setSelectedPriceTo] = useState<number | null>(null);
+
+  const [selectedNumberOfRooms, setSelectedNumberOfRooms] = useState<number | null>(null);
+  const [selectedNumberOfFlatmates, setSelectedNumberOfFlatmates] = useState<number | null>(null);
+
   const [accordionOpen, setAccordionOpen] = useState(false); // or false if you want it closed by default
   const router = useRouter();
 
@@ -123,13 +128,23 @@ export default function TabOneScreen() {
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useInfiniteQuery({
     initialPageParam: 0,
-    queryKey: ['listings', selectedCities, selectedNeighborhoods, selectedPriceFrom, selectedPriceTo],
+    queryKey: [
+      'listings',
+      selectedCities,
+      selectedNeighborhoods,
+      selectedPriceFrom,
+      selectedPriceTo,
+      selectedNumberOfRooms,
+      selectedNumberOfFlatmates,
+    ],
     queryFn: async ({ pageParam = 0 }) => {
       const params = new URLSearchParams();
       selectedCities.forEach((city) => params.append('city', city));
       selectedNeighborhoods.forEach((n) => params.append('neighborhood', n));
       if (selectedPriceFrom) params.append('priceFrom', String(selectedPriceFrom));
       if (selectedPriceTo) params.append('priceTo', String(selectedPriceTo));
+      if (selectedNumberOfRooms) params.append('numberOfRooms', String(selectedNumberOfRooms));
+      if (selectedNumberOfFlatmates) params.append('numberOfFlatmates', String(selectedNumberOfFlatmates));
       params.append('limit', String(PAGE_SIZE));
       params.append('skip', String(pageParam));
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings?${params.toString()}`);
@@ -157,6 +172,8 @@ export default function TabOneScreen() {
   }
 
   const showFilter =
+    (selectedNumberOfRooms !== null && selectedNumberOfRooms !== undefined) ||
+    (selectedNumberOfFlatmates !== null && selectedNumberOfFlatmates !== undefined) ||
     (selectedPriceFrom !== null && selectedPriceFrom !== undefined) ||
     (selectedPriceTo !== null && selectedPriceTo !== undefined) ||
     selectedCities.length > 0 ||
@@ -222,7 +239,7 @@ export default function TabOneScreen() {
                 <Loading />
               </Box>
             ) : (
-              <Box marginTop={24}>
+              <Box marginTop={0}>
                 <Text>Asnjë rezultat.</Text>
               </Box>
             )
@@ -345,7 +362,14 @@ export default function TabOneScreen() {
                       <Box flex={1} style={styles.flexShrink}>
                         <SelectDropdown
                           data={cmimi}
-                          onSelect={setSelectedPriceFrom}
+                          onSelect={(selectedItem) => {
+                            setSelectedPriceFrom((prev) => {
+                              if (prev === selectedItem) {
+                                return undefined;
+                              }
+                              return selectedItem;
+                            });
+                          }}
                           defaultValue={selectedPriceFrom}
                           renderButton={(_, isOpened) => {
                             return (
@@ -410,16 +434,23 @@ export default function TabOneScreen() {
                       <Box flex={1} style={styles.flexShrink}>
                         <Label>Numri i cimerave</Label>
                         <SelectDropdown
-                          data={numriIDhomave}
-                          onSelect={setSelectedPriceFrom}
-                          defaultValue={selectedPriceFrom}
+                          data={cimerat}
+                          onSelect={(selectedItem) => {
+                            setSelectedNumberOfFlatmates((prev) => {
+                              if (prev === selectedItem) {
+                                return undefined;
+                              }
+                              return selectedItem;
+                            });
+                          }}
+                          defaultValue={selectedNumberOfFlatmates}
                           renderButton={(_, isOpened) => {
                             return (
                               <Box style={styles.selectDropdownStyles}>
                                 <SelectButton
-                                  title={(selectedPriceFrom && 'Nga ' + selectedPriceFrom + '€') || ''}
+                                  title={(selectedNumberOfFlatmates && selectedNumberOfFlatmates + ' cimerë') || ''}
                                   isOpened={isOpened}
-                                  placeholder="Nga"
+                                  placeholder="Numri i cimerave"
                                 />
                               </Box>
                             );
@@ -437,16 +468,16 @@ export default function TabOneScreen() {
                       <Box flex={1} style={styles.flexShrink}>
                         <Label>Numri i dhomave</Label>
                         <SelectDropdown
-                          data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
+                          data={numriIDhomave}
                           onSelect={(selectedItem) => {
-                            setSelectedPriceTo((prev) => {
+                            setSelectedNumberOfRooms((prev) => {
                               if (prev === selectedItem) {
                                 return undefined;
                               }
                               return selectedItem;
                             });
                           }}
-                          defaultValue={selectedPriceTo}
+                          defaultValue={selectedNumberOfRooms}
                           renderButton={(_, isOpened) => (
                             <Input
                               style={{
@@ -455,9 +486,9 @@ export default function TabOneScreen() {
                               }}
                             >
                               <SelectButton
-                                title={(selectedPriceTo && 'Deri në ' + selectedPriceTo + '€') || ''}
+                                title={(selectedNumberOfRooms && selectedNumberOfRooms + ' dhoma') || ''}
                                 isOpened={isOpened}
-                                placeholder="Deri në"
+                                placeholder="Numri i dhomave"
                               />
                             </Input>
                           )}
@@ -484,6 +515,9 @@ export default function TabOneScreen() {
                         setSelectedNeighborhoods([]);
                         setSelectedPriceFrom(null);
                         setSelectedPriceTo(null);
+                        setSelectedNumberOfRooms(null);
+                        setSelectedNumberOfFlatmates(null);
+                        setAccordionOpen(false);
                       }}
                     >
                       Pastro filtrat

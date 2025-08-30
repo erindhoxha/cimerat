@@ -133,7 +133,16 @@ router.put('/listings/:id', requireAuth, upload.array('images'), async (req, res
 
 router.get('/listings', async (req, res) => {
   try {
-    const { city, neighborhood, priceFrom, priceTo, limit = 20, skip = 0 } = req.query;
+    const {
+      city,
+      neighborhood,
+      priceFrom,
+      numberOfRooms,
+      numberOfFlatmates,
+      priceTo,
+      limit = 20,
+      skip = 0,
+    } = req.query;
     const filter = {};
     if (city) {
       // Handles both single and multiple cities
@@ -148,6 +157,10 @@ router.get('/listings', async (req, res) => {
       if (priceFrom) filter.price.$gte = Number(priceFrom);
       if (priceTo) filter.price.$lte = Number(priceTo);
     }
+    console.log(numberOfRooms, numberOfFlatmates);
+    if (numberOfRooms) filter.rooms = numberOfRooms;
+    if (numberOfFlatmates) filter.currentFlatmates = numberOfFlatmates;
+
     const listings = await Listing.find(filter)
       .sort({ createdAt: -1 })
       .skip(Number(skip))
