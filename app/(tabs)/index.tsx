@@ -44,7 +44,7 @@ interface SelectButtonProps {
   disabled?: boolean;
 }
 
-const SelectButton = ({ title, isOpened, placeholder, disabled }: SelectButtonProps) => (
+const SelectButton = ({ title, placeholder, disabled }: SelectButtonProps) => (
   <Box style={[dropdownStyles.dropdownButtonStyle, disabled ? dropdownStyles.dropdownButtonDisabledStyle : null]}>
     <Text
       style={[
