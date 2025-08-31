@@ -39,7 +39,7 @@ export default function LoginScreen() {
       });
       const json = await res.json();
       if (!res.ok) {
-        throw new Error(json.error || 'Gabim gjatë kyçjes. Ju lutemi provoni përsëri.');
+        return Promise.reject(json.error || 'Gabim gjatë kyçjes. Ju lutemi provoni përsëri.');
       }
       return json;
     },
