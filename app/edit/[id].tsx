@@ -17,7 +17,7 @@ export default function EditScreen() {
     queryKey: ['listing', id],
     queryFn: async () => {
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listing/${id}`);
-      if (!res.ok) throw new Error('Failed to fetch');
+      if (!res.ok) return Promise.reject('Failed to fetch');
       return res.json();
     },
   });
@@ -32,7 +32,7 @@ export default function EditScreen() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Gabim gjatë ndryshimit.');
+      if (!res.ok) Promise.reject(json.error || 'Gabim gjatë ndryshimit.');
       Toast.show({ type: 'success', text1: 'Listimi u ndryshua' });
       queryClient.invalidateQueries({ queryKey: ['my-listings'] });
       queryClient.invalidateQueries({ queryKey: ['listings'] });

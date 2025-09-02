@@ -29,7 +29,7 @@ export default function Liked() {
         },
       });
       if (!res.ok) {
-        throw new Error('Failed to fetch listings');
+        return Promise.reject('Gjetja e listimeve ishte e pasuksesshme nga ana jonë.');
       }
       return res.json();
     },
@@ -86,7 +86,7 @@ export default function Liked() {
                 isWeb && isDesktop ? (
                   <CardItemWebView {...item} key={item._id} />
                 ) : (
-                  <HorizontalCardItem item={item} router={router} key={item._id} />
+                  <HorizontalCardItem item={item} router={router} key={item._id} liked={true} />
                 ),
               )
             ) : (

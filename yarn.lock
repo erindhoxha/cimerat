@@ -7189,6 +7189,11 @@ react-native-is-edge-to-edge@1.1.7, react-native-is-edge-to-edge@^1.1.6, react-n
   resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.1.7.tgz#28947688f9fafd584e73a4f935ea9603bd9b1939"
   integrity sha512-EH6i7E8epJGIcu7KpfXYXiV2JFIYITtq+rVS8uEb+92naMRBdxhTuS8Wn2Q7j9sqyO0B+Xbaaf9VdipIAmGW4w==
 
+react-native-lightbox-v2@^0.9.2:
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/react-native-lightbox-v2/-/react-native-lightbox-v2-0.9.2.tgz#58e256ee18bdd2e270f228a911a76831251229e5"
+  integrity sha512-+8LwINeSWvPP69YAyWhiJQyaw4Gtu8X4EMvT3PEN615NrOeDaz8jOcIw73pzYJst3z4Z0vxvFB73iH16wCPXtw==
+
 react-native-reanimated-carousel@^4.0.3:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/react-native-reanimated-carousel/-/react-native-reanimated-carousel-4.0.3.tgz#975f4ff3f5da5bb3790fe60850a46ad8119612bc"

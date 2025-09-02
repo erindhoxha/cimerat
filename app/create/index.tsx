@@ -19,7 +19,7 @@ export default function CreateScreen() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Gabim gjatë krijimit.');
+      if (!res.ok) return Promise.reject(json.error || 'Gabim gjatë krijimit.');
       Toast.show({ type: 'success', text1: 'Listimi u krijua' });
       router.push('/');
     } catch (e) {

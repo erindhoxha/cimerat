@@ -19,4 +19,5 @@ export default {
   green: '#29c061ff',
   lightGray: '#e0e0e0',
   white: '#fff',
+  textFade: '#171717ff',
 };

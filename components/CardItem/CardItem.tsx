@@ -42,6 +42,16 @@ export const CardItem = ({
 
   const CarouselComponent = isWeb ? NewCarousel : ReusableCarousel;
 
+  // Show up to 3 thumbnails, sliding window
+  const maxThumbs = 5;
+  let start = 0;
+  if (carouselIndex > 1 && images.length > maxThumbs) {
+    // Center active thumbnail if possible
+    start = Math.min(carouselIndex - 1, images.length - maxThumbs);
+  }
+  const thumbnailsToShow = images.slice(start, start + maxThumbs);
+  const thumbnailIndexes = thumbnailsToShow.map((img) => images.indexOf(img));
+
   return (
     <Pressable
       style={styles.cardLink}
@@ -69,6 +79,25 @@ export const CardItem = ({
             </Box>
           )}
         />
+        {images.length > 1 && (
+          <Box style={styles.thumbnailRow}>
+            {thumbnailsToShow.map((img, idx) => (
+              <Pressable
+                key={img}
+                onPress={(e) => {
+                  e.stopPropagation();
+                }}
+                style={[styles.thumbnailWrapper, carouselIndex === thumbnailIndexes[idx] && styles.thumbnailActive]}
+              >
+                <Image
+                  source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${img}` }}
+                  style={styles.thumbnailImage}
+                  contentFit="cover"
+                />
+              </Pressable>
+            ))}
+          </Box>
+        )}
 
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
@@ -85,68 +114,68 @@ export const CardItem = ({
                 justifyContent="flex-start"
                 alignItems="flex-start"
                 style={isWeb && styles.webColumnBox}
+                gap={12}
               >
-                <Box style={styles.featuresBox}>
-                  {rooms && rooms !== 'undefined' && (
+                <Box flexDirection="row" justifyContent="space-between" alignItems="center" width="100%">
+                  {((rooms && rooms !== undefined) || (currentFlatmates && currentFlatmates !== undefined)) && (
+                    <Box style={styles.featuresBox}>
+                      {rooms && rooms !== 'undefined' && (
+                        <Box style={styles.featureItem}>
+                          <Text style={styles.text}>{rooms}</Text>
+                          <FontAwesome name="bed" size={12} />
+                        </Box>
+                      )}
+                      {currentFlatmates && currentFlatmates !== 'undefined' && (
+                        <Box style={styles.featureItem}>
+                          <Text style={styles.text}>{currentFlatmates}</Text>
+                          <FontAwesome name="user" size={12} />
+                        </Box>
+                      )}
+                      {/* {flatmateGender === 'Mashkull' ? (
                     <Box style={styles.featureItem}>
-                      <Text>{rooms}</Text>
-                      <FontAwesome name="bed" size={16} />
-                    </Box>
-                  )}
-                  {currentFlatmates && currentFlatmates !== 'undefined' && (
-                    <Box style={styles.featureItem}>
-                      <Text>{currentFlatmates}</Text>
-                      <FontAwesome name="user" size={16} />
-                    </Box>
-                  )}
-                  {flatmateGender === 'Mashkull' ? (
-                    <Box style={styles.featureItem}>
-                      <Text>M</Text>
-                      <FontAwesome name="male" size={16} />
+                      <Text style={styles.text}>M</Text>
+                      <FontAwesome name="male" size={12} />
                     </Box>
                   ) : flatmateGender === 'Femër' ? (
                     <Box style={styles.featureItem}>
-                      <Text>F</Text>
-                      <FontAwesome name="female" size={16} />
+                      <Text style={styles.text}>F</Text>
+                      <FontAwesome name="female" size={12} />
                     </Box>
                   ) : (
                     <Box style={styles.featureItem}>
-                      <Text>M/F</Text>
-                      <FontAwesome name="male" size={16} />
-                      <FontAwesome name="female" size={16} />
+                      <Text style={styles.text}>M/F</Text>
+                      <FontAwesome name="male" size={12} />
+                      <FontAwesome name="female" size={12} />
+                    </Box>
+                  )} */}
+                    </Box>
+                  )}
+
+                  {isExpired ? (
+                    <Text style={styles.expiredText}>❌ Skaduar</Text>
+                  ) : (
+                    <Box flexDirection="column" alignItems="flex-end">
+                      {createdAt && <Text>{formatDate(createdAt)}</Text>}
                     </Box>
                   )}
                 </Box>
 
                 {isWeb ? (
-                  <Box style={styles.webHeaderRow}>
+                  <Box>
                     <Text style={styles.cardTitle}>
                       {city}, {neighborhood}
                     </Text>
-                    <Box flexDirection="column" alignItems="flex-end">
-                      {createdAt && <Text>{formatDate(createdAt)}</Text>}
-                    </Box>
+                    <Text style={styles.cardPrice}>{price}€ për muaj</Text>
                   </Box>
                 ) : (
-                  <>
+                  <Box>
                     <Text style={styles.cardTitle}>
                       {city}, {neighborhood}
                     </Text>
-                    {isExpired ? (
-                      <Text style={styles.expiredText}>❌ Skaduar</Text>
-                    ) : (
-                      <Text style={styles.cardPrice}>{price}€ për muaj</Text>
-                    )}
-                  </>
+                    <Text style={styles.cardPrice}>{price}€ për muaj</Text>
+                  </Box>
                 )}
               </Box>
-
-              {!isWeb &&
-                (isExpired ? (
-                  <Text style={styles.expiredText}>❌ Skaduar</Text>
-                ) : (
-                  <Text style={styles.cardPrice}>{price}€ për muaj</Text>
-                ))}
             </Box>
 
             <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
@@ -182,6 +211,16 @@ export const CardItem = ({
 };
 
 const styles = StyleSheet.create({
+  text: {
+    fontSize: 14,
+    color: Colors.textFade,
+  },
+  imageCounter: {
+    position: 'absolute',
+    bottom: 40,
+    color: 'white',
+    fontSize: 16,
+  },
   card: {
     marginVertical: 0,
     width: '100%',
@@ -215,6 +254,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
+    color: Colors.textFade,
   },
   cardPrice: {
     fontSize: 14,
@@ -230,22 +270,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '400',
     marginTop: 16,
+    display: 'none',
   },
   featuresBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingVertical: 2,
     borderRadius: 24,
-    gap: 12,
-    borderColor: Colors.gray,
-    marginBottom: 12,
+    gap: 8,
+    paddingHorizontal: 8,
     borderWidth: 1,
+    borderColor: Colors.lightGray,
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 2,
   },
   webCarousel: {
     alignSelf: 'flex-start',
@@ -263,5 +303,35 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     flexDirection: 'row',
+  },
+  thumbnailRow: {
+    flexDirection: 'row',
+    justifyContent: 'center', // changed from 'center'
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8,
+    marginBottom: 0,
+    width: '100%',
+    paddingHorizontal: 12,
+  },
+  thumbnailWrapper: {
+    flex: 1, // take equal space
+    borderRadius: 8,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'transparent',
+    aspectRatio: 1.5, // or 1.2, adjust as you like
+    minWidth: 0, // allow shrinking
+    height: 70, // or adjust as needed
+    maxWidth: '100%', // optional, to avoid too large thumbs
+  },
+  thumbnailActive: {
+    borderColor: Colors.yellow,
+  },
+  thumbnailImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 6,
+    backgroundColor: Colors.lightGray,
   },
 });

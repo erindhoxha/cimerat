@@ -39,16 +39,7 @@ export default function TabLayout() {
             name="index"
             options={{
               tabBarIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} />,
-              title: 'Listimet',
-              tabBarActiveTintColor: Colors.tint,
-              tabBarInactiveTintColor: Colors.darkYellow,
-            }}
-          />
-          <Tabs.Screen
-            name="liked"
-            options={{
-              title: 'Të ruajturat',
-              tabBarIcon: ({ color }) => <FontAwesome name="heart" size={24} color={color} />,
+              title: 'Faqja kryesore',
               tabBarActiveTintColor: Colors.tint,
               tabBarInactiveTintColor: Colors.darkYellow,
             }}
@@ -56,8 +47,17 @@ export default function TabLayout() {
           <Tabs.Screen
             name="your-listings"
             options={{
-              title: 'Krijo',
-              tabBarIcon: ({ color }) => <FontAwesome name="plus" size={24} color={color} />,
+              title: 'Krijo & listimet',
+              tabBarIcon: ({ color }) => <FontAwesome name="plus-circle" size={24} color={color} />,
+              tabBarActiveTintColor: Colors.tint,
+              tabBarInactiveTintColor: Colors.darkYellow,
+            }}
+          />
+          <Tabs.Screen
+            name="liked"
+            options={{
+              title: 'Të preferuarat',
+              tabBarIcon: ({ color }) => <FontAwesome name="heart" size={24} color={color} />,
               tabBarActiveTintColor: Colors.tint,
               tabBarInactiveTintColor: Colors.darkYellow,
             }}

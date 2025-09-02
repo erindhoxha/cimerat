@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { Dimensions, View, StyleProp, ViewStyle, StyleSheet } from 'react-native';
+import { Dimensions, View, StyleProp, ViewStyle, StyleSheet, Pressable, Text } from 'react-native';
 import { useSharedValue, configureReanimatedLogger } from 'react-native-reanimated';
 import Carousel, { ICarouselInstance, Pagination } from 'react-native-reanimated-carousel';
 
 // disable warnings
-
 configureReanimatedLogger({
   strict: false,
 });
@@ -30,6 +29,7 @@ export function ReusableCarousel<T>({
 }: ReusableCarouselProps<T>) {
   const ref = React.useRef<ICarouselInstance>(null);
   const progresSharedValue = useSharedValue<number>(0);
+  const [currentIndex, setCurrentIndex] = React.useState(defaultIndex ?? 0);
 
   const carouselWidth = width ?? Dimensions.get('window').width;
   const carouselHeight = height ?? carouselWidth / 2;
@@ -43,8 +43,38 @@ export function ReusableCarousel<T>({
 
   const isCarousel = data.length > 1;
 
+  const goLeft = () => {
+    if (!isCarousel) return;
+    const nextIndex = currentIndex === 0 ? data.length - 1 : currentIndex - 1;
+    setCurrentIndex(nextIndex);
+    ref.current?.scrollTo({
+      count: nextIndex - progresSharedValue.value,
+      animated: true,
+    });
+  };
+
+  const goRight = () => {
+    if (!isCarousel) return;
+    const nextIndex = currentIndex === data.length - 1 ? 0 : currentIndex + 1;
+    setCurrentIndex(nextIndex);
+    ref.current?.scrollTo({
+      count: nextIndex - progresSharedValue.value,
+      animated: true,
+    });
+  };
+
   return (
-    <View style={{ touchAction: 'pan-y' }}>
+    <View style={{ touchAction: 'pan-y', position: 'relative' }}>
+      {isCarousel && (
+        <>
+          <Pressable style={[styles.arrow, styles.arrowLeft]} onPress={goLeft} hitSlop={10}>
+            <Text style={styles.arrowText}>{'‹'}</Text>
+          </Pressable>
+          <Pressable style={[styles.arrow, styles.arrowRight]} onPress={goRight} hitSlop={10}>
+            <Text style={styles.arrowText}>{'›'}</Text>
+          </Pressable>
+        </>
+      )}
       <Carousel
         ref={ref}
         width={carouselWidth}
@@ -53,7 +83,9 @@ export function ReusableCarousel<T>({
         data={data}
         onProgressChange={(_, absoluteProgress) => {
           progresSharedValue.value = absoluteProgress;
-          onProgressChange?.(absoluteProgress);
+          const rounded = Math.round(absoluteProgress);
+          setCurrentIndex(rounded);
+          onProgressChange?.(rounded);
         }}
         onConfigurePanGesture={(panGesture) => {
           panGesture.activeOffsetX([-10, 10]);
@@ -83,4 +115,26 @@ const styles = StyleSheet.create({
   },
   dotStyle: { backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: 50 },
   containerStyle: { gap: 5, marginTop: 10, position: 'absolute', bottom: 12, touchAction: 'auto' },
+  arrow: {
+    position: 'absolute',
+    top: '50%',
+    zIndex: 10,
+    backgroundColor: 'rgba(0,0,0,0.75)',
+    borderRadius: 100,
+    padding: 12,
+    marginTop: -24,
+  },
+  arrowLeft: {
+    left: 10,
+  },
+  arrowRight: {
+    right: 10,
+  },
+  arrowText: {
+    color: '#fff',
+    fontSize: 32,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    lineHeight: 32,
+  },
 });

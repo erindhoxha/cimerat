@@ -17,7 +17,6 @@ import { Button } from '@/components/Button';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
-import { Pill } from '@/components/Pill/Pill';
 import { BLURHASH_TRANSITION } from '@/constants/global';
 import { ReusableCarousel } from '@/components/Carousel/Carousel';
 import { formatDate, formatKosovoPhone, listingHasExpired } from '@/utils';
@@ -25,7 +24,7 @@ import Colors from '@/constants/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Toast from 'react-native-toast-message';
 import { WebView } from '@/components/WebView/WebView';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 export default function ItemDetailScreen() {
@@ -45,7 +44,10 @@ export default function ItemDetailScreen() {
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/user`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error('Failed to fetch user data');
+
+      if (!res.ok) {
+        return Promise.reject('Gjetja e listimeve ishte e pasuksesshme nga ana jonë.');
+      }
       return res.json();
     },
   });
@@ -60,7 +62,9 @@ export default function ItemDetailScreen() {
         },
         body: JSON.stringify({ userId }),
       });
-      if (!res.ok) throw new Error('Failed to like listing');
+      if (!res.ok) {
+        return Promise.reject('Pëlqimi i listimit ishte i pasuksesshëm nga ana jonë.');
+      }
       return res.json();
     },
     onMutate: async (listingId: string) => {
@@ -99,10 +103,31 @@ export default function ItemDetailScreen() {
     queryKey: ['listing', item],
     queryFn: async () => {
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listing/${item}`);
-      if (!res.ok) throw new Error('Failed to fetch listings');
+      if (!res.ok) {
+        return Promise.reject('Gjetja e listimit ishte i pasuksesshëm nga ana jonë.');
+      }
       return res.json();
     },
   });
+
+  useEffect(() => {
+    if (lightboxIndex === null || !data) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        setLightboxIndex((prev) => (prev === 0 ? data.images.length - 1 : (prev ?? 0) - 1));
+      }
+      if (e.key === 'ArrowRight') {
+        setLightboxIndex((prev) => (prev === data.images.length - 1 ? 0 : (prev ?? 0) + 1));
+      }
+      if (e.key === 'Escape') {
+        setLightboxIndex(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxIndex, data?.images.length]);
 
   if (error) return <Text>Error: {error.message}</Text>;
   if (isLoading) return <Loading />;
@@ -127,7 +152,7 @@ export default function ItemDetailScreen() {
 
               if (total === 1) {
                 height = 320;
-                borderRadius = 12;
+                borderRadius = 0;
               } else if (total === 2) {
                 width = 'calc(50% - 4px)';
                 height = 320;
@@ -165,7 +190,7 @@ export default function ItemDetailScreen() {
           </Box>
         ) : (
           <ReusableCarousel
-            style={styles.carousel}
+            style={[styles.carousel]}
             data={data.images}
             defaultIndex={typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) : 0}
             renderItem={({ item, index }) => (
@@ -272,11 +297,54 @@ export default function ItemDetailScreen() {
       {lightboxIndex !== null &&
         createPortal(
           <Pressable onPress={() => setLightboxIndex(null)} style={styles.lightboxWrapper}>
-            <ExpoImage
-              style={styles.lightboxImage}
-              contentFit="contain"
-              source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${data.images[lightboxIndex]}` }}
-            />
+            <Box
+              style={{
+                position: 'relative',
+                width: '90%',
+                height: '80%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {/* Left arrow */}
+              {data.images.length > 1 && (
+                <Pressable
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setLightboxIndex(lightboxIndex === 0 ? data.images.length - 1 : lightboxIndex - 1);
+                  }}
+                  style={styles.lightboxArrowLeft}
+                >
+                  <Text style={{ color: 'white', fontSize: 40 }}>{'‹'}</Text>
+                </Pressable>
+              )}
+
+              {/* Image */}
+              <ExpoImage
+                style={styles.lightboxImage}
+                contentFit="contain"
+                source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${data.images[lightboxIndex]}` }}
+              />
+
+              {/* Right arrow */}
+              {data.images.length > 1 && (
+                <Pressable
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setLightboxIndex(lightboxIndex === data.images.length - 1 ? 0 : lightboxIndex + 1);
+                  }}
+                  style={styles.lightboxArrowRight}
+                >
+                  <Text style={{ color: 'white', fontSize: 40 }}>{'›'}</Text>
+                </Pressable>
+              )}
+
+              {/* Image counter at the bottom center */}
+              <Text style={styles.imageCounter}>
+                {lightboxIndex + 1} / {data.images.length}
+              </Text>
+            </Box>
             <Text style={styles.lightboxHint}>(prek kudo për të mbyllur)</Text>
           </Pressable>,
           document.body,
@@ -295,7 +363,7 @@ const styles = StyleSheet.create({
   },
   contentInner: { flexShrink: 1, flexGrow: 1, minWidth: 0 },
 
-  carousel: { maxHeight: 320, width: '100%', userSelect: 'all' },
+  carousel: { width: '100%', userSelect: 'all' },
   cardImage: { width: '100%', height: '100%', aspectRatio: 2, marginBottom: 20 },
 
   webGallery: {
@@ -322,11 +390,41 @@ const styles = StyleSheet.create({
     left: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.9)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 9999,
   },
   lightboxImage: { width: '90%', height: '80%', borderRadius: 24, overflow: 'hidden' },
   lightboxHint: { color: 'white', marginTop: 10 },
+  lightboxArrowRight: {
+    position: 'absolute',
+    right: 10,
+    top: '50%',
+    transform: [{ translateY: -24 }],
+    zIndex: 2,
+    padding: 16,
+  },
+  lightboxArrowLeft: {
+    position: 'absolute',
+    left: 10,
+    top: '50%',
+    transform: [{ translateY: -24 }],
+    zIndex: 2,
+    padding: 16,
+  },
+  imageCounter: {
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 0,
+    textAlign: 'center',
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0,0,0,0.7)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
+    zIndex: 10,
+  },
 });

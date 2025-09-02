@@ -210,33 +210,56 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             )}
           />
 
-          <DropdownField
-            control={control}
-            name="flatmateGender"
-            label="Gjinia e preferuar e bashkëbanuesit/es"
-            options={genders}
-            placeholder="Zgjedh gjininë"
-            defaultValue={genders[2]}
-            error={errors.flatmateGender?.message}
-          />
+          <Box
+            gap={12}
+            style={{
+              padding: 12,
+              borderWidth: 1,
+              borderRadius: 12,
+              borderColor: Colors.lightGray,
+            }}
+          >
+            <Text fontSize="md" fontWeight="bold">
+              Extra, opsionale
+            </Text>
+            <Text
+              style={{
+                borderBottomWidth: 1,
+                paddingBottom: 12,
+                borderColor: Colors.lightGray,
+              }}
+            >
+              Nuk është e nevojshme të plotësoni këto fusha, por mund t'ju ndihmojë të gjeni bashkëbanuesin/es më të
+              përshtatshëm.
+            </Text>
+            <DropdownField
+              control={control}
+              name="flatmateGender"
+              label="Gjinia e preferuar e bashkëbanuesit/es"
+              options={genders}
+              placeholder="Zgjedh gjininë"
+              defaultValue={genders[2]}
+              error={errors.flatmateGender?.message}
+            />
 
-          <DropdownField
-            control={control}
-            name="currentFlatmates"
-            label="Numri i bashkëbanuesve ekzistues"
-            options={cimerat}
-            placeholder="Zgjedh numrin"
-            error={errors.currentFlatmates?.message}
-          />
+            <DropdownField
+              control={control}
+              name="currentFlatmates"
+              label="Numri i bashkëbanuesve ekzistues"
+              options={cimerat}
+              placeholder="Zgjedh numrin"
+              error={errors.currentFlatmates?.message}
+            />
 
-          <DropdownField
-            control={control}
-            name="rooms"
-            label="Numri i dhomave në total"
-            options={numriIDhomave}
-            placeholder="Zgjedh numrin"
-            error={errors.rooms?.message}
-          />
+            <DropdownField
+              control={control}
+              name="rooms"
+              label="Numri i dhomave në total"
+              options={numriIDhomave}
+              placeholder="Zgjedh numrin"
+              error={errors.rooms?.message}
+            />
+          </Box>
 
           <Button
             variant="primary"
@@ -261,7 +284,6 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             </Button>
           )}
         </Box>
-
         {/* Delete Confirmation Modal */}
         <Modal
           visible={modalOpen}
@@ -304,7 +326,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
                         method: 'DELETE',
                         headers: { Authorization: `Bearer ${token}` },
                       });
-                      if (!res.ok) throw new Error('Failed to delete listing');
+                      if (!res.ok) return Promise.reject('Failed to delete listing');
                       Toast.show({ type: 'success', text1: 'Listimi u fshi me sukses' });
                       client.invalidateQueries({ queryKey: ['listings'] });
                       router.dismissAll();
@@ -371,7 +393,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 12,
-    marginTop: 120,
     alignSelf: 'center',
   },
   modalTitle: { textAlign: 'center' },

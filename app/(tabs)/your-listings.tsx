@@ -29,7 +29,7 @@ export default function TabTwoScreen() {
         },
       });
       if (!res.ok) {
-        throw new Error('Failed to fetch listings');
+        return Promise.reject('Gjetja e listimeve ishte e pasuksesshme nga ana jonë.');
       }
       return res.json();
     },

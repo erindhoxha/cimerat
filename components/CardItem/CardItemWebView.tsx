@@ -27,6 +27,7 @@ export const CardItemWebView = ({
   flatmateGender,
   rooms,
   blurhash,
+  liked,
 }: Listing) => {
   const router = useRouter();
   const [carouselIndex, setCarouselIndex] = useState(0);
@@ -61,42 +62,43 @@ export const CardItemWebView = ({
           <View style={styles.topCardContent}>
             <Box style={styles.metaRow}>
               <Box style={styles.metaLeft}>
-                <Box style={styles.metaTags}>
-                  <Box style={styles.cardInner}>
-                    {rooms && rooms !== 'undefined' && (
-                      <Box style={styles.metaItem}>
-                        <Text>{rooms}</Text>
-                        <FontAwesome name="bed" size={16} />
-                      </Box>
-                    )}
-                    {currentFlatmates && currentFlatmates !== 'undefined' && (
-                      <Box style={styles.metaItem}>
-                        <Text>{currentFlatmates}</Text>
-                        <FontAwesome name="user" size={16} />
-                      </Box>
-                    )}
-                    {flatmateGender === 'Mashkull' ? (
-                      <Box style={styles.metaItem}>
-                        <Text>M</Text>
-                        <FontAwesome name="male" size={16} />
-                      </Box>
-                    ) : flatmateGender === 'Femër' ? (
-                      <Box style={styles.metaItem}>
-                        <Text>F</Text>
-                        <FontAwesome name="female" size={16} />
-                      </Box>
-                    ) : (
-                      <Box style={styles.metaItem}>
-                        <Text>M/F</Text>
-                        <FontAwesome name="male" size={16} />
-                        <FontAwesome name="female" size={16} />
-                      </Box>
-                    )}
-                  </Box>
-                  {isOwner && <Pill title="Listimi yt" />}
-                </Box>
                 <Box>
-                  <Text style={styles.cardTitle}>{city + ', ' + neighborhood}</Text>
+                  <Box flexDirection="row" gap={12} alignItems="center">
+                    <Text style={styles.cardTitle}>{city + ', ' + neighborhood}</Text>
+                    <Box style={styles.metaTags}>
+                      <Box style={styles.cardInner}>
+                        {rooms && rooms !== 'undefined' && (
+                          <Box style={styles.metaItem}>
+                            <Text style={styles.text}>{rooms}</Text>
+                            <FontAwesome name="bed" size={12} color={Colors.textFade} />
+                          </Box>
+                        )}
+                        {currentFlatmates && currentFlatmates !== 'undefined' && (
+                          <Box style={styles.metaItem}>
+                            <Text style={styles.text}>{currentFlatmates}</Text>
+                            <FontAwesome name="user" size={12} color={Colors.textFade} />
+                          </Box>
+                        )}
+                        {flatmateGender === 'Mashkull' ? (
+                          <Box style={styles.metaItem}>
+                            <Text style={styles.text}>M</Text>
+                            <FontAwesome name="male" size={12} color={Colors.textFade} />
+                          </Box>
+                        ) : flatmateGender === 'Femër' ? (
+                          <Box style={styles.metaItem}>
+                            <Text style={styles.text}>F</Text>
+                            <FontAwesome name="female" size={12} color={Colors.textFade} />
+                          </Box>
+                        ) : (
+                          <Box style={styles.metaItem}>
+                            <FontAwesome name="male" size={12} color={Colors.textFade} />
+                            <FontAwesome name="female" size={12} color={Colors.textFade} />
+                          </Box>
+                        )}
+                      </Box>
+                      {isOwner && <Pill title="Listimi yt" />}
+                    </Box>
+                  </Box>
                   {isExpired ? (
                     <Text style={styles.expiredText}>❌ Skaduar</Text>
                   ) : (
@@ -106,7 +108,7 @@ export const CardItemWebView = ({
               </Box>
 
               <Box style={styles.ownerActions}>
-                {createdAt && <Text>{formatDate(createdAt)}</Text>}
+                {createdAt && <Text style={styles.text}>{formatDate(createdAt)}</Text>}
                 {isOwner && (
                   <Button
                     disabled={isExpired}
@@ -145,7 +147,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     overflow: 'hidden',
-    borderColor: 'rgba(0,0,0,0.1)',
+    borderColor: 'rgba(0,0,0,0.08)',
     flexDirection: 'row',
   },
   ownerCard: {
@@ -156,6 +158,10 @@ const styles = StyleSheet.create({
     width: 180,
     height: 'auto',
     backgroundColor: '#0553',
+  },
+  text: {
+    fontSize: 14,
+    color: Colors.textFade,
   },
   cardImage: {
     width: '100%',
@@ -189,8 +195,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
+    color: Colors.textFade,
   },
   expiredText: {
     fontSize: 14,
@@ -201,9 +208,9 @@ const styles = StyleSheet.create({
   cardPrice: {
     fontSize: 14,
     marginTop: 4,
+    color: Colors.textFade,
   },
   cardSubtitle: {
-    fontSize: 14,
     fontWeight: '400',
     marginTop: 12,
   },
@@ -219,7 +226,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     flexShrink: 1,
-    gap: 8,
+    gap: 4,
   },
   metaTags: {
     flexDirection: 'row',
@@ -231,16 +238,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.1)',
+    borderColor: 'rgba(0,0,0,0.05)',
     borderRadius: 12,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    gap: 12,
+    gap: 4,
   },
   metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    fontSize: 14,
   },
   ownerActions: {
     flexDirection: 'column',

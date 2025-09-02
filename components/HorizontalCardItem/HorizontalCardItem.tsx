@@ -10,14 +10,17 @@ import { Listing } from '@/types';
 import { formatDate, listingHasExpired } from '@/utils';
 import { BLURHASH_TRANSITION } from '@/constants/global';
 import { useAuth } from '@/context/AuthContext';
+import { FontAwesome } from '@expo/vector-icons';
 interface HorizontalCardItemProps {
   item: Listing;
   router: Router;
+  liked: boolean;
 }
 
 export const HorizontalCardItem = ({
   item: { images, _id, city, neighborhood, createdAt, price, description, blurhash, user },
   router,
+  liked,
 }: HorizontalCardItemProps) => {
   const { userId } = useAuth();
   const isOwner = user?._id === userId;
@@ -37,18 +40,25 @@ export const HorizontalCardItem = ({
             contentFit="cover"
             transition={BLURHASH_TRANSITION}
           />
+          {liked && (
+            <Text style={styles.liked}>
+              <FontAwesome name={liked ? 'heart' : 'heart-o'} size={14} color={Colors.yellow} />
+            </Text>
+          )}
           {images?.length > 1 && <Text style={styles.imageCounter}>+{images.length - 1} foto</Text>}
         </Box>
       </Box>
       <View style={styles.cardContent}>
-        <Text style={styles.cardTitle}>
-          {city} / {neighborhood}
-        </Text>
+        <Box flexDirection="row" gap={4} alignItems="center" marginBottom={4}>
+          <Text style={styles.cardTitle}>
+            {city}, {neighborhood}
+          </Text>
+        </Box>
         {isExpired ? (
           <Text style={styles.expiredText}>❌ Skaduar</Text>
         ) : (
           <Text>
-            {createdAt ? formatDate(createdAt) : ''} - {price}€ për muaj
+            {createdAt ? formatDate(createdAt) : ''}, {price}€ për muaj
           </Text>
         )}
         <Text numberOfLines={1} style={styles.cardDescription} ellipsizeMode="tail">
@@ -64,11 +74,7 @@ export const HorizontalCardItem = ({
               Modifiko listimin
             </Button>
           )}
-          <Button
-            variant={!isExpired ? 'tertiary' : 'secondary'}
-            disabled={isExpired}
-            onPress={() => router.push(`/${_id}`)}
-          >
+          <Button variant="tertiary" onPress={() => router.push(`/${_id}`)}>
             Shiko detajet
           </Button>
         </Box>
@@ -102,6 +108,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 8,
   },
+  liked: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+  },
   imageCounter: {
     position: 'absolute',
     bottom: 6,
@@ -114,7 +125,6 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 4,
   },
   listCard: {
     flexDirection: 'row',

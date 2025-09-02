@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import React, { useEffect, useMemo, useState } from 'react';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome6 } from '@expo/vector-icons';
 import { CardItem } from '@/components/CardItem/CardItem';
 import { useRouter } from 'expo-router';
 import { Box } from '@/components/Box';
@@ -146,7 +146,9 @@ export default function TabOneScreen() {
       params.append('limit', String(PAGE_SIZE));
       params.append('skip', String(pageParam));
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to fetch listings');
+      if (!res.ok) {
+        return Promise.reject('Gjetja e listimeve ishte e pasuksesshëm nga ana jonë.');
+      }
       return res.json();
     },
     getNextPageParam: (lastPage, allPages) => {
@@ -520,8 +522,8 @@ export default function TabOneScreen() {
                 </>
               </AccordionView>
               {showFilter && (
-                <Box flexDirection="row" justifyContent="flex-end" alignItems="center">
-                  <Box flexDirection="row">
+                <Box flexDirection="row" justifyContent="center" alignItems="center">
+                  <Box flexDirection="row" alignItems="center">
                     <Text
                       style={styles.filter}
                       onPress={() => {
@@ -536,6 +538,7 @@ export default function TabOneScreen() {
                     >
                       Pastro filtrat
                     </Text>
+                    <FontAwesome6 name="broom" size={12} color={Colors.textFade} />
                   </Box>
                 </Box>
               )}

@@ -69,8 +69,8 @@ const styles = StyleSheet.create({
     paddingTop: 48,
   },
   bannerText: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 14,
+    fontWeight: '400',
     marginHorizontal: 8,
   },
   storeButton: {
