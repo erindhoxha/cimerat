@@ -25,7 +25,7 @@ export function AccordionView({
       <TouchableOpacity onPress={() => setOpen(!open)}>
         <Box style={[styles.accordionHeader, !open && styles.accordionHeaderClosed]}>
           <Text style={styles.headerText}>{!open ? title : closedTitle}</Text>
-          <FontAwesome name={open ? 'chevron-up' : 'chevron-down'} size={12} color={Colors.text} />
+          <FontAwesome name={open ? 'chevron-up' : 'chevron-down'} size={16} color={Colors.gray} />
         </Box>
       </TouchableOpacity>
       {open && <Box style={styles.accordionContent}>{children}</Box>}
@@ -37,19 +37,21 @@ const styles = StyleSheet.create({
   accordionHeader: {
     paddingVertical: 16,
     paddingHorizontal: 12,
-    backgroundColor: Colors.yellow,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.gray,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   accordionHeaderClosed: {
-    borderBottomRightRadius: 8,
-    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 12,
+    borderBottomLeftRadius: 12,
   },
   headerText: {
-    fontWeight: '500',
+    fontWeight: '400',
   },
   accordionContent: {
     gap: 12,
@@ -57,8 +59,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
     borderWidth: 1,
     borderColor: Colors.gray,
-    borderBottomRightRadius: 8,
-    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 12,
+    borderBottomLeftRadius: 12,
     backgroundColor: Colors.white,
   },
 });

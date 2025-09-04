@@ -14,7 +14,7 @@ import { NewCarousel } from '../NewCarousel/NewCarousel';
 
 import { useAuth } from '@/context/AuthContext';
 import { formatDate, listingHasExpired } from '@/utils';
-import { Listing } from '@/types';
+import { ImageType, Listing } from '@/types';
 import Colors from '@/constants/Colors';
 import { BLURHASH_TRANSITION } from '@/constants/global';
 
@@ -28,9 +28,9 @@ export const CardItem = ({
   _id,
   createdAt,
   currentFlatmates,
-  flatmateGender,
   rooms,
   blurhash,
+  blurhashes,
 }: Listing) => {
   const router = useRouter();
   const [carouselIndex, setCarouselIndex] = useState(0);
@@ -42,15 +42,13 @@ export const CardItem = ({
 
   const CarouselComponent = isWeb ? NewCarousel : ReusableCarousel;
 
-  // Show up to 3 thumbnails, sliding window
   const maxThumbs = 5;
   let start = 0;
   if (carouselIndex > 1 && images.length > maxThumbs) {
-    // Center active thumbnail if possible
     start = Math.min(carouselIndex - 1, images.length - maxThumbs);
   }
   const thumbnailsToShow = images.slice(start, start + maxThumbs);
-  const thumbnailIndexes = thumbnailsToShow.map((img) => images.indexOf(img));
+  const thumbnailIndexes = thumbnailsToShow.map((img: ImageType) => images.indexOf(img));
 
   return (
     <Pressable
@@ -64,6 +62,7 @@ export const CardItem = ({
     >
       <View style={styles.card}>
         <CarouselComponent
+          controlledIndex={carouselIndex}
           style={isWeb ? styles.webCarousel : undefined}
           data={images}
           onProgressChange={setCarouselIndex}
@@ -81,24 +80,28 @@ export const CardItem = ({
         />
         {images.length > 1 && (
           <Box style={styles.thumbnailRow}>
-            {thumbnailsToShow.map((img, idx) => (
-              <Pressable
-                key={img}
-                onPress={(e) => {
-                  e.stopPropagation();
-                }}
-                style={[styles.thumbnailWrapper, carouselIndex === thumbnailIndexes[idx] && styles.thumbnailActive]}
-              >
-                <Image
-                  source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${img}` }}
-                  style={styles.thumbnailImage}
-                  contentFit="cover"
-                />
-              </Pressable>
-            ))}
+            {thumbnailsToShow.map((img: ImageType, idx: number) => {
+              return (
+                <Pressable
+                  key={img as unknown as string}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                  }}
+                  style={[styles.thumbnailWrapper]}
+                >
+                  <Image
+                    source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${img}` }}
+                    style={styles.thumbnailImage}
+                    placeholder={{
+                      blurhash: blurhashes ? blurhashes[thumbnailIndexes[idx]] : '',
+                    }}
+                    contentFit="cover"
+                  />
+                </Pressable>
+              );
+            })}
           </Box>
         )}
-
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
             <Box
@@ -131,26 +134,8 @@ export const CardItem = ({
                           <FontAwesome name="user" size={12} />
                         </Box>
                       )}
-                      {/* {flatmateGender === 'Mashkull' ? (
-                    <Box style={styles.featureItem}>
-                      <Text style={styles.text}>M</Text>
-                      <FontAwesome name="male" size={12} />
-                    </Box>
-                  ) : flatmateGender === 'Femër' ? (
-                    <Box style={styles.featureItem}>
-                      <Text style={styles.text}>F</Text>
-                      <FontAwesome name="female" size={12} />
-                    </Box>
-                  ) : (
-                    <Box style={styles.featureItem}>
-                      <Text style={styles.text}>M/F</Text>
-                      <FontAwesome name="male" size={12} />
-                      <FontAwesome name="female" size={12} />
-                    </Box>
-                  )} */}
                     </Box>
                   )}
-
                   {isExpired ? (
                     <Text style={styles.expiredText}>❌ Skaduar</Text>
                   ) : (
@@ -159,7 +144,6 @@ export const CardItem = ({
                     </Box>
                   )}
                 </Box>
-
                 {isWeb ? (
                   <Box>
                     <Text style={styles.cardTitle}>
@@ -177,11 +161,9 @@ export const CardItem = ({
                 )}
               </Box>
             </Box>
-
             <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
               {description}
             </Text>
-
             {isOwner && (
               <Box flexDirection="row" gap={8} marginTop={12}>
                 <Button
@@ -191,16 +173,6 @@ export const CardItem = ({
                 >
                   Modifiko listimin
                 </Button>
-              </Box>
-            )}
-
-            {user.verified && (
-              <Box flexDirection="row" gap={8} marginTop={12}>
-                <Pill
-                  title="Personi i verifikuar"
-                  variant="yellow"
-                  iconLeft={<FontAwesome name="check" size={12} color="#000" />}
-                />
               </Box>
             )}
           </View>

@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { View } from '../View/View';
 import { Image } from 'expo-image';
-import { Platform, Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { Text } from '../Text';
 import { Box } from '../Box';
 import { FontAwesome } from '@expo/vector-icons';
@@ -27,7 +27,6 @@ export const CardItemWebView = ({
   flatmateGender,
   rooms,
   blurhash,
-  liked,
 }: Listing) => {
   const router = useRouter();
   const [carouselIndex, setCarouselIndex] = useState(0);

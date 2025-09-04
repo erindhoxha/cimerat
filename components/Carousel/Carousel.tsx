@@ -16,6 +16,7 @@ interface ReusableCarouselProps<T> {
   style?: StyleProp<ViewStyle>;
   defaultIndex?: number;
   onProgressChange?: (index: number) => void;
+  controlledIndex?: number;
 }
 
 export function ReusableCarousel<T>({
@@ -26,10 +27,21 @@ export function ReusableCarousel<T>({
   style,
   defaultIndex,
   onProgressChange,
+  controlledIndex,
 }: ReusableCarouselProps<T>) {
   const ref = React.useRef<ICarouselInstance>(null);
   const progresSharedValue = useSharedValue<number>(0);
   const [currentIndex, setCurrentIndex] = React.useState(defaultIndex ?? 0);
+
+  React.useEffect(() => {
+    if (typeof controlledIndex === 'number' && controlledIndex !== currentIndex) {
+      setCurrentIndex(controlledIndex);
+      ref.current?.scrollTo({
+        count: controlledIndex - progresSharedValue.value,
+        animated: true,
+      });
+    }
+  }, [controlledIndex]);
 
   const carouselWidth = width ?? Dimensions.get('window').width;
   const carouselHeight = height ?? carouselWidth / 2;
