@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Platform, Pressable, StyleSheet } from 'react-native';
+import { Modal, Platform, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { FontAwesome } from '@expo/vector-icons';
@@ -7,7 +7,6 @@ import { FontAwesome } from '@expo/vector-icons';
 import { View } from '../View/View';
 import { Box } from '../Box';
 import { Text } from '../Text';
-import { Pill } from '../Pill/Pill';
 import { Button } from '../Button';
 import { ReusableCarousel } from '@/components/Carousel/Carousel';
 import { NewCarousel } from '../NewCarousel/NewCarousel';
@@ -18,7 +17,7 @@ import { ImageType, Listing } from '@/types';
 import Colors from '@/constants/Colors';
 import { BLURHASH_TRANSITION } from '@/constants/global';
 
-export const CardItem = ({
+export const MobileCardItem = ({
   city,
   neighborhood,
   images,
@@ -33,14 +32,16 @@ export const CardItem = ({
   blurhashes,
 }: Listing) => {
   const router = useRouter();
-  const [carouselIndex, setCarouselIndex] = useState(0);
   const { userId } = useAuth();
+  const [carouselIndex, setCarouselIndex] = useState(0);
 
   const isOwner = user?._id === userId;
   const isExpired = listingHasExpired(createdAt);
   const isWeb = Platform.OS === 'web';
 
   const CarouselComponent = isWeb ? NewCarousel : ReusableCarousel;
+
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const maxThumbs = 5;
   let start = 0;
@@ -81,19 +82,24 @@ export const CardItem = ({
         {images.length > 1 && (
           <Box style={styles.thumbnailRow}>
             {thumbnailsToShow.map((img: ImageType, idx: number) => {
+              console.log(carouselIndex, thumbnailIndexes[idx]);
               return (
                 <Pressable
                   key={img as unknown as string}
                   onPress={(e) => {
                     e.stopPropagation();
+                    setLightboxIndex(thumbnailIndexes[idx]); // open at clicked index
                   }}
-                  style={[styles.thumbnailWrapper]}
+                  style={styles.thumbnailWrapper}
                 >
                   <Image
                     source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${img}` }}
-                    style={styles.thumbnailImage}
+                    style={[
+                      styles.thumbnailImage,
+                      carouselIndex === thumbnailIndexes[idx] ? styles.thumbnailActive : {},
+                    ]}
                     placeholder={{
-                      blurhash: blurhashes ? blurhashes[thumbnailIndexes[idx]] : '',
+                      blurhash: blurhashes ? blurhashes[thumbnailIndexes[idx]] : blurhash || '',
                     }}
                     contentFit="cover"
                   />
@@ -178,6 +184,20 @@ export const CardItem = ({
           </View>
         </View>
       </View>
+      {Platform.OS !== 'web' && (
+        <Modal visible={lightboxIndex !== null} transparent>
+          <Pressable style={styles.lightboxWrapper} onPress={() => setLightboxIndex(null)}>
+            <Image
+              style={styles.lightboxImage}
+              contentFit="contain"
+              source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${images[lightboxIndex ?? 0]}` }}
+            />
+            <Text style={styles.imageCounter}>
+              {(lightboxIndex ?? 0) + 1} / {images.length}
+            </Text>
+          </Pressable>
+        </Modal>
+      )}
     </Pressable>
   );
 };
@@ -299,11 +319,42 @@ const styles = StyleSheet.create({
   },
   thumbnailActive: {
     borderColor: Colors.yellow,
+    borderWidth: 2,
   },
   thumbnailImage: {
     width: '100%',
     height: '100%',
     borderRadius: 6,
     backgroundColor: Colors.lightGray,
+  },
+  lightboxWrapper: {
+    position: 'fixed', // for web
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  lightboxImage: {
+    width: '90%',
+    height: '80%',
+    borderRadius: 16,
+  },
+  lightboxArrowLeft: {
+    position: 'absolute',
+    left: 20,
+    top: '50%',
+    transform: [{ translateY: -20 }],
+    padding: 12,
+  },
+  lightboxArrowRight: {
+    position: 'absolute',
+    right: 20,
+    top: '50%',
+    transform: [{ translateY: -20 }],
+    padding: 12,
   },
 });

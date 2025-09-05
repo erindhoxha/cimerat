@@ -10,7 +10,7 @@ import {
 import SelectDropdown from 'react-native-select-dropdown';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FontAwesome, FontAwesome6 } from '@expo/vector-icons';
-import { CardItem } from '@/components/CardItem/CardItem';
+import { MobileCardItem } from '@/components/CardItem/CardItem';
 import { useRouter } from 'expo-router';
 import { Box } from '@/components/Box';
 import Label from '@/components/Label/Label';
@@ -215,7 +215,7 @@ export default function TabOneScreen() {
                   : { gap: 12, paddingVertical: 8 }
               }
             >
-              {isWeb && width > 768 ? <CardItemWebView {...item} /> : <CardItem {...item} />}
+              {isWeb && width > 768 ? <CardItemWebView {...item} /> : <MobileCardItem {...item} />}
             </Box>
           )}
           contentContainerStyle={[styles.contentContainerStyle]}

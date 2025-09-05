@@ -293,21 +293,10 @@ export default function ItemDetailScreen() {
           )}
         </Box>
       </WebView>
-
       {lightboxIndex !== null &&
         createPortal(
           <Pressable onPress={() => setLightboxIndex(null)} style={styles.lightboxWrapper}>
-            <Box
-              style={{
-                position: 'relative',
-                width: '90%',
-                height: '80%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              {/* Left arrow */}
+            <Box style={styles.lightboxInner}>
               {data.images.length > 1 && (
                 <Pressable
                   onPress={(e) => {
@@ -316,11 +305,11 @@ export default function ItemDetailScreen() {
                   }}
                   style={styles.lightboxArrowLeft}
                 >
-                  <Text style={{ color: 'white', fontSize: 40 }}>{'‹'}</Text>
+                  <Text fontSize="lg" style={{ color: 'white' }}>
+                    {'‹'}
+                  </Text>
                 </Pressable>
               )}
-
-              {/* Image */}
               <ExpoImage
                 style={styles.lightboxImage}
                 contentFit="contain"
@@ -336,7 +325,9 @@ export default function ItemDetailScreen() {
                   }}
                   style={styles.lightboxArrowRight}
                 >
-                  <Text style={{ color: 'white', fontSize: 40 }}>{'›'}</Text>
+                  <Text fontSize="lg" style={{ color: 'white' }}>
+                    {'›'}
+                  </Text>
                 </Pressable>
               )}
 
@@ -394,6 +385,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 9999,
+  },
+  lightboxInner: {
+    position: 'relative',
+    width: '90%',
+    height: '80%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   lightboxImage: { width: '90%', height: '80%', borderRadius: 24, overflow: 'hidden' },
   lightboxHint: { color: 'white', marginTop: 10 },

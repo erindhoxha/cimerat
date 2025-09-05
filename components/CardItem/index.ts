@@ -1,1 +1,1 @@
-export { CardItem } from "./CardItem";
+export { MobileCardItem as CardItem } from './CardItem';

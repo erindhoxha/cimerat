@@ -1,9 +1,9 @@
-import { render } from "@testing-library/react-native";
-import { CardItem } from "./CardItem";
+import { render } from '@testing-library/react-native';
+import { MobileCardItem } from './CardItem';
 
-describe("CardItem", () => {
+describe('CardItem', () => {
   render(
-    <CardItem
+    <MobileCardItem
       title="Test Item"
       image="https://example.com/image.jpg"
       description="This is a test item description."
@@ -13,9 +13,9 @@ describe("CardItem", () => {
     />,
   );
 
-  test("renders title correctly", () => {
+  test('renders title correctly', () => {
     const { getByText } = render(
-      <CardItem
+      <MobileCardItem
         title="Test Item"
         image="https://example.com/image.jpg"
         description="This is a test item description."
@@ -24,6 +24,6 @@ describe("CardItem", () => {
         date="2023-10-01"
       />,
     );
-    getByText("Test Item");
+    getByText('Test Item');
   });
 });
