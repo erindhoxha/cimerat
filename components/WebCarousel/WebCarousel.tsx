@@ -1,8 +1,7 @@
-import * as React from 'react';
 import { View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import { Text } from '@/components/Text';
 import { Box } from '@/components/Box';
 import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
 
 interface NewCarouselProps<T> {
   data: T[];
@@ -14,7 +13,7 @@ interface NewCarouselProps<T> {
   onProgressChange?: (index: number) => void;
 }
 
-export function NewCarousel<T>({
+export function WebCarousel<T>({
   data,
   renderItem,
   height,
@@ -23,9 +22,9 @@ export function NewCarousel<T>({
   defaultIndex = 0,
   onProgressChange,
 }: NewCarouselProps<T>) {
-  const [index, setIndex] = React.useState(defaultIndex);
+  const [index, setIndex] = useState(defaultIndex);
 
-  React.useEffect(() => {
+  useEffect(() => {
     onProgressChange?.(index);
   }, [index]);
 

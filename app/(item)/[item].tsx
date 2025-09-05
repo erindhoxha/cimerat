@@ -18,7 +18,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
 import { BLURHASH_TRANSITION } from '@/constants/global';
-import { ReusableCarousel } from '@/components/Carousel/Carousel';
+import { MobileCarousel } from '@/components/MobileCarousel/MobileCarousel';
 import { formatDate, formatKosovoPhone, listingHasExpired } from '@/utils';
 import Colors from '@/constants/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -189,7 +189,7 @@ export default function ItemDetailScreen() {
             })}
           </Box>
         ) : (
-          <ReusableCarousel
+          <MobileCarousel
             style={[styles.carousel]}
             data={data.images}
             defaultIndex={typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) : 0}

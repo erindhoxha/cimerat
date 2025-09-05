@@ -8,8 +8,8 @@ import { View } from '../View/View';
 import { Box } from '../Box';
 import { Text } from '../Text';
 import { Button } from '../Button';
-import { ReusableCarousel } from '@/components/Carousel/Carousel';
-import { NewCarousel } from '../NewCarousel/NewCarousel';
+import { MobileCarousel } from '@/components/MobileCarousel/MobileCarousel';
+import { WebCarousel } from '../WebCarousel/WebCarousel';
 
 import { useAuth } from '@/context/AuthContext';
 import { formatDate, listingHasExpired } from '@/utils';
@@ -39,7 +39,7 @@ export const MobileCardItem = ({
   const isExpired = listingHasExpired(createdAt);
   const isWeb = Platform.OS === 'web';
 
-  const CarouselComponent = isWeb ? NewCarousel : ReusableCarousel;
+  const CarouselComponent = isWeb ? WebCarousel : MobileCarousel;
 
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -82,12 +82,12 @@ export const MobileCardItem = ({
         {images.length > 1 && (
           <Box style={styles.thumbnailRow}>
             {thumbnailsToShow.map((img: ImageType, idx: number) => {
-              console.log(carouselIndex, thumbnailIndexes[idx]);
               return (
                 <Pressable
                   key={img as unknown as string}
                   onPress={(e) => {
                     e.stopPropagation();
+                    setCarouselIndex(thumbnailIndexes[idx]);
                     setLightboxIndex(thumbnailIndexes[idx]); // open at clicked index
                   }}
                   style={styles.thumbnailWrapper}
@@ -309,12 +309,13 @@ const styles = StyleSheet.create({
   thumbnailWrapper: {
     flex: 1, // take equal space
     borderRadius: 8,
+    maxHeight: 85,
     overflow: 'hidden',
     borderWidth: 2,
     borderColor: 'transparent',
     aspectRatio: 1.5, // or 1.2, adjust as you like
     minWidth: 0, // allow shrinking
-    height: 70, // or adjust as needed
+    height: 40, // or adjust as needed
     maxWidth: '100%', // optional, to avoid too large thumbs
   },
   thumbnailActive: {
@@ -324,7 +325,7 @@ const styles = StyleSheet.create({
   thumbnailImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 6,
+    borderRadius: 4,
     backgroundColor: Colors.lightGray,
   },
   lightboxWrapper: {

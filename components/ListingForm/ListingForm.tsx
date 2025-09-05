@@ -51,6 +51,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
     handleSubmit,
     watch,
     setValue,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(formSchema),
@@ -96,15 +97,11 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
       setImages(newImages);
       setValue('images', newImages);
       setImageError(null);
+      clearErrors('images');
     }
   };
 
   const selectedCity = watch('city');
-
-  const onFormError = () => {
-    if (images.length === 0) setImageError('Duhet të ngarkoni së paku një foto');
-    else setImageError(null);
-  };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -264,7 +261,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
           <Button
             variant="primary"
             style={styles.submitButton}
-            onPress={handleSubmit((data) => onSubmit(data, images), onFormError)}
+            onPress={handleSubmit((data) => onSubmit(data, images))}
           >
             {isSubmitting ? (
               <Box flexDirection="row" gap={4} alignItems="center">

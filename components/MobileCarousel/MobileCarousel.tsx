@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dimensions, View, StyleProp, ViewStyle, StyleSheet, Pressable, Text } from 'react-native';
 import { useSharedValue, configureReanimatedLogger } from 'react-native-reanimated';
 import Carousel, { ICarouselInstance, Pagination } from 'react-native-reanimated-carousel';
@@ -19,7 +19,7 @@ interface ReusableCarouselProps<T> {
   controlledIndex?: number;
 }
 
-export function ReusableCarousel<T>({
+export function MobileCarousel<T>({
   data,
   renderItem,
   height,
@@ -29,11 +29,11 @@ export function ReusableCarousel<T>({
   onProgressChange,
   controlledIndex,
 }: ReusableCarouselProps<T>) {
-  const ref = React.useRef<ICarouselInstance>(null);
+  const ref = useRef<ICarouselInstance>(null);
   const progresSharedValue = useSharedValue<number>(0);
-  const [currentIndex, setCurrentIndex] = React.useState(defaultIndex ?? 0);
+  const [currentIndex, setCurrentIndex] = useState(defaultIndex ?? 0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof controlledIndex === 'number' && controlledIndex !== currentIndex) {
       setCurrentIndex(controlledIndex);
       ref.current?.scrollTo({

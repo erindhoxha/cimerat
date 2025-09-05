@@ -239,17 +239,7 @@ export default function TabOneScreen() {
                 <Loading />
               </Box>
             ) : (
-              <Box
-                marginTop={0}
-                width="auto"
-                style={{
-                  width: '100%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  paddingTop: 24,
-                  gap: 12,
-                }}
-              >
+              <Box marginTop={0} width="auto" style={styles.emptyWrapper}>
                 <FontAwesome name="frown-o" size={32} color={Colors.yellow} />
                 <Text
                   style={{
@@ -300,13 +290,7 @@ export default function TabOneScreen() {
                       </Box>
                     )}
                     renderSelectedItem={(item, unSelect) => (
-                      <TouchableOpacity
-                        onPress={unSelect}
-                        style={{
-                          marginTop: 4,
-                          marginRight: 4,
-                        }}
-                      >
+                      <TouchableOpacity onPress={unSelect} style={styles.pillStyle}>
                         <Pill title={item.label} iconLeft={<FontAwesome name="times" size={12} color="#000" />} />
                       </TouchableOpacity>
                     )}
@@ -421,12 +405,7 @@ export default function TabOneScreen() {
                           }}
                           defaultValue={selectedPriceTo}
                           renderButton={(_, isOpened) => (
-                            <Input
-                              style={{
-                                outlineColor: Colors.yellow,
-                                borderRadius: 12,
-                              }}
-                            >
+                            <Input style={styles.inputStyle}>
                               <SelectButton
                                 title={(selectedPriceTo && 'Deri në ' + selectedPriceTo + '€') || ''}
                                 isOpened={isOpened}
@@ -578,5 +557,16 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     textDecorationLine: 'underline',
+  },
+  emptyWrapper: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 24,
+    gap: 12,
+  },
+  inputStyle: {
+    outlineColor: Colors.yellow,
+    borderRadius: 12,
   },
 });
