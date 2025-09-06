@@ -88,7 +88,7 @@ export const MobileCardItem = ({
                   onPress={(e) => {
                     e.stopPropagation();
                     setCarouselIndex(thumbnailIndexes[idx]);
-                    setLightboxIndex(thumbnailIndexes[idx]); // open at clicked index
+                    setLightboxIndex(thumbnailIndexes[idx]);
                   }}
                   style={styles.thumbnailWrapper}
                 >
@@ -142,13 +142,9 @@ export const MobileCardItem = ({
                       )}
                     </Box>
                   )}
-                  {isExpired ? (
-                    <Text style={styles.expiredText}>❌ Skaduar</Text>
-                  ) : (
-                    <Box flexDirection="column" alignItems="flex-end">
-                      {createdAt && <Text>{formatDate(createdAt)}</Text>}
-                    </Box>
-                  )}
+                  <Box flexDirection="column" alignItems="flex-end">
+                    {createdAt && <Text>{formatDate(createdAt)}</Text>}
+                  </Box>
                 </Box>
                 {isWeb ? (
                   <Box>
@@ -170,6 +166,7 @@ export const MobileCardItem = ({
             <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
               {description}
             </Text>
+            {isExpired && <Text style={styles.expiredText}>❌ Skaduar</Text>}
             {isOwner && (
               <Box flexDirection="row" gap={8} marginTop={12}>
                 <Button
@@ -184,20 +181,18 @@ export const MobileCardItem = ({
           </View>
         </View>
       </View>
-      {Platform.OS !== 'web' && (
-        <Modal visible={lightboxIndex !== null} transparent>
-          <Pressable style={styles.lightboxWrapper} onPress={() => setLightboxIndex(null)}>
-            <Image
-              style={styles.lightboxImage}
-              contentFit="contain"
-              source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${images[lightboxIndex ?? 0]}` }}
-            />
-            <Text style={styles.imageCounter}>
-              {(lightboxIndex ?? 0) + 1} / {images.length}
-            </Text>
-          </Pressable>
-        </Modal>
-      )}
+      <Modal visible={lightboxIndex !== null} transparent>
+        <Pressable style={styles.lightboxWrapper} onPress={() => setLightboxIndex(null)}>
+          <Image
+            style={styles.lightboxImage}
+            contentFit="contain"
+            source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${images[lightboxIndex ?? 0]}` }}
+          />
+          <Text style={styles.imageCounter}>
+            {(lightboxIndex ?? 0) + 1} / {images.length}
+          </Text>
+        </Pressable>
+      </Modal>
     </Pressable>
   );
 };

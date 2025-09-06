@@ -14,7 +14,7 @@ import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '../Button';
 
-export const CardItemWebView = ({
+export const WebCardItem = ({
   city,
   neighborhood,
   images,
@@ -119,10 +119,6 @@ export const CardItemWebView = ({
                 )}
               </Box>
             </Box>
-
-            <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
-              {description}
-            </Text>
 
             {user.verified && (
               <Box style={styles.verifiedWrapper}>

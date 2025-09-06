@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
 import { WebView } from '@/components/WebView/WebView';
-import { CardItemWebView } from '@/components/CardItem/CardItemWebView';
+import { WebCardItem } from '@/components/CardItem/WebCardItem';
 
 export default function Liked() {
   const { token } = useAuth();
@@ -84,7 +84,7 @@ export default function Liked() {
             {!!data?.length ? (
               data.map((item) =>
                 isWeb && isDesktop ? (
-                  <CardItemWebView {...item} key={item._id} />
+                  <WebCardItem {...item} key={item._id} />
                 ) : (
                   <HorizontalCardItem item={item} router={router} key={item._id} liked={true} />
                 ),
