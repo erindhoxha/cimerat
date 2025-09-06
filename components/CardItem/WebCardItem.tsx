@@ -119,16 +119,6 @@ export const WebCardItem = ({
                 )}
               </Box>
             </Box>
-
-            {user.verified && (
-              <Box style={styles.verifiedWrapper}>
-                <Pill
-                  title="Personi i verifikuar"
-                  variant="yellow"
-                  iconLeft={<FontAwesome name="check" size={12} color="#000" />}
-                />
-              </Box>
-            )}
           </View>
         </View>
       </View>
@@ -250,10 +240,5 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
     gap: 12,
-  },
-  verifiedWrapper: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 12,
   },
 });

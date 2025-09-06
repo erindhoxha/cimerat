@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, Platform, Pressable, StyleSheet } from 'react-native';
+import { Modal, Platform, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { FontAwesome } from '@expo/vector-icons';
@@ -183,14 +183,52 @@ export const MobileCardItem = ({
       </View>
       <Modal visible={lightboxIndex !== null} transparent>
         <Pressable style={styles.lightboxWrapper} onPress={() => setLightboxIndex(null)}>
-          <Image
-            style={styles.lightboxImage}
-            contentFit="contain"
-            source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${images[lightboxIndex ?? 0]}` }}
-          />
-          <Text style={styles.imageCounter}>
-            {(lightboxIndex ?? 0) + 1} / {images.length}
-          </Text>
+          <Box
+            style={{
+              position: 'relative',
+              width: '90%',
+              height: '80%',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            {images.length > 1 && (
+              <TouchableOpacity
+                onPress={(e) => {
+                  e.stopPropagation();
+                  setLightboxIndex(lightboxIndex === 0 ? images.length - 1 : (lightboxIndex ?? 0) - 1);
+                }}
+                style={styles.lightboxArrowLeft}
+              >
+                <Text style={{ color: 'white', fontSize: 36, lineHeight: 36 }}>{'‹'}</Text>
+              </TouchableOpacity>
+            )}
+
+            <Image
+              style={styles.lightboxImage}
+              contentFit="contain"
+              source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${images[lightboxIndex ?? 0]}` }}
+            />
+
+            {/* Right arrow */}
+            {images.length > 1 && (
+              <TouchableOpacity
+                onPress={(e) => {
+                  e.stopPropagation();
+                  setLightboxIndex(lightboxIndex === images.length - 1 ? 0 : (lightboxIndex ?? 0) + 1);
+                }}
+                style={styles.lightboxArrowRight}
+              >
+                <Text style={{ color: 'white', fontSize: 36, lineHeight: 36 }}>{'›'}</Text>
+              </TouchableOpacity>
+            )}
+
+            {/* Image counter */}
+            <Text style={styles.imageCounter}>
+              {(lightboxIndex ?? 0) + 1} / {images.length}
+            </Text>
+          </Box>
+          <Text style={styles.lightboxHint}>(prek kudo për të mbyllur)</Text>
         </Pressable>
       </Modal>
     </Pressable>
@@ -201,6 +239,11 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     color: Colors.textFade,
+  },
+  lightboxHint: {
+    color: 'white',
+    marginTop: 12,
+    fontSize: 14,
   },
   imageCounter: {
     position: 'absolute',
@@ -344,13 +387,24 @@ const styles = StyleSheet.create({
     left: 20,
     top: '50%',
     transform: [{ translateY: -20 }],
+    zIndex: 200,
     padding: 12,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderRadius: 24,
   },
   lightboxArrowRight: {
     position: 'absolute',
     right: 20,
     top: '50%',
     transform: [{ translateY: -20 }],
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderRadius: 24,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 12,
   },
 });

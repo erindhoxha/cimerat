@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Dimensions, View, StyleProp, ViewStyle, StyleSheet, Pressable, Text } from 'react-native';
+import { Dimensions, View, StyleProp, ViewStyle, StyleSheet, Pressable, Text, TouchableOpacity } from 'react-native';
 import { useSharedValue, configureReanimatedLogger } from 'react-native-reanimated';
 import Carousel, { ICarouselInstance, Pagination } from 'react-native-reanimated-carousel';
 
@@ -79,12 +79,12 @@ export function MobileCarousel<T>({
     <View style={{ touchAction: 'pan-y', position: 'relative' }}>
       {isCarousel && (
         <>
-          <Pressable style={[styles.arrow, styles.arrowLeft]} onPress={goLeft} hitSlop={10}>
+          <TouchableOpacity style={[styles.arrow, styles.arrowLeft]} onPress={goLeft} hitSlop={10}>
             <Text style={styles.arrowText}>{'‹'}</Text>
-          </Pressable>
-          <Pressable style={[styles.arrow, styles.arrowRight]} onPress={goRight} hitSlop={10}>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.arrow, styles.arrowRight]} onPress={goRight} hitSlop={10}>
             <Text style={styles.arrowText}>{'›'}</Text>
-          </Pressable>
+          </TouchableOpacity>
         </>
       )}
       <Carousel
