@@ -135,6 +135,9 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     padding: 12,
     marginTop: -24,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   arrowLeft: {
     left: 10,
@@ -144,9 +147,8 @@ const styles = StyleSheet.create({
   },
   arrowText: {
     color: '#fff',
-    fontSize: 32,
-    fontWeight: 'bold',
     textAlign: 'center',
-    lineHeight: 32,
+    fontSize: 36,
+    lineHeight: 36,
   },
 });

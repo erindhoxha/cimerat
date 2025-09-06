@@ -28,6 +28,7 @@ import Toast from 'react-native-toast-message';
 import { WebView } from '@/components/WebView/WebView';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { WebCarousel } from '@/components/WebCarousel/WebCarousel';
 
 export default function ItemDetailScreen() {
   const { item, imageIndex } = useLocalSearchParams();
@@ -144,7 +145,20 @@ export default function ItemDetailScreen() {
   return data ? (
     <ScrollView style={styles.scrollViewContainer} contentContainerStyle={styles.contentContainer}>
       <WebView noPadding>
-        {isWeb && !isMobile ? (
+        {isWeb && isMobile && data.images.length > 1 ? (
+          <WebCarousel
+            data={data.images}
+            renderItem={({ item, index }) => (
+              <ExpoImage
+                style={styles.cardImage}
+                source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${item}` }}
+                placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
+                contentFit="cover"
+                transition={BLURHASH_TRANSITION}
+              />
+            )}
+          />
+        ) : isWeb && !isMobile ? (
           <Box style={[styles.webGallery, isSingle && styles.webGallerySingle]}>
             {data.images?.map((img: string, index: number) => {
               const total = data.images.length;

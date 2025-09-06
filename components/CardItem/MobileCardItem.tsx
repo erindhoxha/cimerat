@@ -353,7 +353,6 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     aspectRatio: 1.5, // or 1.2, adjust as you like
     minWidth: 0, // allow shrinking
-    height: 40, // or adjust as needed
     maxWidth: '100%', // optional, to avoid too large thumbs
   },
   thumbnailActive: {
