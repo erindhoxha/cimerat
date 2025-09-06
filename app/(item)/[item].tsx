@@ -3,10 +3,12 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ActivityIndicator,
   Linking,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
   useWindowDimensions,
   ViewStyle,
 } from 'react-native';
@@ -293,7 +295,58 @@ export default function ItemDetailScreen() {
           )}
         </Box>
       </WebView>
+      {isMobile && (
+        <Modal visible={lightboxIndex !== null} transparent animationType="fade">
+          <Pressable style={styles.lightboxWrapper} onPress={() => setLightboxIndex(null)}>
+            <Box
+              style={{
+                position: 'relative',
+                width: '90%',
+                height: '80%',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {data.images.length > 1 && (
+                <TouchableOpacity
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setLightboxIndex(lightboxIndex === 0 ? data.images.length - 1 : (lightboxIndex ?? 0) - 1);
+                  }}
+                  style={styles.lightboxArrowLeft}
+                >
+                  <Text style={{ color: 'white', fontSize: 36, lineHeight: 36 }}>{'‹'}</Text>
+                </TouchableOpacity>
+              )}
+
+              <ExpoImage
+                style={styles.lightboxImage}
+                contentFit="contain"
+                source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${data.images[lightboxIndex ?? 0]}` }}
+              />
+
+              {data.images.length > 1 && (
+                <TouchableOpacity
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setLightboxIndex(lightboxIndex === data.images.length - 1 ? 0 : (lightboxIndex ?? 0) + 1);
+                  }}
+                  style={styles.lightboxArrowRight}
+                >
+                  <Text style={{ color: 'white', fontSize: 36, lineHeight: 36 }}>{'›'}</Text>
+                </TouchableOpacity>
+              )}
+
+              <Text style={styles.imageCounter}>
+                {(lightboxIndex ?? 0) + 1} / {data.images.length}
+              </Text>
+            </Box>
+            <Text style={styles.lightboxHint}>(prek kudo për të mbyllur)</Text>
+          </Pressable>
+        </Modal>
+      )}
       {lightboxIndex !== null &&
+        !isMobile &&
         createPortal(
           <Pressable onPress={() => setLightboxIndex(null)} style={styles.lightboxWrapper}>
             <Box style={styles.lightboxInner}>
@@ -305,9 +358,7 @@ export default function ItemDetailScreen() {
                   }}
                   style={styles.lightboxArrowLeft}
                 >
-                  <Text fontSize="lg" style={{ color: 'white' }}>
-                    {'‹'}
-                  </Text>
+                  <Text style={{ color: 'white', fontSize: 42, lineHeight: 42 }}>{'‹'}</Text>
                 </Pressable>
               )}
               <ExpoImage
@@ -325,9 +376,7 @@ export default function ItemDetailScreen() {
                   }}
                   style={styles.lightboxArrowRight}
                 >
-                  <Text fontSize="lg" style={{ color: 'white' }}>
-                    {'›'}
-                  </Text>
+                  <Text style={{ color: 'white', fontSize: 42, lineHeight: 42 }}>{'›'}</Text>
                 </Pressable>
               )}
 

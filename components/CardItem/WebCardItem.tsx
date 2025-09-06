@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   cardBox: {
-    width: 180,
+    width: 140,
     height: 'auto',
     backgroundColor: '#0553',
   },
