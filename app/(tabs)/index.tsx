@@ -335,7 +335,10 @@ export default function TabOneScreen() {
                     valueField="value"
                     disable={selectedCities.length === 0}
                     placeholder="Zgjedh Lagjet"
-                    placeholderStyle={dropdownStyles.placeholderStyle}
+                    placeholderStyle={[
+                      dropdownStyles.placeholderStyle,
+                      selectedCities.length === 0 && dropdownStyles.placeholderGray,
+                    ]}
                     value={selectedNeighborhoods}
                     onChange={setSelectedNeighborhoods}
                     dropdownPosition="bottom"

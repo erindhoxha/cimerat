@@ -55,7 +55,7 @@ export const HorizontalCardItem = ({
           </Text>
         </Box>
         {isExpired ? (
-          <Text style={styles.expiredText}>❌ Skaduar</Text>
+          <Text style={styles.expiredText}>Listimi është skaduar</Text>
         ) : (
           <Text>
             {createdAt ? formatDate(createdAt) : ''}, {price}€ për muaj

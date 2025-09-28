@@ -5,8 +5,10 @@ export const styles = StyleSheet.create({
   asterisk: {
     color: 'red',
   },
-  placeholderStyle: {
+  placeholderGray: {
     color: Colors.gray,
+  },
+  placeholderStyle: {
     fontSize: 14,
     height: '100%',
     width: '100%',

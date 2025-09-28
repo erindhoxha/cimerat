@@ -99,7 +99,7 @@ export const WebCardItem = ({
                     </Box>
                   </Box>
                   {isExpired ? (
-                    <Text style={styles.expiredText}>❌ Skaduar</Text>
+                    <Text style={styles.expiredText}>Listimi është skaduar</Text>
                   ) : (
                     <Text style={styles.cardPrice}>{price}€ për muaj</Text>
                   )}

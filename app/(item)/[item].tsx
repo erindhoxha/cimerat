@@ -128,8 +128,10 @@ export default function ItemDetailScreen() {
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    if (isWeb) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
   }, [lightboxIndex, data?.images.length]);
 
   if (error) return <Text>Error: {error.message}</Text>;
@@ -205,21 +207,23 @@ export default function ItemDetailScreen() {
             })}
           </Box>
         ) : (
-          <MobileCarousel
-            style={[styles.carousel]}
-            data={data.images}
-            defaultIndex={typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) : 0}
-            renderItem={({ item, index }) => (
-              <ExpoImage
-                key={index}
-                style={styles.cardImage}
-                source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${item}` }}
-                placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
-                contentFit="cover"
-                transition={BLURHASH_TRANSITION}
-              />
-            )}
-          />
+          <Pressable onPress={() => setLightboxIndex(0)}>
+            <MobileCarousel
+              style={[styles.carousel]}
+              data={data.images}
+              defaultIndex={typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) : 0}
+              renderItem={({ item, index }) => (
+                <ExpoImage
+                  key={index}
+                  style={styles.cardImage}
+                  source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${item}` }}
+                  placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
+                  contentFit="cover"
+                  transition={BLURHASH_TRANSITION}
+                />
+              )}
+            />
+          </Pressable>
         )}
 
         <Box flex={1} paddingHorizontal={20} gap={12}>
@@ -251,7 +255,7 @@ export default function ItemDetailScreen() {
             </Box>
 
             {isExpired ? (
-              <Text style={styles.expiredText}>❌ Skaduar</Text>
+              <Text style={styles.expiredText}>Listimi është skaduar</Text>
             ) : (
               <Text>
                 <Text fontWeight="bold">Çmimi:</Text> {data.price}€ për muaj
@@ -438,8 +442,17 @@ const styles = StyleSheet.create({
   expiredText: { fontSize: 14, fontWeight: 'bold', color: 'red' },
   link: { color: Colors.blue, textDecorationLine: 'underline' },
 
+  lightboxInner: {
+    position: 'relative',
+    width: '90%',
+    height: '80%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  lightboxHint: { color: 'white', marginTop: 10 },
   lightboxWrapper: {
-    position: 'fixed',
+    position: 'fixed', // for web
     top: 0,
     left: 0,
     width: '100%',
@@ -449,31 +462,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 9999,
   },
-  lightboxInner: {
-    position: 'relative',
+  lightboxImage: {
     width: '90%',
     height: '80%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  lightboxImage: { width: '90%', height: '80%', borderRadius: 24, overflow: 'hidden' },
-  lightboxHint: { color: 'white', marginTop: 10 },
-  lightboxArrowRight: {
-    position: 'absolute',
-    right: 10,
-    top: '50%',
-    transform: [{ translateY: -24 }],
-    zIndex: 2,
-    padding: 16,
+    borderRadius: 16,
   },
   lightboxArrowLeft: {
     position: 'absolute',
-    left: 10,
+    left: 28,
     top: '50%',
-    transform: [{ translateY: -24 }],
-    zIndex: 2,
-    padding: 16,
+    transform: [{ translateY: -20 }],
+    zIndex: 200,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderRadius: 150,
+  },
+  lightboxArrowRight: {
+    position: 'absolute',
+    right: 28,
+    top: '50%',
+    transform: [{ translateY: -20 }],
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderRadius: 150,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
   },
   imageCounter: {
     position: 'absolute',

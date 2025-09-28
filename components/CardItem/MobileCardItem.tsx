@@ -123,27 +123,30 @@ export const MobileCardItem = ({
                 justifyContent="flex-start"
                 alignItems="flex-start"
                 style={isWeb && styles.webColumnBox}
-                gap={12}
+                gap={8}
               >
-                <Box flexDirection="row" justifyContent="space-between" alignItems="center" width="100%">
-                  {((rooms && rooms !== undefined) || (currentFlatmates && currentFlatmates !== undefined)) && (
-                    <Box style={styles.featuresBox}>
-                      {rooms && rooms !== 'undefined' && (
-                        <Box style={styles.featureItem}>
-                          <Text style={styles.text}>{rooms}</Text>
-                          <FontAwesome name="bed" size={12} />
-                        </Box>
-                      )}
-                      {currentFlatmates && currentFlatmates !== 'undefined' && (
-                        <Box style={styles.featureItem}>
-                          <Text style={styles.text}>{currentFlatmates}</Text>
-                          <FontAwesome name="user" size={12} />
-                        </Box>
-                      )}
-                    </Box>
-                  )}
-                  <Box flexDirection="column" alignItems="flex-end">
+                <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start" width="100%">
+                  <Box marginBottom={8}>
+                    {((rooms && rooms !== undefined) || (currentFlatmates && currentFlatmates !== undefined)) && (
+                      <Box style={styles.featuresBox}>
+                        {rooms && rooms !== 'undefined' && (
+                          <Box style={styles.featureItem}>
+                            <Text style={styles.text}>{rooms}</Text>
+                            <FontAwesome name="bed" size={12} />
+                          </Box>
+                        )}
+                        {currentFlatmates && currentFlatmates !== 'undefined' && (
+                          <Box style={styles.featureItem}>
+                            <Text style={styles.text}>{currentFlatmates}</Text>
+                            <FontAwesome name="user" size={12} />
+                          </Box>
+                        )}
+                      </Box>
+                    )}
+                  </Box>
+                  <Box flexDirection="row" alignItems="flex-end" justifyContent="space-between" width="100%">
                     {createdAt && <Text>{formatDate(createdAt)}</Text>}
+                    <Text style={styles.cardPrice}>{price}€ për muaj</Text>
                   </Box>
                 </Box>
                 {isWeb ? (
@@ -158,7 +161,6 @@ export const MobileCardItem = ({
                     <Text style={styles.cardTitle}>
                       {city}, {neighborhood}
                     </Text>
-                    <Text style={styles.cardPrice}>{price}€ për muaj</Text>
                   </Box>
                 )}
               </Box>
@@ -166,13 +168,15 @@ export const MobileCardItem = ({
             <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
               {description}
             </Text>
-            {isExpired && <Text style={styles.expiredText}>❌ Skaduar</Text>}
+            {isExpired && <Text style={styles.expiredText}>Listimi është skaduar</Text>}
             {isOwner && (
               <Box flexDirection="row" gap={8} marginTop={12}>
                 <Button
                   disabled={isExpired}
                   variant={isExpired ? 'secondary' : 'primary'}
-                  onPress={() => router.push(`/edit/${_id}`)}
+                  onPress={() => {
+                    if (!isExpired) router.push(`/edit/${_id}`);
+                  }}
                 >
                   Modifiko listimin
                 </Button>
@@ -294,7 +298,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: 'red',
-    marginTop: 4,
+    marginTop: 8,
   },
   cardSubtitle: {
     fontSize: 14,
@@ -383,27 +387,29 @@ const styles = StyleSheet.create({
   },
   lightboxArrowLeft: {
     position: 'absolute',
-    left: 20,
+    left: 28,
     top: '50%',
     transform: [{ translateY: -20 }],
     zIndex: 200,
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.7)',
-    borderRadius: 24,
+    borderRadius: 150,
   },
   lightboxArrowRight: {
     position: 'absolute',
-    right: 20,
+    right: 28,
     top: '50%',
     transform: [{ translateY: -20 }],
     backgroundColor: 'rgba(0,0,0,0.7)',
-    borderRadius: 24,
+    borderRadius: 150,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
   },
 });

@@ -47,7 +47,7 @@ export default function TabLayout() {
           <Tabs.Screen
             name="your-listings"
             options={{
-              title: 'Krijo & listimet',
+              title: 'Listimet e mia',
               tabBarIcon: ({ color }) => <FontAwesome name="plus-circle" size={24} color={color} />,
               tabBarActiveTintColor: Colors.tint,
               tabBarInactiveTintColor: Colors.darkYellow,

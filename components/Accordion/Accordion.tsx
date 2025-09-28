@@ -36,7 +36,7 @@ export function AccordionView({
 const styles = StyleSheet.create({
   accordionHeader: {
     paddingVertical: 16,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     backgroundColor: Colors.white,
     borderWidth: 1,
     borderColor: Colors.gray,
@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontWeight: '400',
+    fontSize: 14,
   },
   accordionContent: {
     gap: 12,

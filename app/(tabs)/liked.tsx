@@ -14,7 +14,7 @@ import { WebView } from '@/components/WebView/WebView';
 import { WebCardItem } from '@/components/CardItem/WebCardItem';
 
 export default function Liked() {
-  const { token } = useAuth();
+  const { token = '' } = useAuth();
   const router = useRouter();
   const isLoggedIn = !!token;
 
