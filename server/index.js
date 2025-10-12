@@ -51,3 +51,7 @@ app.listen(port, () => {
 });
 
 app.use('/uploads', express.static('uploads'));
+
+app.get('/health', (req, res) => {
+  res.send('Server is healthy');
+});
