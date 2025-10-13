@@ -1,4 +1,4 @@
-import { Dimensions, Platform, RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import Colors from '@/constants/Colors';
 import { Link, useRouter } from 'expo-router';
 import { HorizontalCardItem } from '@/components/HorizontalCardItem/HorizontalCardItem';
@@ -11,7 +11,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
 import { WebView } from '@/components/WebView/WebView';
-import { WebCardItem } from '@/components/CardItem/WebCardItem';
 
 export default function Liked() {
   const { token = '' } = useAuth();
@@ -41,13 +40,9 @@ export default function Liked() {
     return <Text>Error: {error.message}</Text>;
   }
 
-  const isWeb = Platform.OS === 'web';
-  const { width } = Dimensions.get('window');
-  const isDesktop = width > 768;
-
   return (
     <ScrollView
-      style={[styles.container, !isWeb && { backgroundColor: 'white' }]}
+      style={[styles.container, { backgroundColor: 'white' }]}
       contentContainerStyle={styles.contentContainer}
       refreshControl={<RefreshControl refreshing={isRefetching && isLoading} onRefresh={() => listings.refetch()} />}
     >
@@ -82,13 +77,7 @@ export default function Liked() {
         {isLoggedIn && !isLoading && (
           <Box marginTop={24} gap={12}>
             {!!data?.length ? (
-              data.map((item) =>
-                isWeb && isDesktop ? (
-                  <WebCardItem {...item} key={item._id} />
-                ) : (
-                  <HorizontalCardItem item={item} router={router} key={item._id} liked={true} />
-                ),
-              )
+              data.map((item) => <HorizontalCardItem item={item} router={router} key={item._id} liked={true} />)
             ) : (
               <Box flexDirection="column">
                 <Text style={styles.emptyText}>Nuk keni asnjë listim të ruajtur.</Text>

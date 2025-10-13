@@ -2,28 +2,12 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Tabs } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
-import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Box } from '@/components/Box';
 
 export default function TabLayout() {
-  const isWeb = Platform.OS === 'web';
   return (
-    <Box
-      flex={1}
-      backgroundColor="white"
-      style={
-        isWeb
-          ? {
-              maxWidth: 1028,
-              width: '100%',
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              display: 'flex',
-              justifyContent: 'space-between',
-            }
-          : undefined
-      }
-    >
+    <Box flex={1} backgroundColor="white">
       <GestureHandlerRootView style={[styles.container]}>
         <Tabs
           initialRouteName="index"

@@ -1,16 +1,7 @@
-import {
-  FlatList,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  useWindowDimensions,
-  ViewStyle,
-} from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesome, FontAwesome6 } from '@expo/vector-icons';
-import { MobileCardItem } from '@/components/CardItem/MobileCardItem';
 import { useRouter } from 'expo-router';
 import { Box } from '@/components/Box';
 import Label from '@/components/Label/Label';
@@ -33,8 +24,9 @@ import { WebCardItem } from '@/components/CardItem/WebCardItem';
 import { AccordionView } from '@/components/Accordion';
 import { numriIDhomave } from '@/constants/NumberOfRooms';
 import { cimerat } from '@/constants/NumberOfCimera';
+import { MobileCardItem } from '@/components/CardItem/MobileCardItem';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 5;
 
 interface SelectButtonProps {
   title: string | null;
@@ -180,44 +172,19 @@ export default function TabOneScreen() {
     selectedNeighborhoods.length > 0;
 
   const { width } = useWindowDimensions();
-  const isWeb = Platform.OS === 'web';
-
-  const numColumns = useMemo(() => {
-    if (!isWeb) return 1;
-    if (width >= 1200) return 1;
-    if (width >= 800) return 1;
-    return 1;
-  }, [width, isWeb]);
-
-  const Component = isWeb ? ScrollView : View;
 
   return (
-    <Component style={[styles.container]}>
+    <View style={[styles.container]}>
       <WebView noPadding>
         <FlatList
+          initialNumToRender={10}
+          windowSize={5}
+          removeClippedSubviews={true}
           scrollEnabled
           data={listings}
           progressViewOffset={-5}
-          numColumns={numColumns}
-          key={numColumns}
-          renderItem={({ item }) => (
-            <Box
-              style={
-                isWeb && numColumns > 1
-                  ? {
-                      flex: 1,
-                      maxWidth: `${100 / numColumns}%`,
-                      flexBasis: `${100 / numColumns}%`,
-                      boxSizing: 'border-box',
-                    }
-                  : isWeb
-                  ? { width: '100%', paddingVertical: 8 }
-                  : { gap: 12, paddingVertical: 8 }
-              }
-            >
-              {isWeb && width > 768 ? <WebCardItem {...item} /> : <MobileCardItem {...item} />}
-            </Box>
-          )}
+          numColumns={1}
+          renderItem={({ item }) => <Box style={{ gap: 12, paddingVertical: 8 }}>{<MobileCardItem {...item} />}</Box>}
           contentContainerStyle={[styles.contentContainerStyle]}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) fetchNextPage();
@@ -225,7 +192,6 @@ export default function TabOneScreen() {
           onEndReachedThreshold={0.5}
           refreshing={isLoading}
           onRefresh={refetch}
-          columnWrapperStyle={isWeb && numColumns > 1 && { gap: 12 }}
           ListFooterComponent={
             isFetchingNextPage ? (
               <Box marginVertical={16}>
@@ -263,14 +229,6 @@ export default function TabOneScreen() {
                   <Label>Qyteti</Label>
                   <MultiSelect
                     style={dropdownStyles.multiSelectStyle}
-                    containerStyle={
-                      isWeb
-                        ? ({
-                            maxHeight: 300,
-                            overflow: 'auto',
-                          } as unknown as ViewStyle)
-                        : undefined
-                    }
                     data={cities.map((c) => ({ label: c, value: c }))}
                     labelField="label"
                     valueField="value"
@@ -310,14 +268,6 @@ export default function TabOneScreen() {
                       dropdownStyles.multiSelectStyle,
                       selectedCities.length === 0 && dropdownStyles.disabledMultiSelectStyle,
                     ]}
-                    containerStyle={
-                      isWeb
-                        ? ({
-                            maxHeight: 300,
-                            overflow: 'auto',
-                          } as unknown as ViewStyle)
-                        : undefined
-                    }
                     showsVerticalScrollIndicator
                     data={
                       selectedCities.length > 0
@@ -535,7 +485,7 @@ export default function TabOneScreen() {
           )}
         />
       </WebView>
-    </Component>
+    </View>
   );
 }
 

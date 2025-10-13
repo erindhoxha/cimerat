@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, ActivityIndicator, Platform, ScrollView } from 'react-native';
+import { StyleSheet, TextInput, ActivityIndicator, ScrollView } from 'react-native';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
@@ -53,16 +53,12 @@ export default function LoginScreen() {
     await loginMutation({ username: data.username, password: data.password });
   };
 
-  const isWeb = Platform.OS === 'web';
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <WebView>
-        {!isWeb && (
-          <Box alignItems="center" marginBottom={16}>
-            <Box style={styles.dragLine} />
-          </Box>
-        )}
+        <Box alignItems="center" marginBottom={16}>
+          <Box style={styles.dragLine} />
+        </Box>
         <Box style={styles.header}>
           <Text fontSize="xl" fontWeight="bold">
             Kyçu

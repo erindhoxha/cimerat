@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 import { TextInput } from 'react-native-gesture-handler/lib/typescript/components/GestureComponents';
-import { ActivityIndicator, Platform, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { WebView } from '@/components/WebView/WebView';
 
 export default function RegisterScreen() {
@@ -57,16 +57,12 @@ export default function RegisterScreen() {
     await registerMutation({ username: data.username, password: data.password });
   };
 
-  const isWeb = Platform.OS === 'web';
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <WebView>
-        {!isWeb && (
-          <Box alignItems="center" marginBottom={16}>
-            <Box style={styles.dragLine} />
-          </Box>
-        )}
+        <Box alignItems="center" marginBottom={16}>
+          <Box style={styles.dragLine} />
+        </Box>
         <Box marginBottom={12}>
           <Text fontSize="xl" fontWeight="bold">
             Regjistrohu

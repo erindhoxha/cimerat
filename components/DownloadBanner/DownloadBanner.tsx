@@ -1,36 +1,14 @@
-import { Platform, TouchableOpacity, Linking, StyleSheet, useWindowDimensions } from 'react-native';
+import { TouchableOpacity, Linking, StyleSheet, useWindowDimensions } from 'react-native';
 import { Box } from '@/components/Box';
 import { Text } from '@/components/Text';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Colors from '@/constants/Colors';
-import { useState, useEffect } from 'react';
 
 export const DownloadBanner = () => {
   const { width } = useWindowDimensions();
-  const [hide, setHide] = useState(true);
-  const isMobile = width < 768;
-
-  if (Platform.OS !== 'web') return null;
-
-  // useEffect(() => {
-  //   // Check localStorage on mount
-  //   if (typeof window !== 'undefined') {
-  //     const hidden = localStorage.getItem('dl');
-  //     setHide(hidden === 'true');
-  //   }
-  // }, []);
-
-  // const handleHide = () => {
-  //   setHide(true);
-  //   if (typeof window !== 'undefined') {
-  //     localStorage.setItem('dl', 'true');
-  //   }
-  // };
-
-  // if (hide) return null;
 
   return (
-    <Box style={[styles.banner, isMobile && styles.mobileBanner]}>
+    <Box style={[styles.banner, styles.mobileBanner]}>
       <Text style={styles.bannerText}>Eksperiencë më e mirë në aplikacion</Text>
       <TouchableOpacity
         onPress={() => Linking.openURL('https://apps.apple.com/app/your-app-id')}

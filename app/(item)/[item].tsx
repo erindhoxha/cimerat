@@ -4,7 +4,6 @@ import {
   ActivityIndicator,
   Linking,
   Modal,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -127,11 +126,6 @@ export default function ItemDetailScreen() {
         setLightboxIndex(null);
       }
     };
-
-    if (isWeb) {
-      window.addEventListener('keydown', handleKeyDown);
-      return () => window.removeEventListener('keydown', handleKeyDown);
-    }
   }, [lightboxIndex, data?.images.length]);
 
   if (error) return <Text>Error: {error.message}</Text>;
@@ -141,17 +135,19 @@ export default function ItemDetailScreen() {
   const isExpired = listingHasExpired(data?.createdAt);
   const liked = userData?.user?.likedListings?.includes(data?._id as unknown as string);
 
-  const isWeb = Platform.OS === 'web';
   const isSingle = data?.images.length === 1;
 
   return data ? (
     <ScrollView style={styles.scrollViewContainer} contentContainerStyle={styles.contentContainer}>
       <WebView noPadding>
-        {isWeb && isMobile && data.images.length > 1 ? (
-          <WebCarousel
+        <Pressable onPress={() => setLightboxIndex(0)}>
+          <MobileCarousel
+            style={[styles.carousel]}
             data={data.images}
+            defaultIndex={typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) : 0}
             renderItem={({ item, index }) => (
               <ExpoImage
+                key={index}
                 style={styles.cardImage}
                 source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${item}` }}
                 placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
@@ -160,72 +156,7 @@ export default function ItemDetailScreen() {
               />
             )}
           />
-        ) : isWeb && !isMobile ? (
-          <Box style={[styles.webGallery, isSingle && styles.webGallerySingle]}>
-            {data.images?.map((img: string, index: number) => {
-              const total = data.images.length;
-              let width: string = '100%';
-              let height: number = 400;
-              let borderRadius = isSingle ? 0 : 8;
-
-              if (total === 1) {
-                height = 320;
-                borderRadius = 0;
-              } else if (total === 2) {
-                width = 'calc(50% - 4px)';
-                height = 320;
-              } else if (total === 3) {
-                width = 'calc(33.3333% - 7.33px)';
-                height = 320;
-              } else if (total === 4) {
-                if (index < 3) {
-                  width = 'calc(33.3333% - 7px)';
-                  height = 320;
-                } else {
-                  height = 80;
-                }
-              } else if (total >= 5) {
-                width = 'calc(33.3333% - 5.53px)';
-                height = 180;
-              }
-
-              return (
-                <Pressable
-                  key={img + index}
-                  onPress={() => setLightboxIndex(index)}
-                  style={[styles.webGalleryImage, { width, height, borderRadius } as ViewStyle]}
-                >
-                  <ExpoImage
-                    style={{ width: '100%', height: '100%', borderRadius }}
-                    source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${img}` }}
-                    placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
-                    contentFit="cover"
-                    transition={BLURHASH_TRANSITION}
-                  />
-                </Pressable>
-              );
-            })}
-          </Box>
-        ) : (
-          <Pressable onPress={() => setLightboxIndex(0)}>
-            <MobileCarousel
-              style={[styles.carousel]}
-              data={data.images}
-              defaultIndex={typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) : 0}
-              renderItem={({ item, index }) => (
-                <ExpoImage
-                  key={index}
-                  style={styles.cardImage}
-                  source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${item}` }}
-                  placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
-                  contentFit="cover"
-                  transition={BLURHASH_TRANSITION}
-                />
-              )}
-            />
-          </Pressable>
-        )}
-
+        </Pressable>
         <Box flex={1} paddingHorizontal={20} gap={12}>
           <Box flexDirection="column" gap={4} marginTop={isSingle ? 20 : 12} alignItems="flex-start">
             <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="100%">

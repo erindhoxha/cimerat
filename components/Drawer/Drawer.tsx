@@ -9,7 +9,6 @@ import {
   Animated,
   Dimensions,
   Keyboard,
-  Platform,
   Modal,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -70,8 +69,6 @@ const Drawer = ({ open, onClose }: DrawerProps) => {
 
   if (!visible) return null;
 
-  const offsetLeft = 0;
-
   return (
     <>
       <TouchableWithoutFeedback onPress={onClose}>
@@ -83,7 +80,7 @@ const Drawer = ({ open, onClose }: DrawerProps) => {
           {
             transform: [{ translateX: animation }],
             paddingTop: insets.top + 20,
-            left: Platform.OS === 'web' ? offsetLeft : 0,
+            left: 0,
           },
         ]}
       >

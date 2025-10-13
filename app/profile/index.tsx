@@ -3,7 +3,7 @@ import { Button } from '@/components/Button';
 import { useAuth } from '@/context/AuthContext';
 import { Text } from '@/components/Text';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ActivityIndicator, Modal, Platform, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Modal, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import Input from '@/components/Input';
 import Label from '@/components/Label';
 import { useState } from 'react';
@@ -117,13 +117,8 @@ export default function ProfileScreen() {
     );
   };
 
-  const isWeb = Platform.OS === 'web';
-
   return (
-    <ScrollView
-      style={[styles.container, !isWeb && styles.nonWebBackground]}
-      contentContainerStyle={styles.contentContainer}
-    >
+    <ScrollView style={[styles.container, styles.nonWebBackground]} contentContainerStyle={styles.contentContainer}>
       <WebView>
         <Box marginBottom={12}>
           <Text fontSize="xl" fontWeight="bold">

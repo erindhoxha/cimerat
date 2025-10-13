@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, Platform, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
+import { Modal, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { FontAwesome } from '@expo/vector-icons';
@@ -9,7 +9,6 @@ import { Box } from '../Box';
 import { Text } from '../Text';
 import { Button } from '../Button';
 import { MobileCarousel } from '@/components/MobileCarousel/MobileCarousel';
-import { WebCarousel } from '../WebCarousel/WebCarousel';
 
 import { useAuth } from '@/context/AuthContext';
 import { formatDate, listingHasExpired } from '@/utils';
@@ -37,9 +36,6 @@ export const MobileCardItem = ({
 
   const isOwner = user?._id === userId;
   const isExpired = listingHasExpired(createdAt);
-  const isWeb = Platform.OS === 'web';
-
-  const CarouselComponent = isWeb ? WebCarousel : MobileCarousel;
 
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -62,9 +58,8 @@ export const MobileCardItem = ({
       }
     >
       <View style={styles.card}>
-        <CarouselComponent
+        <MobileCarousel
           controlledIndex={carouselIndex}
-          style={isWeb ? styles.webCarousel : undefined}
           data={images}
           onProgressChange={setCarouselIndex}
           renderItem={({ item }) => (
@@ -79,52 +74,10 @@ export const MobileCardItem = ({
             </Box>
           )}
         />
-        {images.length > 1 && (
-          <Box style={styles.thumbnailRow}>
-            {thumbnailsToShow.map((img: ImageType, idx: number) => {
-              return (
-                <Pressable
-                  key={img as unknown as string}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    setCarouselIndex(thumbnailIndexes[idx]);
-                    setLightboxIndex(thumbnailIndexes[idx]);
-                  }}
-                  style={styles.thumbnailWrapper}
-                >
-                  <Image
-                    source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${img}` }}
-                    style={[
-                      styles.thumbnailImage,
-                      carouselIndex === thumbnailIndexes[idx] ? styles.thumbnailActive : {},
-                    ]}
-                    placeholder={{
-                      blurhash: blurhashes ? blurhashes[thumbnailIndexes[idx]] : blurhash || '',
-                    }}
-                    contentFit="cover"
-                  />
-                </Pressable>
-              );
-            })}
-          </Box>
-        )}
         <View style={styles.cardContent}>
           <View style={styles.topCardContent}>
-            <Box
-              flexDirection="row"
-              justifyContent="space-between"
-              flex={1}
-              gap={12}
-              flexWrap="wrap"
-              style={isWeb && styles.webTopBox}
-            >
-              <Box
-                flexDirection="column"
-                justifyContent="flex-start"
-                alignItems="flex-start"
-                style={isWeb && styles.webColumnBox}
-                gap={8}
-              >
+            <Box flexDirection="row" justifyContent="space-between" flex={1} gap={12} flexWrap="wrap">
+              <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap={8}>
                 <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start" width="100%">
                   <Box marginBottom={8}>
                     {((rooms && rooms !== undefined) || (currentFlatmates && currentFlatmates !== undefined)) && (
@@ -149,20 +102,11 @@ export const MobileCardItem = ({
                     <Text style={styles.cardPrice}>{price}€ për muaj</Text>
                   </Box>
                 </Box>
-                {isWeb ? (
-                  <Box>
-                    <Text style={styles.cardTitle}>
-                      {city}, {neighborhood}
-                    </Text>
-                    <Text style={styles.cardPrice}>{price}€ për muaj</Text>
-                  </Box>
-                ) : (
-                  <Box>
-                    <Text style={styles.cardTitle}>
-                      {city}, {neighborhood}
-                    </Text>
-                  </Box>
-                )}
+                <Box>
+                  <Text style={styles.cardTitle}>
+                    {city}, {neighborhood}
+                  </Text>
+                </Box>
               </Box>
             </Box>
             <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
@@ -272,6 +216,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     padding: 16,
+    paddingTop: 8,
   },
   cardImage: {
     flex: 1,
