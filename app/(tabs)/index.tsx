@@ -20,7 +20,6 @@ import Input from '@/components/Input';
 import { useAuth } from '@/context/AuthContext';
 import { View } from '@/components/View';
 import { WebView } from '@/components/WebView/WebView';
-import { WebCardItem } from '@/components/CardItem/WebCardItem';
 import { AccordionView } from '@/components/Accordion';
 import { numriIDhomave } from '@/constants/NumberOfRooms';
 import { cimerat } from '@/constants/NumberOfCimera';
@@ -34,6 +33,8 @@ interface SelectButtonProps {
   placeholder: string;
   disabled?: boolean;
 }
+
+const MemoMobileCardItem = React.memo(MobileCardItem);
 
 const SelectButton = ({ title, placeholder, disabled }: SelectButtonProps) => (
   <Box style={[dropdownStyles.dropdownButtonStyle, disabled ? dropdownStyles.dropdownButtonDisabledStyle : null]}>
@@ -184,7 +185,9 @@ export default function TabOneScreen() {
           data={listings}
           progressViewOffset={-5}
           numColumns={1}
-          renderItem={({ item }) => <Box style={{ gap: 12, paddingVertical: 8 }}>{<MobileCardItem {...item} />}</Box>}
+          renderItem={({ item }) => (
+            <Box style={{ gap: 12, paddingVertical: 8 }}>{<MemoMobileCardItem {...item} />}</Box>
+          )}
           contentContainerStyle={[styles.contentContainerStyle]}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) fetchNextPage();
