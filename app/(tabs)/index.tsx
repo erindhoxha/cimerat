@@ -296,7 +296,7 @@ export default function TabOneScreen() {
                     )}
                     renderInputSearch={(onSearch) => (
                       <Box padding={12}>
-                        <Input autoFocus placeholder="Kërko lagjet..." onChangeText={onSearch} />
+                        <Input placeholder="Kërko lagjet..." onChangeText={onSearch} />
                       </Box>
                     )}
                     search
@@ -344,7 +344,7 @@ export default function TabOneScreen() {
                     dropdownPosition="bottom"
                     renderInputSearch={(onSearch) => (
                       <Box padding={12}>
-                        <Input autoFocus placeholder="Kërko lagjet..." onChangeText={onSearch} />
+                        <Input placeholder="Kërko lagjet..." onChangeText={onSearch} />
                       </Box>
                     )}
                     selectedStyle={dropdownStyles.dropdownItemSelected}
