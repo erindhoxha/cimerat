@@ -10,9 +10,6 @@
     "test": "jest",
     "nodemon": "nodemon --watch server --exec node server/index.js"
   },
-  "engines": {
-    "node": "22.x"
-  },
   "jest": {
     "preset": "jest-expo"
   },
