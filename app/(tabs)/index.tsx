@@ -365,6 +365,7 @@ export default function TabOneScreen() {
                     <Box flex={1} flexDirection="row" gap={12}>
                       <Box flex={1} style={styles.flexShrink}>
                         <SelectDropdown
+                          key={JSON.stringify(selectedPriceFrom)}
                           data={cmimi}
                           onSelect={(selectedItem) => {
                             setSelectedPriceFrom((prev) => {
@@ -397,6 +398,7 @@ export default function TabOneScreen() {
                       </Box>
                       <Box flex={1} style={styles.flexShrink}>
                         <SelectDropdown
+                          key={JSON.stringify(selectedPriceTo)}
                           data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
                           onSelect={(selectedItem) => {
                             setSelectedPriceTo((prev) => {
@@ -432,6 +434,7 @@ export default function TabOneScreen() {
                       <Box flex={1} style={styles.flexShrink}>
                         <Label>Numri i cimerave</Label>
                         <SelectDropdown
+                          key={JSON.stringify(selectedNumberOfFlatmates)}
                           data={cimerat}
                           onSelect={(selectedItem) => {
                             setSelectedNumberOfFlatmates((prev) => {
@@ -466,6 +469,7 @@ export default function TabOneScreen() {
                       <Box flex={1} style={styles.flexShrink}>
                         <Label>Numri i dhomave</Label>
                         <SelectDropdown
+                          key={JSON.stringify(selectedNumberOfRooms)}
                           data={numriIDhomave}
                           onSelect={(selectedItem) => {
                             setSelectedNumberOfRooms((prev) => {
@@ -476,20 +480,23 @@ export default function TabOneScreen() {
                             });
                           }}
                           defaultValue={selectedNumberOfRooms}
-                          renderButton={(_, isOpened) => (
-                            <Input
-                              style={{
-                                outlineColor: Colors.yellow,
-                                borderRadius: 12,
-                              }}
-                            >
-                              <SelectButton
-                                title={(selectedNumberOfRooms && selectedNumberOfRooms + ' dhoma') || ''}
-                                isOpened={isOpened}
-                                placeholder="Numri i dhomave"
-                              />
-                            </Input>
-                          )}
+                          renderButton={(_, isOpened) => {
+                            console.log(isOpened);
+                            return (
+                              <Input
+                                style={{
+                                  outlineColor: Colors.yellow,
+                                  borderRadius: 12,
+                                }}
+                              >
+                                <SelectButton
+                                  title={(selectedNumberOfRooms && selectedNumberOfRooms + ' dhoma') || ''}
+                                  isOpened={isOpened}
+                                  placeholder="Numri i dhomave"
+                                />
+                              </Input>
+                            );
+                          }}
                           renderItem={(item, _, isSelected) => (
                             <>
                               <SelectItem item={item} isSelected={isSelected} />
