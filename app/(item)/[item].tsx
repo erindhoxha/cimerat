@@ -9,7 +9,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   useWindowDimensions,
-  ViewStyle,
 } from 'react-native';
 import { Text } from '@/components/Text';
 import { Box } from '@/components/Box';

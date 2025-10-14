@@ -38,7 +38,10 @@ app.get('/user', requireAuth, (req, res) => {
 app.get('/liked-listings', requireAuth, async (req, res) => {
   console.log('Getting liked listings for user:', req.user);
   try {
-    const user = await User.findById(req.user._id).populate('likedListings');
+    const user = await User.findById(req.user._id).populate({
+      path: 'likedListings',
+      options: { sort: { createdAt: -1 } }, // Sort by latest to oldest
+    });
     return res.status(200).json(user.likedListings);
   } catch (error) {
     console.error('Error fetching liked listings:', error);
