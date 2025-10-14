@@ -77,7 +77,6 @@ export default function LoginScreen() {
                   onChangeText={onChange}
                   value={value}
                   autoCapitalize="none"
-                  autoFocus
                   returnKeyType="next"
                   onSubmitEditing={() => {
                     passwordRef.current?.focus();

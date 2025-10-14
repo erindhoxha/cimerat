@@ -131,9 +131,6 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             options={cities}
             placeholder="Zgjedh Qytetin"
             error={errors.city?.message}
-            search
-            searchPlaceHolder="Kërko qytetin..."
-            searchPlaceHolderColor="#6c757d"
             onSelect={() => setValue('neighborhood', '')}
           />
 
@@ -145,9 +142,6 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             placeholder="Zgjedh Lagjën"
             disabled={!selectedCity}
             error={errors.neighborhood?.message}
-            search
-            searchPlaceHolder="Kërko lagjën..."
-            searchPlaceHolderColor="#6c757d"
           />
 
           <Controller
@@ -162,6 +156,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
                 required
                 error={errors.description?.message}
                 value={value}
+                returnKeyType="default"
                 onChangeText={onChange}
               />
             )}
@@ -179,6 +174,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
                 placeholder="300"
                 keyboardType="numeric"
                 inputMode="numeric"
+                returnKeyType="done"
                 error={errors.price?.message}
                 onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ''))}
               />
@@ -196,6 +192,7 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
               <Input
                 value={value}
                 label="Numri i telefonit"
+                returnKeyType="done"
                 maxLength={15}
                 required
                 placeholder="048123456 ose +38348123456"
