@@ -45,3 +45,7 @@ server/scripts/backups/
 
 # User uploads (local dev only; production photos live in Cloudinary)
 uploads/
+
+# Native folders are generated from app.json (expo prebuild / EAS); don't commit them
+/ios
+/android
