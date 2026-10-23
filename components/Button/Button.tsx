@@ -1,71 +1,71 @@
-import { StyleSheet, TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import { StyleSheet, TouchableOpacity, TouchableOpacityProps, View, ViewStyle } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Text } from '../Text';
 import Colors from '@/constants/Colors';
 
 type Variant = 'primary' | 'secondary' | 'tertiary' | 'danger';
 
+const THEME: Record<Variant, { container: ViewStyle; color: string }> = {
+  primary: { container: { backgroundColor: Colors.primary }, color: Colors.onPrimary },
+  secondary: { container: { backgroundColor: Colors.lightGray }, color: Colors.text },
+  tertiary: {
+    container: { backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.borderStrong },
+    color: Colors.text,
+  },
+  danger: { container: { backgroundColor: Colors.danger }, color: Colors.white },
+};
+
 export const Button = (
   props: TouchableOpacityProps & {
     variant?: Variant;
+    /** Rendered next to the label, vertically centered with it */
+    icon?: React.ComponentProps<typeof Ionicons>['name'];
+    iconColor?: string;
   },
 ) => {
-  const THEME: Record<
-    Variant,
-    {
-      backgroundColor: string;
-      borderRadius: number;
-      alignItems: 'center';
-      color?: string;
-    }
-  > = {
-    primary: style.primaryButton,
-    secondary: style.secondaryButton,
-    tertiary: style.tertiaryButton,
-    danger: style.dangerButton,
-  };
+  const theme = THEME[props.variant || 'primary'];
+  const label = (
+    <Text fontWeight="semibold" style={[styles.label, { color: theme.color }]}>
+      {props.children}
+    </Text>
+  );
 
   return (
-    <TouchableOpacity {...props} style={[THEME[props.variant || 'primary'], props.style]}>
-      <Text
-        fontWeight="medium"
-        style={{
-          color: THEME[props.variant || 'primary'].color,
-        }}
-      >
-        {props.children}
-      </Text>
+    <TouchableOpacity
+      activeOpacity={0.8}
+      {...props}
+      style={[styles.button, theme.container, props.disabled && styles.disabled, props.style]}
+    >
+      {props.icon ? (
+        <View style={styles.row}>
+          <Ionicons name={props.icon} size={18} color={props.iconColor ?? theme.color} />
+          {label}
+        </View>
+      ) : (
+        label
+      )}
     </TouchableOpacity>
   );
 };
 
-const style = StyleSheet.create({
-  primaryButton: {
-    backgroundColor: Colors.yellow,
-    padding: 12,
+const styles = StyleSheet.create({
+  button: {
+    minHeight: 48,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
     borderRadius: 12,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  dangerButton: {
-    backgroundColor: Colors.danger,
-    color: 'white',
-    padding: 12,
-    borderRadius: 12,
-    alignItems: 'center',
+  label: {
+    fontSize: 15,
   },
-  secondaryButton: {
-    backgroundColor: Colors.lightGray,
-    padding: 12,
-    borderRadius: 12,
+  row: {
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
   },
-  tertiaryButton: {
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: Colors.gray,
-    color: Colors.tint,
-    padding: 12,
-    borderRadius: 12,
-    fontWeight: 400,
-    alignItems: 'center',
+  disabled: {
+    opacity: 0.5,
   },
 });

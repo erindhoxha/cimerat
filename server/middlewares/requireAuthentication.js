@@ -13,7 +13,8 @@ module.exports = async (req, res, next) => {
   try {
     const payload = jwt.verify(token, 'MY_SECRET_KEY');
     const { userId } = payload;
-    const user = await User.findById(userId);
+    // Never expose the password hash through req.user (it's returned by GET /user)
+    const user = await User.findById(userId).select('-password');
     if (!user) {
       return res.status(401).json({ error: 'User not found' });
     }

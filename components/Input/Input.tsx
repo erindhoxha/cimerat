@@ -16,7 +16,7 @@ const Input = forwardRef(
     if (props.label) {
       return (
         <Box style={styles.labeledBox}>
-          <Text>
+          <Text style={styles.label}>
             {props.label}
             {props.required ? <Text style={styles.required}>*</Text> : ''}
           </Text>
@@ -59,6 +59,11 @@ const styles = StyleSheet.create({
   labeledBox: {
     gap: 6,
   },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: Colors.textFade,
+  },
   inputError: {
     borderColor: Colors.danger,
   },
@@ -66,17 +71,24 @@ const styles = StyleSheet.create({
     color: Colors.danger,
   },
   input: {
-    padding: 12,
+    minHeight: 48,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 15,
+    color: Colors.text,
+    backgroundColor: Colors.surface,
     borderWidth: 1,
-    borderColor: Colors.gray,
+    borderColor: Colors.border,
     borderRadius: 12,
-    outlineColor: Colors.yellow,
+    outlineColor: Colors.primary,
   },
   inputMultiline: {
     height: 200,
+    textAlignVertical: 'top',
   },
   inputMultilineSmall: {
     height: 100,
+    textAlignVertical: 'top',
   },
   error: {
     color: Colors.danger,

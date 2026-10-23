@@ -10,10 +10,12 @@ interface PillProps {
 
 const VARIANTS = {
   yellow: {
-    backgroundColor: Colors.yellow,
+    backgroundColor: Colors.accentSoft,
+    color: Colors.accentInk,
   },
   green: {
-    backgroundColor: Colors.green,
+    backgroundColor: Colors.greenSoft,
+    color: Colors.green,
   },
 };
 
@@ -23,14 +25,16 @@ export const Pill: React.FC<PillProps> = ({ title, iconLeft, variant = 'yellow' 
       testID="pill-box"
       gap={4}
       flexDirection="row"
-      borderRadius={12}
+      borderRadius={999}
       paddingVertical={4}
       alignItems="center"
-      paddingHorizontal={8}
-      {...VARIANTS[variant]}
+      paddingHorizontal={10}
+      backgroundColor={VARIANTS[variant].backgroundColor}
     >
       {iconLeft}
-      <Text>{title}</Text>
+      <Text fontWeight="semibold" style={{ fontSize: 13, color: VARIANTS[variant].color }}>
+        {title}
+      </Text>
     </Box>
   );
 };

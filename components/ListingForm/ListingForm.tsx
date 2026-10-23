@@ -1,14 +1,15 @@
 import { Box } from '@/components/Box';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import { Button } from '@/components/Button/Button';
 import Input from '@/components/Input/Input';
 import { Text } from '@/components/Text';
 import { cities } from '@/constants/Cities';
-import { neighborhoods } from '@/constants/Neighborhoods';
+import { neighborhoodOptions } from '@/constants/Neighborhoods';
 import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image } from 'expo-image';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ImagePickerGrid } from '@/components/ImagePickerGrid/ImagePickerGrid';
@@ -16,21 +17,24 @@ import { DropdownField } from '@/components/DropdownController/DropdownControlle
 import { Listing } from '@/types';
 import formSchema from './schema';
 import { isValidPhoneNumber } from 'libphonenumber-js';
-import { useRouter } from 'expo-router';
-import { useAuth } from '@/context/AuthContext';
+import { useDeleteListing } from '@/hooks/useDeleteListing';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { QuickPicks } from '@/components/QuickPicks/QuickPicks';
+import { appendPhrase, LISTING_FEATURES, POPULAR_CITIES, PRICE_SUGGESTIONS } from '@/constants/QuickPicks';
 import Colors from '@/constants/Colors';
 import { genders } from '@/constants/Genders';
-import { numriIDhomave } from '@/constants/NumberOfRooms';
+import { numriIDhomave, toCountOption } from '@/constants/NumberOfRooms';
+import { ChoiceField } from '@/components/ChoiceChips/ChoiceChips';
 import { cimerat } from '@/constants/NumberOfCimera';
-import { useQueryClient } from '@tanstack/react-query';
 import { WebView } from '../WebView/WebView';
-import { FontAwesome } from '@expo/vector-icons';
 
 interface ListingFormProps {
   defaultValues?: Partial<Listing>;
   onSubmit: (
     data: Omit<Listing, '_id' | 'user' | 'createdAt' | 'updatedAt'>,
     images: { uri: string; type?: string; name: string }[],
+    /** Called with 0..1 while the photos upload */
+    onProgress: (fraction: number) => void,
   ) => Promise<void>;
   isEditing?: boolean;
 }
@@ -40,17 +44,17 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [mediaLibraryPermission, requestMediaLibraryPermission] = ImagePicker.useMediaLibraryPermissions();
   const [imageError, setImageError] = useState<string | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const { token } = useAuth();
-  const client = useQueryClient();
+  const confirmDelete = useDeleteListing();
+  const [picking, setPicking] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const router = useSafeRouter();
 
   const {
     control,
     handleSubmit,
     watch,
     setValue,
+    getValues,
     clearErrors,
     formState: { errors, isSubmitting },
   } = useForm({
@@ -62,7 +66,10 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
       description: '',
       price: undefined,
       images: [],
+      flatmateGender: genders[2],
       ...defaultValues,
+      rooms: toCountOption(defaultValues?.rooms),
+      currentFlatmates: toCountOption(defaultValues?.currentFlatmates),
     },
   });
 
@@ -79,21 +86,28 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
       }
     }
 
+    // iOS can take a few seconds to hand back large/iCloud photos, so show a spinner meanwhile
+    setPicking(true);
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsMultipleSelection: true,
-      quality: 1,
-    });
+      selectionLimit: Math.max(1, 10 - images.length),
+      // The server resizes to 1600px anyway; a lighter file uploads much faster
+      quality: 0.85,
+    }).finally(() => setPicking(false));
 
     if (!result.canceled) {
+      const existing = new Set(images.map((img) => img.uri));
       const newImages = [
         ...images,
-        ...result.assets.map((asset, index) => ({
-          type: asset.type,
-          name: `photo_${index}.jpg`,
-          uri: asset.uri,
-        })),
-      ];
+        ...result.assets
+          .filter((asset) => !existing.has(asset.uri))
+          .map((asset, index) => ({
+            type: asset.mimeType ?? 'image/jpeg',
+            name: asset.fileName ?? `photo_${Date.now()}_${index}.jpg`,
+            uri: asset.uri,
+          })),
+      ].slice(0, 10);
       setImages(newImages);
       setValue('images', newImages);
       setImageError(null);
@@ -102,6 +116,13 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
   };
 
   const selectedCity = watch('city');
+
+  // New listings start with the phone saved on the profile
+  const { data: currentUser } = useCurrentUser();
+  const profilePhone = currentUser?.user?.phone;
+  useEffect(() => {
+    if (!isEditing && profilePhone && !getValues('phone')) setValue('phone', profilePhone);
+  }, [profilePhone]);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -115,7 +136,15 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
           <ImagePickerGrid
             images={images}
             onPick={pickImage}
+            picking={picking}
             onPreview={setPreviewImage}
+            onReorder={(from, to) => {
+              const next = [...images];
+              const [moved] = next.splice(from, 1);
+              next.splice(to, 0, moved);
+              setImages(next);
+              setValue('images', next, { shouldDirty: true });
+            }}
             onRemove={(idx) => {
               const newImages = images.filter((_, i) => i !== idx);
               setImages(newImages);
@@ -124,21 +153,31 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             error={imageError || errors.images?.message}
           />
 
-          <DropdownField
-            control={control}
-            name="city"
-            label="Qyteti"
-            options={cities}
-            placeholder="Zgjedh Qytetin"
-            error={errors.city?.message}
-            onSelect={() => setValue('neighborhood', '')}
-          />
+          <Box>
+            <DropdownField
+              control={control}
+              name="city"
+              label="Qyteti"
+              options={cities}
+              placeholder="Zgjedh Qytetin"
+              error={errors.city?.message}
+              onSelect={() => setValue('neighborhood', '')}
+            />
+            <QuickPicks
+              options={POPULAR_CITIES}
+              value={selectedCity}
+              onPick={(city) => {
+                setValue('city', city, { shouldValidate: true });
+                setValue('neighborhood', '');
+              }}
+            />
+          </Box>
 
           <DropdownField
             control={control}
             name="neighborhood"
             label="Lagja"
-            options={selectedCity ? neighborhoods[selectedCity] : []}
+            options={neighborhoodOptions(selectedCity)}
             placeholder="Zgjedh Lagjën"
             disabled={!selectedCity}
             error={errors.neighborhood?.message}
@@ -148,17 +187,24 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             control={control}
             name="description"
             render={({ field: { onChange, value } }) => (
-              <Input
-                label="Përshkrimi"
-                placeholder="Përshkrimi"
-                multiline
-                numberOfLines={20}
-                required
-                error={errors.description?.message}
-                value={value}
-                returnKeyType="default"
-                onChangeText={onChange}
-              />
+              <Box>
+                <Input
+                  label="Përshkrimi"
+                  placeholder="P.sh. Dhomë e ndritshme në banesë me 3 dhoma, kërkoj cimer/e të qetë..."
+                  multiline
+                  numberOfLines={20}
+                  required
+                  error={errors.description?.message}
+                  value={value}
+                  onChangeText={onChange}
+                />
+                <QuickPicks
+                  // Hide phrases that are already in the text
+                  options={LISTING_FEATURES.filter((f) => !(value ?? '').toLowerCase().includes(f.toLowerCase()))}
+                  onPick={(phrase) => onChange(appendPhrase(value, phrase))}
+                  format={(phrase) => `+ ${phrase}`}
+                />
+              </Box>
             )}
           />
 
@@ -166,18 +212,26 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             control={control}
             name="price"
             render={({ field: { onChange, value } }) => (
-              <Input
-                value={value?.toString()}
-                label="Çmimi në euro (€)"
-                maxLength={6}
-                required
-                placeholder="300"
-                keyboardType="numeric"
-                inputMode="numeric"
-                returnKeyType="done"
-                error={errors.price?.message}
-                onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ''))}
-              />
+              <Box>
+                <Input
+                  value={value?.toString()}
+                  label="Çmimi për muaj (€)"
+                  maxLength={6}
+                  required
+                  placeholder="300"
+                  keyboardType="numeric"
+                  inputMode="numeric"
+                  returnKeyType="done"
+                  error={errors.price?.message}
+                  onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ''))}
+                />
+                <QuickPicks
+                  options={PRICE_SUGGESTIONS}
+                  value={value?.toString()}
+                  onPick={onChange}
+                  format={(price) => `${price}€`}
+                />
+              </Box>
             )}
           />
 
@@ -204,140 +258,86 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
             )}
           />
 
-          <Box
-            gap={12}
-            style={{
-              padding: 12,
-              borderWidth: 1,
-              borderRadius: 12,
-              borderColor: Colors.lightGray,
-            }}
-          >
-            <Text fontSize="md" fontWeight="bold">
-              Extra, opsionale
-            </Text>
-            <Text
-              style={{
-                borderBottomWidth: 1,
-                paddingBottom: 12,
-                borderColor: Colors.lightGray,
-              }}
-            >
-              Nuk është e nevojshme të plotësoni këto fusha, por mund t'ju ndihmojë të gjeni bashkëbanuesin/es më të
-              përshtatshëm.
-            </Text>
-            <DropdownField
+          <Box gap={18} style={styles.extraBox}>
+            <Box gap={2}>
+              <Text style={styles.extraTitle}>Detaje shtesë</Text>
+              <Text style={styles.extraHint}>Opsionale, por ndihmojnë të gjeni cimerin e duhur.</Text>
+            </Box>
+            <ChoiceField
               control={control}
               name="flatmateGender"
-              label="Gjinia e preferuar e bashkëbanuesit/es"
+              label="Gjinia e preferuar e cimerit"
               options={genders}
-              placeholder="Zgjedh gjininë"
-              defaultValue={genders[2]}
-              error={errors.flatmateGender?.message}
+              equalWidth
             />
-
-            <DropdownField
+            <ChoiceField
               control={control}
               name="currentFlatmates"
-              label="Numri i bashkëbanuesve ekzistues"
+              label="Sa cimerë jetojnë aktualisht?"
               options={cimerat}
-              placeholder="Zgjedh numrin"
-              error={errors.currentFlatmates?.message}
+              equalWidth
             />
-
-            <DropdownField
+            <ChoiceField
               control={control}
               name="rooms"
-              label="Numri i dhomave në total"
+              label="Sa dhoma ka banesa?"
               options={numriIDhomave}
-              placeholder="Zgjedh numrin"
-              error={errors.rooms?.message}
+              equalWidth
             />
           </Box>
 
-          <Button
-            variant="primary"
-            style={styles.submitButton}
-            onPress={handleSubmit((data) => onSubmit(data, images))}
-          >
-            {isSubmitting ? (
-              <Box flexDirection="row" gap={4} alignItems="center">
-                <Text>{isEditing ? 'Duke Ndryshuar...' : 'Duke Krijuar...'}</Text>
-                <ActivityIndicator color="#000" />
+          {isSubmitting ? (
+            <Box
+              style={styles.progressButton}
+              accessibilityRole="progressbar"
+              accessibilityValue={{ now: Math.round((uploadProgress ?? 0) * 100), min: 0, max: 100 }}
+            >
+              <Box style={[styles.progressFill, { width: `${Math.max(4, (uploadProgress ?? 0) * 100)}%` }]} />
+              <Box flexDirection="row" gap={8} alignItems="center">
+                <ActivityIndicator color={Colors.onPrimary} size="small" />
+                <Text style={styles.progressText}>
+                  {uploadProgress === null || uploadProgress < 1
+                    ? `Duke ngarkuar fotot… ${Math.round((uploadProgress ?? 0) * 100)}%`
+                    : 'Duke përfunduar…'}
+                </Text>
               </Box>
-            ) : isEditing ? (
-              'Modifiko Listimin'
-            ) : (
-              'Krijo Listimin'
-            )}
-          </Button>
+            </Box>
+          ) : (
+            <Button
+              variant="primary"
+              icon={isEditing ? 'checkmark' : 'cloud-upload-outline'}
+              style={styles.submitButton}
+              onPress={handleSubmit(async (data) => {
+                setUploadProgress(0);
+                try {
+                  await onSubmit(data, images, setUploadProgress);
+                } finally {
+                  setUploadProgress(null);
+                }
+              })}
+            >
+              {isEditing ? 'Ruaj ndryshimet' : 'Publiko listimin'}
+            </Button>
+          )}
 
           {isEditing && (
-            <Button variant="danger" style={styles.deleteButton} onPress={() => setModalOpen(true)}>
-              Fshi Listimin
+            <Button
+              variant="tertiary"
+              icon="trash-outline"
+              iconColor={Colors.danger}
+              style={styles.deleteButton}
+              onPress={() =>
+                defaultValues?._id &&
+                confirmDelete(defaultValues._id, () => {
+                  router.dismissAll();
+                  router.replace({ pathname: '/profile', params: { tab: 'listings' } });
+                })
+              }
+            >
+              <Text style={{ color: Colors.danger }}>Fshi listimin</Text>
             </Button>
           )}
         </Box>
-        {/* Delete Confirmation Modal */}
-        <Modal
-          visible={modalOpen}
-          onDismiss={() => setModalOpen(false)}
-          onRequestClose={() => setModalOpen(!modalOpen)}
-          transparent
-          presentationStyle="overFullScreen"
-        >
-          <TouchableOpacity onPressOut={() => setModalOpen(false)} activeOpacity={1} style={styles.modalOverlay}>
-            <TouchableOpacity activeOpacity={1} style={styles.modalContent}>
-              <Box marginBottom={8}>
-                <FontAwesome name="question" size={32} />
-              </Box>
-              <Text fontSize="lg" fontWeight="bold" style={styles.modalTitle}>
-                A jeni të sigurtë që dëshironi të fshini këtë listim?
-              </Text>
-              <Text style={styles.modalSubtitle}>
-                Listimi do të fshihet përgjithmonë dhe nuk do të jetë më i disponueshëm për përdoruesit e tjerë.
-              </Text>
-              <Box
-                marginTop={12}
-                gap={12}
-                flexDirection="row"
-                width="100%"
-                justifyContent="center"
-                alignItems="center"
-                style={styles.modalButtonRow}
-              >
-                <Button style={styles.flex1} variant="tertiary" onPress={() => setModalOpen(false)}>
-                  <Text>Jo, anulo</Text>
-                </Button>
-                <Button
-                  style={styles.flex1}
-                  variant="danger"
-                  disabled={loading}
-                  onPress={async () => {
-                    try {
-                      setLoading(true);
-                      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings/${defaultValues?._id}`, {
-                        method: 'DELETE',
-                        headers: { Authorization: `Bearer ${token}` },
-                      });
-                      if (!res.ok) return Promise.reject('Failed to delete listing');
-                      Toast.show({ type: 'success', text1: 'Listimi u fshi me sukses' });
-                      client.invalidateQueries({ queryKey: ['listings'] });
-                      router.dismissAll();
-                      router.push('/your-listings');
-                    } catch (error) {
-                      Toast.show({ type: 'error', text1: 'Gabim gjatë fshirjes së listimit' });
-                    } finally {
-                      setLoading(false);
-                    }
-                  }}
-                >
-                  <Text>{loading ? 'Duke fshirë...' : 'Po, fshije'}</Text>
-                </Button>
-              </Box>
-            </TouchableOpacity>
-          </TouchableOpacity>
-        </Modal>
 
         {/* Preview Image Modal */}
         <Modal visible={!!previewImage} transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>
@@ -351,6 +351,42 @@ export function ListingForm({ defaultValues, onSubmit, isEditing = false }: List
 }
 
 const styles = StyleSheet.create({
+  extraBox: {
+    padding: 16,
+    borderWidth: 1,
+    borderRadius: 18,
+    borderColor: Colors.border,
+  },
+  extraTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.text,
+  },
+  extraHint: {
+    fontSize: 13,
+    color: Colors.textMuted,
+  },
+  progressButton: {
+    height: 52,
+    marginTop: 12,
+    borderRadius: 12,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.textFade,
+  },
+  progressFill: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: Colors.primary,
+  },
+  progressText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: Colors.onPrimary,
+  },
   container: { flex: 1, height: '100%', backgroundColor: 'white' },
   contentContainer: {
     minHeight: '100%',
@@ -373,24 +409,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   previewImage: { width: '90%', height: '80%', borderRadius: 32 },
-  modalOverlay: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    maxWidth: '90%',
-    backgroundColor: 'white',
-    padding: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
-    alignSelf: 'center',
-  },
-  modalTitle: { textAlign: 'center' },
-  modalSubtitle: { textAlign: 'center', marginTop: 12 },
-  modalButtonRow: { position: 'relative' },
-  flex1: { flex: 1 },
 });

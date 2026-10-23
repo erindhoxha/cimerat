@@ -1,7 +1,5 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Tabs } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
-import Colors from '@/constants/Colors';
 import { StyleSheet } from 'react-native';
 import { Box } from '@/components/Box';
 
@@ -11,41 +9,16 @@ export default function TabLayout() {
       <GestureHandlerRootView style={[styles.container]}>
         <Tabs
           initialRouteName="index"
-          screenOptions={{
-            headerShown: false,
-            tabBarStyle: {
-              backgroundColor: Colors.yellow,
-              borderTopColor: 'transparent',
-            },
-          }}
+          screenOptions={{ headerShown: false }}
+          // The single bottom bar is rendered by the root layout (app/_layout.tsx) so it never
+          // appears twice during page transitions
+          tabBar={() => null}
         >
-          <Tabs.Screen
-            name="index"
-            options={{
-              tabBarIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} />,
-              title: 'Faqja kryesore',
-              tabBarActiveTintColor: Colors.tint,
-              tabBarInactiveTintColor: Colors.darkYellow,
-            }}
-          />
-          <Tabs.Screen
-            name="your-listings"
-            options={{
-              title: 'Listimet e mia',
-              tabBarIcon: ({ color }) => <FontAwesome name="plus-circle" size={24} color={color} />,
-              tabBarActiveTintColor: Colors.tint,
-              tabBarInactiveTintColor: Colors.darkYellow,
-            }}
-          />
-          <Tabs.Screen
-            name="liked"
-            options={{
-              title: 'Të preferuarat',
-              tabBarIcon: ({ color }) => <FontAwesome name="heart" size={24} color={color} />,
-              tabBarActiveTintColor: Colors.tint,
-              tabBarInactiveTintColor: Colors.darkYellow,
-            }}
-          />
+          <Tabs.Screen name="index" options={{ title: 'Dhomat' }} />
+          <Tabs.Screen name="cimerat" options={{ title: 'Cimerat' }} />
+          {/* Still routable (header heart, drawer, profile), just not in the tab bar */}
+          <Tabs.Screen name="your-listings" options={{ title: 'Listimet e mia' }} />
+          <Tabs.Screen name="liked" options={{ title: 'Të preferuarat' }} />
         </Tabs>
       </GestureHandlerRootView>
     </Box>

@@ -2,7 +2,7 @@ import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
 import { AccordionView } from "./Accordion";
 import { Text } from "../Text";
-import { FontAwesome } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 describe("AccordionView", () => {
   it("renders the accordion header", () => {
@@ -10,9 +10,9 @@ describe("AccordionView", () => {
     expect(getByText("Filtro më shumë")).toBeTruthy();
   });
 
-  it("renders the FontAwesome chevron-down icon in header", () => {
+  it("renders the chevron-down icon in header", () => {
     const { UNSAFE_getAllByType } = render(<AccordionView />);
-    const icons = UNSAFE_getAllByType(FontAwesome);
+    const icons = UNSAFE_getAllByType(Ionicons);
     expect(icons.some((icon) => icon.props.name === "chevron-down")).toBe(true);
   });
 
@@ -33,7 +33,7 @@ describe("AccordionView", () => {
 
   it("renders the dropdown chevron icon", () => {
     const { UNSAFE_getAllByType } = render(<AccordionView />);
-    const icons = UNSAFE_getAllByType(FontAwesome);
+    const icons = UNSAFE_getAllByType(Ionicons);
     expect(icons.some((icon) => icon.props.name === "chevron-up" || icon.props.name === "chevron-down")).toBe(true);
   });
 });

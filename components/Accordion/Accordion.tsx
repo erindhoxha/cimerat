@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { Text } from '../Text';
 import { Box } from '../Box';
 import Colors from '@/constants/Colors';
@@ -24,8 +24,11 @@ export function AccordionView({
     <View>
       <TouchableOpacity onPress={() => setOpen(!open)}>
         <Box style={[styles.accordionHeader, !open && styles.accordionHeaderClosed]}>
-          <Text style={styles.headerText}>{!open ? title : closedTitle}</Text>
-          <FontAwesome name={open ? 'chevron-up' : 'chevron-down'} size={16} color={Colors.gray} />
+          <Box flexDirection="row" alignItems="center" gap={10}>
+            <Ionicons name="options-outline" size={16} color={Colors.text} />
+            <Text style={styles.headerText}>{!open ? title : closedTitle}</Text>
+          </Box>
+          <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={12} color={Colors.textMuted} />
         </Box>
       </TouchableOpacity>
       {open && <Box style={styles.accordionContent}>{children}</Box>}
@@ -35,11 +38,12 @@ export function AccordionView({
 
 const styles = StyleSheet.create({
   accordionHeader: {
-    paddingVertical: 16,
+    minHeight: 48,
+    paddingVertical: 12,
     paddingHorizontal: 14,
     backgroundColor: Colors.white,
     borderWidth: 1,
-    borderColor: Colors.gray,
+    borderColor: Colors.border,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     flexDirection: 'row',
@@ -51,15 +55,16 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 12,
   },
   headerText: {
-    fontWeight: '400',
-    fontSize: 14,
+    fontWeight: '500',
+    fontSize: 15,
+    color: Colors.text,
   },
   accordionContent: {
-    gap: 12,
-    padding: 12,
+    gap: 16,
+    padding: 14,
     borderTopWidth: 0,
     borderWidth: 1,
-    borderColor: Colors.gray,
+    borderColor: Colors.border,
     borderBottomRightRadius: 12,
     borderBottomLeftRadius: 12,
     backgroundColor: Colors.white,

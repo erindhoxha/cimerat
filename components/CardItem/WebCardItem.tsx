@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import { View } from '../View/View';
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet } from 'react-native';
@@ -28,7 +28,7 @@ export const WebCardItem = ({
   rooms,
   blurhash,
 }: Listing) => {
-  const router = useRouter();
+  const router = useSafeRouter();
   const [carouselIndex, setCarouselIndex] = useState(0);
   const { userId } = useAuth();
 
@@ -136,13 +136,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   ownerCard: {
-    borderColor: Colors.yellow,
+    borderColor: Colors.primary,
     borderWidth: 2,
   },
   cardBox: {
     width: 140,
     height: 'auto',
-    backgroundColor: '#0553',
+    backgroundColor: Colors.imagePlaceholder,
   },
   text: {
     fontSize: 14,
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 8,
     right: 8,
-    backgroundColor: Colors.yellow,
+    backgroundColor: Colors.surface,
     borderRadius: 12,
     paddingHorizontal: 8,
     paddingVertical: 4,

@@ -86,10 +86,10 @@ router.post('/listing/:id/like', async (req, res) => {
 });
 
 router.put('/edit-user', async (req, res) => {
-  const { userId, username, password, oldPassword } = req.body;
-  if (!userId || (!username && !password)) {
-    console.log('EROR');
-    return res.status(400).json({ error: 'User ID and at least one field to update are required' });
+  // Usernames are permanent; this endpoint only changes the password
+  const { userId, password, oldPassword } = req.body;
+  if (!userId || !password) {
+    return res.status(400).json({ error: 'User ID and a new password are required' });
   }
 
   try {
@@ -103,12 +103,7 @@ router.put('/edit-user', async (req, res) => {
       return res.status(401).json({ error: 'Gabim i username-it ose fjalëkalimit. Ju lutemi provoni përsëri.' });
     }
 
-    if (username) {
-      user.username = username;
-    }
-    if (password) {
-      user.password = password;
-    }
+    user.password = password;
 
     await user.save();
     return res.status(200).json({ message: 'User updated successfully' });

@@ -1,11 +1,11 @@
 import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import Colors from '@/constants/Colors';
 import { useRef } from 'react';
 import { Text } from '@/components/Text';
 import Input from '@/components/Input/Input';
 import { Box } from '@/components/Box';
 import { Button } from '@/components/Button/Button';
-import { useRouter } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 import { TextInput } from 'react-native-gesture-handler/lib/typescript/components/GestureComponents';
@@ -17,12 +17,13 @@ export default function RegisterScreen() {
     handleSubmit,
     reset,
     control,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm();
 
   const { setAuth } = useAuth();
 
-  const router = useRouter();
+  const router = useSafeRouter();
 
   const passwordInputRef = useRef<TextInput>(null);
 
@@ -41,15 +42,21 @@ export default function RegisterScreen() {
           password: data.password,
         }),
       });
-      const json = await res.json();
+      const json = await res.json().catch(() => ({}));
       if (!res.ok) {
-        return Promise.reject(json.error || 'Gabim gjatë regjistrimit. Ju lutemi provoni përsëri.');
+        // Rejecting with an Error (not a string) so the server's message reaches the UI
+        const error = new Error(json.error || 'Gabim gjatë regjistrimit. Ju lutemi provoni përsëri.');
+        return Promise.reject(Object.assign(error, { status: res.status }));
       }
       return json;
     },
     onSuccess: (data) => {
       setAuth(data.token, data.userId, data.username);
       reset();
+    },
+    onError: (error: Error & { status?: number }) => {
+      // Username taken: show it on the field itself
+      if (error.status === 409) setError('username', { message: error.message });
     },
   });
 
@@ -93,7 +100,8 @@ export default function RegisterScreen() {
               )}
               name="username"
               rules={{
-                required: true,
+                required: 'Emri i përdoruesit është i detyrueshëm',
+                minLength: { value: 3, message: 'Emri i përdoruesit duhet të ketë të paktën 3 karaktere' },
                 pattern: {
                   value: /^[a-zA-Z0-9]+$/,
                   message: 'Lejohen vetëm shkronja dhe numra, pa hapësira apo karaktere të veçanta.',
@@ -105,10 +113,13 @@ export default function RegisterScreen() {
             <Controller
               control={control}
               name="password"
-              rules={{ required: true }}
+              rules={{
+                required: 'Fjalëkalimi është i detyrueshëm',
+                minLength: { value: 6, message: 'Fjalëkalimi duhet të ketë të paktën 6 karaktere' },
+              }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  placeholder="Fjalëkalimi"
+                  placeholder="Të paktën 6 karaktere"
                   label="Fjalëkalimi"
                   required
                   ref={passwordInputRef}
@@ -122,13 +133,14 @@ export default function RegisterScreen() {
                 />
               )}
             />
-            {errors.password && <Text style={styles.errorText}>Fjalëkalimi është i detyrueshëm</Text>}
+            {errors.password && <Text style={styles.errorText}>{String(errors.password.message)}</Text>}
           </Box>
           <Button onPress={handleSubmit(onSubmitHandler)} disabled={isPending || isSubmitting}>
             {isPending && isSubmitting ? <ActivityIndicator color="#fff" /> : <Text>Regjistrohu</Text>}
           </Button>
-          {isError && (
-            <Text style={styles.errorText}>{error instanceof Error ? error.message : 'Gabim gjatë kyçjes'}</Text>
+          {/* 409 is already shown under the username field */}
+          {isError && (error as Error & { status?: number }).status !== 409 && (
+            <Text style={styles.errorText}>{error.message}</Text>
           )}
           <Button variant="tertiary" onPress={() => router.back()}>
             <Text style={styles.backButtonText}>Kthehu</Text>
@@ -169,7 +181,7 @@ const styles = StyleSheet.create({
     width: 50,
   },
   errorText: {
-    color: 'red',
+    color: Colors.danger,
     marginTop: 4,
   },
   linkText: {

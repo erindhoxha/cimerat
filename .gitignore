@@ -39,3 +39,6 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# reset-content.js backups (contain personal data)
+server/scripts/backups/

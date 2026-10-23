@@ -1,13 +1,5 @@
 import { Control, Controller } from 'react-hook-form';
-import SelectDropdown from 'react-native-select-dropdown';
-import { Box } from '@/components/Box';
-import Label from '@/components/Label';
-import { Text } from '@/components/Text';
-import React from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
-import { styles } from './styles';
-import Colors from '@/constants/Colors';
+import { Select } from '@/components/Select/Select';
 
 interface DropdownFieldProps {
   control: Control<any>;
@@ -19,48 +11,12 @@ interface DropdownFieldProps {
   rules?: any;
   error?: string;
   required?: boolean;
-  dropdownStyle?: StyleProp<ViewStyle>;
   search?: boolean;
-  searchPlaceHolder?: string;
-  searchPlaceHolderColor?: string;
   defaultValue?: string;
   onSelect?: (value: string) => void;
 }
 
-interface SelectValueProps {
-  value: string | undefined;
-  title: string | undefined;
-  isOpened: boolean;
-  placeholder: string;
-  disabled?: boolean;
-  error?: string;
-}
-
-const SelectValue = ({ value, title, isOpened, placeholder, disabled, error }: SelectValueProps) => (
-  <Box
-    style={[
-      styles.dropdownButtonStyle,
-      disabled ? styles.dropdownButtonDisabledStyle : null,
-      error && !disabled ? styles.dropdownButtonErrorStyle : null,
-    ]}
-  >
-    <Text
-      style={[
-        styles.dropdownButtonTxtStyle,
-        disabled ? styles.dropdownButtonTxtDisabledStyle : null,
-        {
-          color: value ? '#000' : '#ccc',
-        },
-      ]}
-    >
-      {title || placeholder}
-    </Text>
-    <Text>
-      <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} />
-    </Text>
-  </Box>
-);
-
+// react-hook-form wrapper around the bottom-sheet Select
 export function DropdownField({
   control,
   name,
@@ -71,56 +27,33 @@ export function DropdownField({
   rules,
   error,
   required,
+  search,
   defaultValue,
-  dropdownStyle,
   onSelect,
-  ...dropdownProps
 }: DropdownFieldProps) {
   return (
-    <Box>
-      <Label>
-        {label}
-        {required && <Text style={styles.asterisk}>*</Text>}
-      </Label>
-      <Controller
-        control={control}
-        name={name}
-        rules={rules}
-        defaultValue={defaultValue}
-        render={({ field: { onChange, value } }) => (
-          <SelectDropdown
-            data={options}
-            onSelect={(value) => {
-              onChange(value);
-              onSelect?.(value);
-            }}
-            disabled={disabled}
-            searchInputStyle={styles.searchInputStyle}
-            searchInputTxtStyle={{ color: '#000', outline: 'transparent' }}
-            renderButton={(_: any, isOpened: boolean) => {
-              return (
-                <Box style={styles.dropdownRenderedButtonStyle}>
-                  <SelectValue
-                    value={value === 'undefined' ? undefined : value}
-                    title={value === 'undefined' ? undefined : value ?? placeholder ?? ''}
-                    isOpened={isOpened}
-                    placeholder={placeholder}
-                    disabled={disabled}
-                    error={error}
-                  />
-                </Box>
-              );
-            }}
-            renderItem={(item: string, _: number, isSelected: boolean) => (
-              <Box style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-              </Box>
-            )}
-            {...dropdownProps}
-          />
-        )}
-      />
-      {error && !disabled && <Text style={styles.error}>{error}</Text>}
-    </Box>
+    <Controller
+      control={control}
+      name={name}
+      rules={rules}
+      defaultValue={defaultValue}
+      render={({ field: { onChange, value } }) => (
+        <Select
+          label={label}
+          required={required}
+          placeholder={placeholder}
+          options={options}
+          // Older listings stored the literal string "undefined" for empty optional fields
+          value={value === 'undefined' ? null : value}
+          onChange={(next) => {
+            onChange(next ?? '');
+            if (next) onSelect?.(next);
+          }}
+          searchable={search}
+          disabled={disabled}
+          error={disabled ? undefined : error}
+        />
+      )}
+    />
   );
 }

@@ -1,12 +1,13 @@
 import { RefreshControl, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import Colors from '@/constants/Colors';
-import { Link, useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 import { HorizontalCardItem } from '@/components/HorizontalCardItem/HorizontalCardItem';
 import { Text } from '@/components/Text';
 import { Button } from '@/components/Button/Button';
 import { Box } from '@/components/Box';
 import { useAuth } from '@/context/AuthContext';
-import { FontAwesome } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
@@ -15,7 +16,7 @@ import { useEffect, useState } from 'react';
 
 export default function TabTwoScreen() {
   const { token } = useAuth();
-  const router = useRouter();
+  const router = useSafeRouter();
   const isLoggedIn = !!token;
 
   const listings = useQuery<Listing[]>({
@@ -37,7 +38,7 @@ export default function TabTwoScreen() {
   const { data, error, isLoading, isRefetching } = listings;
 
   if (error) {
-    return <Text>Error: {error.message}</Text>;
+    return <Text style={{ padding: 20 }}>{typeof error === 'string' ? error : error.message}</Text>;
   }
 
   const [authChecked, setAuthChecked] = useState(false);
@@ -80,8 +81,8 @@ export default function TabTwoScreen() {
         )}
         {!isLoggedIn && (
           <Box marginTop={24} gap={12} style={styles.centeredBox}>
-            <Box>
-              <FontAwesome name="exclamation" size={48} color={Colors.danger} />
+            <Box style={styles.emptyIcon}>
+              <Ionicons name="albums-outline" size={26} color={Colors.textMuted} />
             </Box>
             <Text fontSize="xl" fontWeight="bold">
               Nuk jeni të kyçur
@@ -124,6 +125,7 @@ const styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
+    color: Colors.textMuted,
   },
   emptyText: {
     marginBottom: 24,
@@ -144,5 +146,13 @@ const styles = StyleSheet.create({
   },
   fullWidthButton: {
     width: '100%',
+  },
+  emptyIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: Colors.lightGray,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

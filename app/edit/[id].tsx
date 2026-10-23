@@ -1,14 +1,16 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
+import { RequireAuth } from '@/components/RequireAuth/RequireAuth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import { useAuth } from '@/context/AuthContext';
 import { ImageType, Listing } from '@/types';
 import { ListingForm } from '@/components/ListingForm/ListingForm';
-import { buildListingFormData } from '@/utils';
+import { buildListingFormData, uploadForm } from '@/utils';
 
-export default function EditScreen() {
+function EditScreenContent() {
   const { id } = useLocalSearchParams();
-  const router = useRouter();
+  const router = useSafeRouter();
   const { token } = useAuth();
 
   const queryClient = useQueryClient();
@@ -22,24 +24,28 @@ export default function EditScreen() {
     },
   });
 
-  const onSubmit = async (data: Omit<Listing, '_id' | 'user' | 'createdAt' | 'updatedAt'>, images: ImageType[]) => {
+  const onSubmit = async (
+    data: Omit<Listing, '_id' | 'user' | 'createdAt' | 'updatedAt'>,
+    images: ImageType[],
+    onProgress: (fraction: number) => void,
+  ) => {
     const formData = await buildListingFormData(data, images);
 
     try {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings/${id}`, {
+      await uploadForm({
+        url: `${process.env.EXPO_PUBLIC_API_URL}/listings/${id}`,
         method: 'PUT',
         body: formData,
-        headers: { Authorization: `Bearer ${token}` },
+        token,
+        onProgress,
       });
-      const json = await res.json();
-      if (!res.ok) Promise.reject(json.error || 'Gabim gjatë ndryshimit.');
       Toast.show({ type: 'success', text1: 'Listimi u ndryshua' });
       queryClient.invalidateQueries({ queryKey: ['my-listings'] });
       queryClient.invalidateQueries({ queryKey: ['listings'] });
       router.dismissAll();
       router.push(`/${id}`);
     } catch (e) {
-      Toast.show({ type: 'error', text1: 'Gabim gjatë ndryshimit' });
+      Toast.show({ type: 'error', text1: e instanceof Error ? e.message : 'Gabim gjatë ndryshimit' });
     }
   };
 
@@ -59,5 +65,13 @@ export default function EditScreen() {
       }}
       isEditing
     />
+  );
+}
+
+export default function EditScreen() {
+  return (
+    <RequireAuth reason="modifikuar listimin">
+      <EditScreenContent />
+    </RequireAuth>
   );
 }

@@ -1,29 +1,18 @@
 const express = require('express');
-const multer = require('multer');
-const sharp = require('sharp');
-const { encode } = require('blurhash');
 
 const Listing = require('../models/Listing');
 const requireAuth = require('../middlewares/requireAuthentication');
+const { upload, saveImage, PUBLIC_USER_FIELDS } = require('../utils/images');
+const { buildSearchFilter } = require('../utils/search');
 
 const router = express.Router();
-const upload = multer({ dest: 'uploads/' });
-
-// Helper to generate blurhash
-async function getBlurhash(imagePath) {
-  const { data, info } = await sharp(imagePath)
-    .raw()
-    .ensureAlpha()
-    .resize(32, 32, { fit: 'inside' })
-    .toBuffer({ resolveWithObject: true });
-
-  return encode(new Uint8ClampedArray(data), info.width, info.height, 4, 4);
-}
 
 // Get current user's listings
 router.get('/my-listings', requireAuth, async (req, res) => {
   try {
-    const listings = await Listing.find({ user: req.user._id }).sort({ createdAt: -1 }).populate('user', 'username');
+    const listings = await Listing.find({ user: req.user._id })
+      .sort({ createdAt: -1 })
+      .populate('user', PUBLIC_USER_FIELDS);
     res.status(200).json(listings);
   } catch (error) {
     console.error(error);
@@ -39,8 +28,9 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
   }
 
   try {
-    const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
-    const blurhashes = await Promise.all(req.files.map((file) => getBlurhash(file.path)));
+    const saved = await Promise.all(req.files.map((file) => saveImage(file)));
+    const imagePaths = saved.map((img) => img.path);
+    const blurhashes = saved.map((img) => img.blurhash);
 
     const listing = new Listing({
       city,
@@ -68,8 +58,13 @@ router.post('/listings', requireAuth, upload.array('images'), async (req, res) =
 // Delete a listing
 router.delete('/listings/:id', requireAuth, async (req, res) => {
   try {
-    const listing = await Listing.findByIdAndDelete(req.params.id);
+    const listing = await Listing.findById(req.params.id);
     if (!listing) return res.status(404).json({ error: 'Listing not found' });
+    // Previously any logged in user could delete any listing
+    if (listing.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'You are not allowed to delete this listing' });
+    }
+    await listing.deleteOne();
     res.status(200).json({ message: 'Listing deleted successfully' });
   } catch (error) {
     console.error(error);
@@ -92,8 +87,9 @@ router.put('/listings/:id', requireAuth, upload.array('images'), async (req, res
       return res.status(403).json({ error: 'You are not allowed to edit this listing' });
     }
 
-    const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
-    const blurhashes = await Promise.all(req.files.map((file) => getBlurhash(file.path)));
+    const saved = await Promise.all(req.files.map((file) => saveImage(file)));
+    const imagePaths = saved.map((img) => img.path);
+    const blurhashes = saved.map((img) => img.blurhash);
 
     Object.assign(listing, {
       city,
@@ -127,26 +123,52 @@ router.get('/listings', async (req, res) => {
       priceTo,
       numberOfRooms,
       numberOfFlatmates,
+      q,
       limit = 20,
       skip = 0,
     } = req.query;
     const filter = {};
 
     if (city) filter.city = Array.isArray(city) ? { $in: city } : city;
-    if (neighborhood) filter.neighborhood = Array.isArray(neighborhood) ? { $in: neighborhood } : neighborhood;
+    if (neighborhood) {
+      // Ids are "City|Name" (names repeat across cities); plain names are still accepted
+      const pairs = (Array.isArray(neighborhood) ? neighborhood : [neighborhood]).map((value) => {
+        const [first, ...rest] = String(value).split('|');
+        const name = rest.length ? rest.join('|') : first;
+        // "Bregu i Diellit / Kodra e Diellit" also matches listings saved under either single name
+        const names = [name, ...name.split(' / ').map((part) => part.trim())];
+        const match = { neighborhood: { $in: [...new Set(names)] } };
+        return rest.length ? { city: first, ...match } : match;
+      });
+      filter.$or = pairs;
+    }
     if (priceFrom || priceTo) {
       filter.price = {};
       if (priceFrom) filter.price.$gte = Number(priceFrom);
       if (priceTo) filter.price.$lte = Number(priceTo);
     }
-    if (numberOfRooms) filter.rooms = numberOfRooms;
-    if (numberOfFlatmates) filter.currentFlatmates = numberOfFlatmates;
+    // "5+" means five or more; older listings stored exact counts up to 10
+    const countFilter = (value) =>
+      value === '5+' ? { $in: ['5+', '5', '6', '7', '8', '9', '10'] } : value;
+    if (numberOfRooms) filter.rooms = countFilter(numberOfRooms);
+    if (numberOfFlatmates) filter.currentFlatmates = countFilter(numberOfFlatmates);
+
+    if (q) {
+      Object.assign(
+        filter,
+        await buildSearchFilter(q, {
+          textFields: ['city', 'neighborhood', 'description', 'flatmateGender'],
+          numberFields: ['rooms', 'currentFlatmates'],
+          approxNumberFields: ['price'],
+        }),
+      );
+    }
 
     const listings = await Listing.find(filter)
       .sort({ createdAt: -1 })
       .skip(Number(skip))
       .limit(Number(limit))
-      .populate('user', 'username');
+      .populate('user', PUBLIC_USER_FIELDS);
 
     const total = await Listing.countDocuments(filter);
     res.status(200).json({ listings, total });
@@ -159,7 +181,7 @@ router.get('/listings', async (req, res) => {
 // Get a single listing
 router.get('/listing/:id', async (req, res) => {
   try {
-    const listing = await Listing.findById(req.params.id).populate('user', 'username');
+    const listing = await Listing.findById(req.params.id).populate('user', PUBLIC_USER_FIELDS);
     if (!listing) return res.status(404).json({ error: 'Listing not found' });
     res.status(200).json(listing);
   } catch (error) {

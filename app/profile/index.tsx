@@ -1,243 +1,276 @@
+import { useEffect, useState } from 'react';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
+import { RequireAuth } from '@/components/RequireAuth/RequireAuth';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { Controller, useForm } from 'react-hook-form';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { isValidPhoneNumber } from 'libphonenumber-js';
+import { Ionicons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
+import { z } from 'zod';
 import { Box } from '@/components/Box';
 import { Button } from '@/components/Button';
-import { useAuth } from '@/context/AuthContext';
 import { Text } from '@/components/Text';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ActivityIndicator, Modal, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import Input from '@/components/Input';
-import Label from '@/components/Label';
-import { useState } from 'react';
-import Colors from '@/constants/Colors';
-import { useRouter } from 'expo-router';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Toast from 'react-native-toast-message';
+import { Avatar } from '@/components/Avatar/Avatar';
+import { MyListings } from '@/components/MyListings/MyListings';
+import { Loading } from '@/components/Loading/Loading';
 import { WebView } from '@/components/WebView/WebView';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { FontAwesome } from '@expo/vector-icons';
+import { useAuth } from '@/context/AuthContext';
+import { useConfirm } from '@/context/ConfirmProvider';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useUploadAvatar } from '@/hooks/useUploadAvatar';
+import { displayName } from '@/utils';
+import Colors from '@/constants/Colors';
 
-interface Mutation {
-  userId: string | null;
-  username: string;
-  password: string;
-  oldPassword: string;
-}
-
-const formSchema = z.object({
-  oldPassword: z.string().min(6, 'Fjalëkalimi i vjetër është i detyrueshëm, dhe duhet të ketë të paktën 6 karaktere'),
-  newPassword: z.string().min(6, 'Fjalëkalimi i ri është i detyrueshëm, dhe duhet të ketë të paktën 6 karaktere'),
+const detailsSchema = z.object({
+  fullName: z.string().max(60, 'Emri i plotë mund të ketë deri në 60 karaktere'),
+  phone: z.string().refine((val) => !val || isValidPhoneNumber(val, 'XK'), 'Numri duhet të jetë valid për Kosovë'),
 });
 
-export default function ProfileScreen() {
+const passwordSchema = z.object({
+  oldPassword: z.string().min(6, 'Fjalëkalimi i vjetër duhet të ketë të paktën 6 karaktere'),
+  newPassword: z.string().min(6, 'Fjalëkalimi i ri duhet të ketë të paktën 6 karaktere'),
+});
+
+type Details = z.infer<typeof detailsSchema>;
+type Passwords = z.infer<typeof passwordSchema>;
+
+function ProfileScreenContent() {
   const queryClient = useQueryClient();
-  const { token, userId, setAuth } = useAuth();
-  const [modalOpen, setModalOpen] = useState(false);
+  const router = useSafeRouter();
+  const { token, userId, username, setAuth } = useAuth();
+  const confirm = useConfirm();
+  // Opened with ?tab=listings after posting something, so it's right there
+  const params = useLocalSearchParams<{ tab?: string }>();
+  const [tab, setTab] = useState<'listings' | 'profile'>(params.tab === 'profile' ? 'profile' : 'listings');
+  const { data, isLoading } = useCurrentUser();
+  const { pickAndUpload, isUploading } = useUploadAvatar();
+  const user = data?.user;
 
-  const router = useRouter();
-
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      oldPassword: '',
-      newPassword: '',
-    },
+  const detailsForm = useForm<Details>({
+    resolver: zodResolver(detailsSchema),
+    defaultValues: { fullName: '', phone: '' },
   });
 
-  const { data, error, status } = useQuery({
-    queryKey: ['user'],
-    enabled: !!token,
-    queryFn: async () => {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/user`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) {
-        return Promise.reject(
-          (await res.json()) ||
-            'Gabim gjatë përditësimit. Mund te jetë se fjalëkalimi juaj është i gabuar. Ju lutemi provoni përsëri.',
-        );
-      }
-      return res.json();
-    },
+  const passwordForm = useForm<Passwords>({
+    resolver: zodResolver(passwordSchema),
+    defaultValues: { oldPassword: '', newPassword: '' },
   });
 
-  const {
-    mutateAsync: updateMutation,
-    error: mutationError,
-    isPending,
-  } = useMutation({
-    mutationFn: async (variables: Mutation) => {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/edit-user`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+  // Fill the form once the user has loaded
+  useEffect(() => {
+    if (user) detailsForm.reset({ fullName: user.fullName ?? '', phone: user.phone ?? '' });
+  }, [user?.fullName, user?.phone]);
+
+  const saveDetails = useMutation({
+    mutationFn: async (values: Details) => {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/me`, {
         method: 'PUT',
-        body: JSON.stringify(variables),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(values),
+      });
+      const json = await res.json();
+      if (!res.ok) return Promise.reject(new Error(json.error || 'Gabim gjatë ruajtjes së profilit.'));
+      return json;
+    },
+    onSuccess: () => {
+      // The name is embedded in listings and posts too
+      queryClient.invalidateQueries();
+      Toast.show({ type: 'success', text1: 'Profili u ruajt' });
+    },
+  });
+
+  const changePassword = useMutation({
+    mutationFn: async (values: Passwords) => {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/edit-user`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ userId, oldPassword: values.oldPassword, password: values.newPassword }),
       });
       const json = await res.json();
       if (!res.ok) {
-        return Promise.reject({
-          message:
-            json.message ||
-            'Gabim gjatë përditësimit. Mund te jetë se fjalëkalimi juaj është i gabuar. Ju lutemi provoni përsëri',
-        });
+        return Promise.reject(new Error(json.error || 'Gabim gjatë ndryshimit të fjalëkalimit.'));
       }
       return json;
     },
+    onSuccess: () => {
+      passwordForm.reset();
+      Toast.show({ type: 'success', text1: 'Fjalëkalimi u ndryshua' });
+    },
   });
 
-  if (status === 'pending') {
-    return (
-      <Box flex={1} justifyContent="center" alignItems="center">
-        <Text>Duke ngarkuar...</Text>
-      </Box>
-    );
-  }
-
-  const {
-    user: { username },
-  } = data;
-
-  const onSubmitHandler = async (data: FieldValues) => {
-    await updateMutation(
-      {
-        userId,
-        username: data?.user?.username ?? username,
-        oldPassword: data.oldPassword,
-        password: data.newPassword,
-      },
-      {
-        onSuccess() {
-          Toast.show({ type: 'success', text1: 'Përdoruesi u përditësua me sukses' });
-          router.push('/');
-        },
-      },
-    );
+  const signOut = async () => {
+    const ok = await confirm({
+      title: 'Dil nga llogaria?',
+      message: 'Mund të hyni përsëri në çdo moment me kredencialet tuaja.',
+      confirmLabel: 'Po, dil',
+      destructive: true,
+      icon: 'log-out-outline',
+    });
+    if (!ok) return;
+    setAuth(null, null, null);
+    queryClient.clear();
+    router.replace('/');
   };
 
+  if (isLoading || !user) return <Loading />;
+
   return (
-    <ScrollView style={[styles.container, styles.nonWebBackground]} contentContainerStyle={styles.contentContainer}>
+    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       <WebView>
-        <Box marginBottom={12}>
-          <Text fontSize="xl" fontWeight="bold">
-            Profili juaj
+        <Box alignItems="center" gap={4} marginBottom={20}>
+          <TouchableOpacity
+            onPress={pickAndUpload}
+            disabled={isUploading}
+            accessibilityLabel="Ndrysho foton e profilit"
+          >
+            <Avatar user={user} size={96} linked={false} />
+            <Box style={styles.cameraBadge}>
+              {isUploading ? (
+                <ActivityIndicator size="small" color={Colors.onPrimary} />
+              ) : (
+                <Ionicons name="camera" size={16} color={Colors.onPrimary} />
+              )}
+            </Box>
+          </TouchableOpacity>
+          <Text style={styles.name}>{displayName(user)}</Text>
+          <Text style={styles.handle}>@{user.username ?? username}</Text>
+          <Text style={styles.linkText} onPress={() => router.push(`/user/${userId}`)}>
+            Shiko profilin publik
           </Text>
         </Box>
-        <Box>
-          <Box marginBottom={12} gap={12} marginTop={12}>
-            <Box flexDirection="row" gap={4}>
-              <Label>Username:</Label>
-              <Text fontWeight="bold">{data?.user?.username ?? username}</Text>
-            </Box>
-            <Box>
-              <Label>Fjalëkalimi i vjetër</Label>
-              <Controller
-                control={form.control}
-                name="oldPassword"
-                render={({ field, fieldState: { error } }) => (
-                  <Input
-                    {...field}
-                    placeholder="Fjalëkalimi juaj"
-                    secureTextEntry
-                    error={error?.message}
-                    onChangeText={field.onChange}
-                  />
-                )}
-              />
-            </Box>
-            <Box>
-              <Label>Fjalëkalimi i ri</Label>
-              <Controller
-                control={form.control}
-                name="newPassword"
-                render={({ field, fieldState: { error } }) => (
-                  <Input
-                    {...field}
-                    placeholder="Fjalëkalimi i ri"
-                    secureTextEntry
-                    error={error?.message}
-                    onChangeText={field.onChange}
-                  />
-                )}
-              />
-            </Box>
-            <Button variant="primary" onPress={form.handleSubmit(onSubmitHandler)} disabled={isPending}>
-              {form.formState.isSubmitting ? (
-                <Box flexDirection="row" gap={4}>
-                  <Text>Duke ndryshuar...</Text>
-                  <ActivityIndicator size="small" color="#000" />
-                </Box>
-              ) : (
-                <Text>Modifiko të dhënat e profilit</Text>
-              )}
-            </Button>
-            {mutationError && <Text style={styles.errorText}>{mutationError.message}</Text>}
-            {error && <Text style={styles.errorText}>{error.message}</Text>}
-          </Box>
-          <Modal
-            onDismiss={() => setModalOpen(false)}
-            visible={modalOpen}
-            onRequestClose={() => setModalOpen(!modalOpen)}
-            transparent
-            presentationStyle="overFullScreen"
-          >
-            <TouchableOpacity
-              onPressOut={() => setModalOpen(false)}
-              onPressIn={() => undefined}
-              activeOpacity={1}
-              style={styles.modalOverlay}
+
+        <Box style={styles.segmented} accessibilityRole="tablist">
+          {(
+            [
+              ['listings', 'Listimet e mia'],
+              ['profile', 'Profili'],
+            ] as const
+          ).map(([key, title]) => (
+            <Pressable
+              key={key}
+              onPress={() => setTab(key)}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: tab === key }}
+              style={[styles.segment, tab === key && styles.segmentActive]}
             >
-              <TouchableOpacity activeOpacity={1} style={styles.modalContent}>
-                <Box marginBottom={8}>
-                  <FontAwesome name="question" size={32} />
-                </Box>
-                <Text fontSize="lg" fontWeight="bold" style={styles.modalTitle}>
-                  A jeni të sigurtë që dëshironi të dilni nga aplikacioni?
-                </Text>
-                <Text style={styles.modalDescription}>
-                  Mund te hyni perseri ne cdo moment duke u kycur me kredencialet tuaja.
-                </Text>
-                <Box
-                  marginTop={12}
-                  gap={12}
-                  flexDirection="row"
-                  width="100%"
-                  justifyContent="center"
-                  alignItems="center"
-                  style={styles.modalActions}
-                >
-                  <Button style={styles.flexOne} variant="tertiary" onPress={() => setModalOpen(false)}>
-                    <Text>Jo, anulo</Text>
-                  </Button>
-                  <Button
-                    style={styles.flexOne}
-                    variant="danger"
-                    onPress={() => {
-                      setAuth(null, null, null);
-                      queryClient.clear();
-                      router.replace('/');
-                    }}
-                  >
-                    <Text>Po, dil</Text>
-                  </Button>
-                </Box>
-              </TouchableOpacity>
-            </TouchableOpacity>
-          </Modal>
-          <Box gap={12} marginTop={24}>
-            <Text fontSize="md" fontWeight="bold">
-              Veprime të tjera
-            </Text>
-            <Button variant="tertiary" onPress={() => router.push(`/your-listings`)}>
-              Shiko listimet e mia
-            </Button>
-            <Button variant="danger" onPress={() => setModalOpen(true)}>
-              Dil nga profili
-            </Button>
-          </Box>
+              <Text style={[styles.segmentText, tab === key && styles.segmentTextActive]}>{title}</Text>
+            </Pressable>
+          ))}
         </Box>
+
+        {tab === 'listings' ? (
+          <MyListings />
+        ) : (
+          <>
+            <Box style={styles.section}>
+              <Text style={styles.sectionTitle}>Të dhënat personale</Text>
+
+              <Box gap={6}>
+                <Text style={styles.fieldLabel}>Emri i përdoruesit</Text>
+                <Box style={styles.lockedField}>
+                  <Text style={styles.lockedText}>{user.username}</Text>
+                  <Ionicons name="lock-closed-outline" size={16} color={Colors.textMuted} />
+                </Box>
+                <Text style={styles.hint}>Emri i përdoruesit nuk mund të ndryshohet.</Text>
+              </Box>
+
+              <Controller
+                control={detailsForm.control}
+                name="fullName"
+                render={({ field, fieldState }) => (
+                  <Input
+                    label="Emri i plotë"
+                    placeholder="P.sh. Arta Krasniqi"
+                    autoCapitalize="words"
+                    autoComplete="name"
+                    maxLength={60}
+                    value={field.value}
+                    onChangeText={field.onChange}
+                    onBlur={field.onBlur}
+                    error={fieldState.error?.message}
+                  />
+                )}
+              />
+              <Controller
+                control={detailsForm.control}
+                name="phone"
+                render={({ field, fieldState }) => (
+                  <Input
+                    label="Numri i telefonit"
+                    placeholder="048123456 ose +38348123456"
+                    keyboardType="phone-pad"
+                    autoComplete="tel"
+                    maxLength={15}
+                    value={field.value}
+                    onChangeText={(text) => field.onChange(text.replace(/[^0-9+]/g, ''))}
+                    onBlur={field.onBlur}
+                    error={fieldState.error?.message}
+                  />
+                )}
+              />
+              <Text style={styles.hint}>
+                Emri i plotë shfaqet në postimet tuaja. Numri plotësohet automatikisht kur postoni veten si cimer.
+              </Text>
+              {saveDetails.error && <Text style={styles.errorText}>{saveDetails.error.message}</Text>}
+              <Button
+                onPress={detailsForm.handleSubmit((values) => saveDetails.mutate(values))}
+                disabled={saveDetails.isPending || !detailsForm.formState.isDirty}
+              >
+                {saveDetails.isPending ? <ActivityIndicator color={Colors.onPrimary} /> : 'Ruaj ndryshimet'}
+              </Button>
+            </Box>
+
+            <Box style={styles.section}>
+              <Text style={styles.sectionTitle}>Fjalëkalimi</Text>
+              <Controller
+                control={passwordForm.control}
+                name="oldPassword"
+                render={({ field, fieldState }) => (
+                  <Input
+                    label="Fjalëkalimi aktual"
+                    placeholder="••••••"
+                    secureTextEntry
+                    value={field.value}
+                    onChangeText={field.onChange}
+                    error={fieldState.error?.message}
+                  />
+                )}
+              />
+              <Controller
+                control={passwordForm.control}
+                name="newPassword"
+                render={({ field, fieldState }) => (
+                  <Input
+                    label="Fjalëkalimi i ri"
+                    placeholder="Të paktën 6 karaktere"
+                    secureTextEntry
+                    value={field.value}
+                    onChangeText={field.onChange}
+                    error={fieldState.error?.message}
+                  />
+                )}
+              />
+              {changePassword.error && <Text style={styles.errorText}>{changePassword.error.message}</Text>}
+              <Button
+                variant="tertiary"
+                onPress={passwordForm.handleSubmit((values) => changePassword.mutate(values))}
+                disabled={changePassword.isPending}
+              >
+                {changePassword.isPending ? <ActivityIndicator color={Colors.text} /> : 'Ndrysho fjalëkalimin'}
+              </Button>
+            </Box>
+
+            <Box gap={12} marginBottom={40}>
+              <Button variant="tertiary" icon="log-out-outline" iconColor={Colors.danger} onPress={signOut}>
+                <Text style={{ color: Colors.danger }}>Dil nga profili</Text>
+              </Button>
+            </Box>
+          </>
+        )}
       </WebView>
     </ScrollView>
   );
@@ -246,46 +279,113 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.surface,
   },
-  nonWebBackground: {
-    backgroundColor: 'white',
+  name: {
+    fontSize: 24,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+    color: Colors.text,
+    marginTop: 10,
   },
-  contentContainer: {
-    minHeight: '100%',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    flexDirection: 'column',
+  handle: {
+    fontSize: 15,
+    color: Colors.textMuted,
+  },
+  linkText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.accentInk,
+    marginTop: 6,
+  },
+  cameraBadge: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 3,
+    borderColor: Colors.surface,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  segmented: {
+    flexDirection: 'row',
+    padding: 4,
+    marginBottom: 20,
+    borderRadius: 14,
+    backgroundColor: Colors.lightGray,
+  },
+  segment: {
+    flex: 1,
+    height: 40,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  segmentActive: {
+    backgroundColor: Colors.surface,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
+  },
+  segmentText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.textMuted,
+  },
+  segmentTextActive: {
+    color: Colors.text,
+  },
+  section: {
+    gap: 14,
+    padding: 16,
+    marginBottom: 20,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  sectionTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: Colors.text,
+  },
+  fieldLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: Colors.textFade,
+  },
+  lockedField: {
+    minHeight: 48,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 12,
+    backgroundColor: Colors.lightGray,
+  },
+  lockedText: {
+    fontSize: 15,
+    color: Colors.textFade,
+  },
+  hint: {
+    fontSize: 12,
+    lineHeight: 17,
+    color: Colors.textMuted,
   },
   errorText: {
     color: Colors.danger,
-    marginTop: 4,
-  },
-  modalOverlay: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalContent: {
-    maxWidth: '90%',
-    backgroundColor: 'white',
-    padding: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
-    marginTop: 120,
-    alignSelf: 'center',
-  },
-  modalTitle: {
-    textAlign: 'center',
-  },
-  modalDescription: {
-    textAlign: 'center',
-    marginTop: 12,
-  },
-  modalActions: {
-    position: 'relative',
-  },
-  flexOne: {
-    flex: 1,
   },
 });
+
+export default function ProfileScreen() {
+  return (
+    <RequireAuth reason="parë profilin">
+      <ProfileScreenContent />
+    </RequireAuth>
+  );
+}

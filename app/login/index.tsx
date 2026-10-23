@@ -1,7 +1,7 @@
 import { StyleSheet, TextInput, ActivityIndicator, ScrollView } from 'react-native';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Colors from '@/constants/Colors';
-import { useRouter } from 'expo-router';
 import { View } from '@/components/View/View';
 import { Box } from '@/components/Box';
 import { Text } from '@/components/Text';
@@ -21,7 +21,7 @@ export default function LoginScreen() {
   } = useForm();
   const { setAuth } = useAuth();
 
-  const router = useRouter();
+  const router = useSafeRouter();
 
   const passwordRef = useRef<TextInput>(null);
 
@@ -37,9 +37,11 @@ export default function LoginScreen() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      const json = await res.json();
+      // An HTML error page (e.g. server down) would otherwise throw "JSON Parse error"
+      const json = await res.json().catch(() => ({}));
       if (!res.ok) {
-        return Promise.reject(json.error || 'Gabim gjatë kyçjes. Ju lutemi provoni përsëri.');
+        // Rejecting with an Error (not a string) so the server's message reaches the UI
+        return Promise.reject(new Error(json.error || 'Gabim gjatë kyçjes. Ju lutemi provoni përsëri.'));
       }
       return json;
     },
@@ -112,11 +114,9 @@ export default function LoginScreen() {
             {errors.password && <Text style={styles.errorText}>Fjalëkalimi është i detyrueshëm</Text>}
           </Box>
           <Button onPress={handleSubmit(onSubmitHandler)} disabled={isPending || isSubmitting}>
-            {isPending && isSubmitting ? <ActivityIndicator color="#000" /> : <Text>Kyçu</Text>}
+            {isPending && isSubmitting ? <ActivityIndicator color={Colors.onPrimary} /> : <Text>Kyçu</Text>}
           </Button>
-          {isError && (
-            <Text style={styles.globalErrorText}>{error instanceof Error ? error.message : 'Gabim gjatë kyçjes'}</Text>
-          )}
+          {isError && <Text style={styles.globalErrorText}>{error.message}</Text>}
         </Box>
         <Button variant="tertiary" style={styles.backButton} onPress={() => router.back()}>
           <Text style={styles.backButtonText}>Kthehu</Text>

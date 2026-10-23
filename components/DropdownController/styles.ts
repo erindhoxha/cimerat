@@ -16,13 +16,12 @@ export const styles = StyleSheet.create({
     cursor: 'pointer',
   },
   dropdownItemSelected: {
-    backgroundColor: Colors.yellow,
-    color: 'white',
+    backgroundColor: Colors.accentSoft,
     borderColor: 'white',
   },
   dropdownButtonStyle: {
     width: '100%',
-    height: 50,
+    height: 48,
     borderRadius: 12,
     flexDirection: 'row',
     justifyContent: 'center',
@@ -30,15 +29,17 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 12,
     flexShrink: 1,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: Colors.border,
     fontSize: 14,
   },
   multiSelectStyle: {
     width: '100%',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#ccc',
-    outline: Colors.yellow,
+    borderColor: Colors.border,
+    outline: Colors.primary,
+    minHeight: 48,
+    backgroundColor: Colors.surface,
     fontSize: 14,
   },
   dropdownButtonErrorStyle: {
@@ -50,7 +51,8 @@ export const styles = StyleSheet.create({
     fontSize: 14,
   },
   dropdownMenuStyle: {
-    borderRadius: 8,
+    borderRadius: 12,
+    backgroundColor: Colors.surface,
     paddingHorizontal: 8,
     paddingVertical: 12,
     overflow: 'scroll',
@@ -63,14 +65,14 @@ export const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   dropdownRenderedButtonStyle: {
-    outlineColor: Colors.yellow,
+    outlineColor: Colors.primary,
     borderRadius: 12,
   },
   dropdownItemTxtStyle: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '500',
-    color: '#151E26',
+    color: Colors.text,
   },
   searchInputStyle: {
     backgroundColor: Colors.gray,
@@ -78,17 +80,17 @@ export const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   dropdownButtonDisabledStyle: {
-    backgroundColor: '#f3f3f3ff',
+    backgroundColor: Colors.lightGray,
     opacity: 1,
     borderWidth: 0,
   },
   disabledMultiSelectStyle: {
-    backgroundColor: '#f3f3f3ff',
+    backgroundColor: Colors.lightGray,
     opacity: 1,
     borderWidth: 0,
   },
   dropdownButtonTxtDisabledStyle: {
-    color: '#aaa',
+    color: Colors.gray,
   },
   error: {
     color: Colors.danger,

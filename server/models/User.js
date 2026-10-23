@@ -1,31 +1,54 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true,
-    match: [/^[a-zA-Z0-9]+$/, 'Username can only contain letters and numbers.'],
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6,
-  },
-  verified: {
-    type: Boolean,
-    default: false,
-  },
-  likedListings: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Listing',
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+      match: [/^[a-zA-Z0-9]+$/, 'Username can only contain letters and numbers.'],
     },
-  ],
-});
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+    },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+    likedListings: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Listing',
+      },
+    ],
+    fullName: {
+      type: String,
+      trim: true,
+      maxlength: 60,
+      default: null,
+    },
+    // Private: only returned to the user themselves, used to prefill posts
+    phone: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    avatar: {
+      type: String,
+      default: null,
+    },
+    avatarBlurhash: {
+      type: String,
+      default: null,
+    },
+  },
+  { timestamps: true },
+);
 
 userSchema.pre('save', function (next) {
   const user = this;

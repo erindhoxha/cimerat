@@ -1,8 +1,7 @@
-import { Image as ExpoImage } from 'expo-image';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import {
   ActivityIndicator,
-  Linking,
   Modal,
   Pressable,
   ScrollView,
@@ -17,26 +16,38 @@ import { Button } from '@/components/Button';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Listing } from '@/types';
 import { Loading } from '@/components/Loading/Loading';
-import { BLURHASH_TRANSITION } from '@/constants/global';
 import { MobileCarousel } from '@/components/MobileCarousel/MobileCarousel';
-import { formatDate, formatKosovoPhone, listingHasExpired } from '@/utils';
+import { displayName, formatDate, formatKosovoPhone, listingHasExpired } from '@/utils';
 import Colors from '@/constants/Colors';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import Toast from 'react-native-toast-message';
 import { WebView } from '@/components/WebView/WebView';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { WebCarousel } from '@/components/WebCarousel/WebCarousel';
+import { ListingImage } from '@/components/ListingImage/ListingImage';
+import { Avatar } from '@/components/Avatar/Avatar';
+import { ContactButtons } from '@/components/ContactButtons/ContactButtons';
+
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
+
+const Stat = ({ icon, label, value }: { icon: IconName; label: string; value?: string }) => (
+  <Box style={styles.stat}>
+    <Ionicons name={icon} size={16} color={Colors.text} />
+    <Text style={styles.statValue}>{value && value !== 'undefined' ? value : '–'}</Text>
+    <Text style={styles.statLabel}>{label}</Text>
+  </Box>
+);
 
 export default function ItemDetailScreen() {
   const { item, imageIndex } = useLocalSearchParams();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [heroIndex, setHeroIndex] = useState(typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) || 0 : 0);
   const isMobile = useWindowDimensions().width < 768;
 
   const { token, userId } = useAuth();
   const isLoggedIn = !!token;
   const queryClient = useQueryClient();
-  const router = useRouter();
+  const router = useSafeRouter();
 
   const { data: userData } = useQuery({
     queryKey: ['user'],
@@ -101,6 +112,7 @@ export default function ItemDetailScreen() {
 
   const { data, error, isLoading } = useQuery<Listing>({
     staleTime: 0,
+    enabled: typeof item === 'string' && item !== 'undefined',
     queryKey: ['listing', item],
     queryFn: async () => {
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listing/${item}`);
@@ -127,109 +139,138 @@ export default function ItemDetailScreen() {
     };
   }, [lightboxIndex, data?.images.length]);
 
-  if (error) return <Text>Error: {error.message}</Text>;
+  if (error) return <Text style={{ padding: 20 }}>{typeof error === 'string' ? error : error.message}</Text>;
   if (isLoading) return <Loading />;
 
   const isOwner = data?.user?._id === userId;
   const isExpired = listingHasExpired(data?.createdAt);
   const liked = userData?.user?.likedListings?.includes(data?._id as unknown as string);
 
-  const isSingle = data?.images.length === 1;
-
   return data ? (
     <ScrollView style={styles.scrollViewContainer} contentContainerStyle={styles.contentContainer}>
       <WebView noPadding>
-        <Pressable onPress={() => setLightboxIndex(0)}>
-          <MobileCarousel
-            style={[styles.carousel]}
+        <Box style={styles.hero}>
+          <MobileCarousel<string>
             data={data.images}
-            defaultIndex={typeof imageIndex === 'string' ? Math.round(Number(imageIndex)) : 0}
+            aspectRatio={4 / 3}
+            defaultIndex={heroIndex}
+            onProgressChange={setHeroIndex}
             renderItem={({ item, index }) => (
-              <ExpoImage
-                key={index}
-                style={styles.cardImage}
-                source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${item}` }}
-                placeholder={{ blurhash: data?.blurhashes?.[index] || data?.blurhash || '' }}
-                contentFit="cover"
-                transition={BLURHASH_TRANSITION}
-              />
+              <Pressable style={styles.heroSlide} onPress={() => setLightboxIndex(index)}>
+                <ListingImage
+                  path={item}
+                  blurhash={data?.blurhashes?.[index] || data?.blurhash}
+                  style={styles.cardImage}
+                  priority={index === heroIndex ? 'high' : 'normal'}
+                />
+              </Pressable>
             )}
           />
-        </Pressable>
-        <Box flex={1} paddingHorizontal={20} gap={12}>
-          <Box flexDirection="column" gap={4} marginTop={isSingle ? 20 : 12} alignItems="flex-start">
-            <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="100%">
-              <Box style={styles.contentInner}>
-                <Text>
-                  Postuar nga <Text fontWeight="bold">{data.user.username}</Text>
-                </Text>
-                <Box marginVertical={8}>
-                  <Text fontSize="xl" fontWeight="bold" numberOfLines={1} ellipsizeMode="tail">
-                    {data.city}, {data.neighborhood}
-                  </Text>
-                </Box>
-              </Box>
+          {data.images.length > 1 && (
+            <Box style={styles.heroCounter} pointerEvents="none">
+              <Text style={styles.heroCounterText}>
+                {heroIndex + 1}/{data.images.length}
+              </Text>
+            </Box>
+          )}
+        </Box>
 
-              {!isOwner && (
-                <Pressable
-                  onPress={() => (!isLoggedIn ? router.push('/login') : like(data._id))}
-                  style={({ pressed }) => [styles.likeButton, pressed && styles.likeButtonPressed]}
-                >
-                  {status === 'pending' ? (
-                    <ActivityIndicator size={24} color={Colors.yellow} />
-                  ) : (
-                    <FontAwesome name={liked ? 'heart' : 'heart-o'} size={24} color={Colors.yellow} />
-                  )}
-                </Pressable>
-              )}
+        <Box style={styles.body}>
+          <Box flexDirection="row" alignItems="flex-start" justifyContent="space-between" gap={12}>
+            <Box style={styles.contentInner}>
+              <Text style={styles.title} numberOfLines={2}>
+                {data.neighborhood}
+              </Text>
+              <Box flexDirection="row" alignItems="center" gap={6} marginTop={4}>
+                <Ionicons name="location-outline" size={13} color={Colors.textMuted} />
+                <Text style={styles.muted}>{data.city}</Text>
+              </Box>
             </Box>
 
-            {isExpired ? (
-              <Text style={styles.expiredText}>Listimi është skaduar</Text>
-            ) : (
-              <Text>
-                <Text fontWeight="bold">Çmimi:</Text> {data.price}€ për muaj
-              </Text>
+            {!isOwner && (
+              <Pressable
+                onPress={() => (!isLoggedIn ? router.push('/login') : like(data._id))}
+                style={({ pressed }) => [
+                  styles.likeButton,
+                  liked && styles.likeButtonActive,
+                  pressed && styles.likeButtonPressed,
+                ]}
+                accessibilityLabel={liked ? 'Hiq nga të preferuarat' : 'Shto te të preferuarat'}
+              >
+                {status === 'pending' ? (
+                  <ActivityIndicator size="small" color={Colors.accent} />
+                ) : (
+                  <Ionicons
+                    name={liked ? 'heart' : 'heart-outline'}
+                    size={20}
+                    color={liked ? Colors.accent : Colors.text}
+                  />
+                )}
+              </Pressable>
             )}
           </Box>
 
-          {data.createdAt && (
-            <Text>
-              <Text fontWeight="bold">Data e postimit:</Text> {formatDate(data.createdAt)}
+          <Box flexDirection="row" alignItems="baseline" gap={8}>
+            <Text style={styles.price}>
+              {data.price}€<Text style={styles.priceUnit}> /muaj</Text>
             </Text>
-          )}
-          <Text>
-            <Text fontWeight="bold">Numri i Dhomave: </Text>
-            {data.rooms || 'Nuk është cekur'}
-          </Text>
-          <Text>
-            <Text fontWeight="bold">Numri i Cimerave: </Text>
-            {data.currentFlatmates || 'Nuk është cekur'}
-          </Text>
-          <Text>
-            <Text fontWeight="bold">Gjinia e preferuar: </Text>
-            {data.flatmateGender || 'Nuk është cekur'}
-          </Text>
-          <Text>
-            <Text fontWeight="bold">Mesazhi: </Text>
-            {data.description || 'Përshkrimi i listimit nuk është i disponueshëm'}
-          </Text>
+            {isExpired && (
+              <Box style={styles.expiredBadge}>
+                <Text style={styles.expiredText}>Skaduar</Text>
+              </Box>
+            )}
+          </Box>
 
-          {data.phone && (
-            <Text>
-              <Text fontWeight="bold">Numri i telefonit: </Text>
-              <Text
-                style={styles.link}
-                accessibilityRole="link"
-                onPress={async () => {
-                  const url = `tel:${formatKosovoPhone(data.phone)}`;
-                  if (await Linking.canOpenURL(url)) Linking.openURL(url);
-                  else console.warn("Can't handle tel link");
-                }}
-              >
-                {formatKosovoPhone(data.phone)}
-              </Text>
+          <Box style={styles.stats}>
+            <Stat icon="bed-outline" label="Dhoma" value={data.rooms} />
+            <Box style={styles.statDivider} />
+            <Stat icon="person-outline" label="Cimerë" value={data.currentFlatmates} />
+            <Box style={styles.statDivider} />
+            <Stat
+              icon={
+                data.flatmateGender === 'Mashkull'
+                  ? 'male'
+                  : data.flatmateGender === 'Femër'
+                    ? 'female'
+                    : 'people-outline'
+              }
+              label="Gjinia"
+              value={data.flatmateGender}
+            />
+          </Box>
+
+          <Box gap={8}>
+            <Text style={styles.sectionTitle}>Përshkrimi</Text>
+            <Text style={styles.description}>
+              {data.description || 'Përshkrimi i listimit nuk është i disponueshëm'}
             </Text>
+          </Box>
+
+          <Pressable
+            style={({ pressed }) => [styles.author, pressed && styles.pressed]}
+            onPress={() => router.push(`/user/${data.user._id}`)}
+          >
+            <Avatar user={data.user} size={44} linked={false} />
+            <Box flex={1}>
+              <Text style={styles.authorName}>{displayName(data.user)}</Text>
+              {data.createdAt && <Text style={styles.muted}>Postuar më {formatDate(data.createdAt)}</Text>}
+            </Box>
+            <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+          </Pressable>
+
+          {data.phone && !isOwner && (
+            <Box gap={8}>
+              <Box flexDirection="row" justifyContent="space-between" alignItems="baseline">
+                <Text style={styles.sectionTitle}>Kontakto</Text>
+                <Text style={styles.muted} selectable>
+                  {formatKosovoPhone(data.phone)}
+                </Text>
+              </Box>
+              <ContactButtons
+                phone={data.phone}
+                message={`Përshëndetje, pashë listimin tuaj në Cimerat (${data.neighborhood}, ${data.city}). A është ende i lirë?`}
+              />
+            </Box>
           )}
 
           {isOwner && (
@@ -267,10 +308,11 @@ export default function ItemDetailScreen() {
                 </TouchableOpacity>
               )}
 
-              <ExpoImage
+              <ListingImage
                 style={styles.lightboxImage}
                 contentFit="contain"
-                source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${data.images[lightboxIndex ?? 0]}` }}
+                path={data.images[lightboxIndex ?? 0]}
+                blurhash={data.blurhashes?.[lightboxIndex ?? 0]}
               />
 
               {data.images.length > 1 && (
@@ -309,10 +351,11 @@ export default function ItemDetailScreen() {
                   <Text style={{ color: 'white', fontSize: 42, lineHeight: 42 }}>{'‹'}</Text>
                 </Pressable>
               )}
-              <ExpoImage
+              <ListingImage
                 style={styles.lightboxImage}
                 contentFit="contain"
-                source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${data.images[lightboxIndex]}` }}
+                path={data.images[lightboxIndex]}
+                blurhash={data.blurhashes?.[lightboxIndex]}
               />
 
               {/* Right arrow */}
@@ -351,26 +394,78 @@ const styles = StyleSheet.create({
   },
   contentInner: { flexShrink: 1, flexGrow: 1, minWidth: 0 },
 
-  carousel: { width: '100%', userSelect: 'all' },
-  cardImage: { width: '100%', height: '100%', aspectRatio: 2, marginBottom: 20 },
-
-  webGallery: {
-    width: '100%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    overflow: 'hidden',
-    maxHeight: '100%',
-    padding: 8,
+  hero: { width: '100%', position: 'relative' },
+  heroSlide: { width: '100%', height: '100%' },
+  heroCounter: {
+    position: 'absolute',
+    top: 14,
+    right: 14,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
-  webGallerySingle: { padding: 0 },
-  webGalleryImage: { overflow: 'hidden', backgroundColor: '#eee' },
+  heroCounterText: { color: 'white', fontSize: 12, fontWeight: '600' },
+  cardImage: { width: '100%', height: '100%' },
 
-  likeButton: { borderRadius: 8, padding: 8, marginLeft: 8 },
-  likeButtonPressed: { backgroundColor: '#eee', opacity: 0.7 },
+  body: {
+    width: '100%',
+    padding: 20,
+    paddingBottom: 48,
+    gap: 20,
+    backgroundColor: Colors.surface,
+  },
+  title: { fontSize: 24, fontWeight: '800', letterSpacing: -0.5, color: Colors.text },
+  muted: { fontSize: 14, color: Colors.textMuted },
+  price: { fontSize: 28, fontWeight: '800', letterSpacing: -0.6, color: Colors.text },
+  priceUnit: { fontSize: 15, fontWeight: '500', color: Colors.textMuted },
 
-  expiredText: { fontSize: 14, fontWeight: 'bold', color: 'red' },
-  link: { color: Colors.blue, textDecorationLine: 'underline' },
+  stats: {
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 16,
+    paddingVertical: 14,
+  },
+  stat: { flex: 1, alignItems: 'center', gap: 4 },
+  statDivider: { width: 1, backgroundColor: Colors.border },
+  statValue: { fontSize: 15, fontWeight: '700', color: Colors.text, marginTop: 2 },
+  statLabel: { fontSize: 12, color: Colors.textMuted },
+
+  sectionTitle: { fontSize: 17, fontWeight: '700', color: Colors.text },
+  description: { fontSize: 15, lineHeight: 22, color: Colors.textFade },
+
+  author: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 16,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: Colors.border,
+  },
+  authorName: { fontSize: 15, fontWeight: '600', color: Colors.text },
+  pressed: { opacity: 0.7 },
+
+  likeButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  likeButtonActive: { backgroundColor: Colors.accentSoft, borderColor: Colors.accentSoft },
+  likeButtonPressed: { opacity: 0.7 },
+
+  expiredBadge: {
+    backgroundColor: Colors.dangerSoft,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+  },
+  expiredText: { fontSize: 12, fontWeight: '700', color: Colors.danger },
 
   lightboxInner: {
     position: 'relative',

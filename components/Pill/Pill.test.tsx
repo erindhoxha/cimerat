@@ -25,7 +25,7 @@ describe('Pill', () => {
     const { getByTestId } = render(<Pill title="Yellow Pill" variant="yellow" />);
     const pillBox = getByTestId('pill-box');
     expect(pillBox.props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining({ backgroundColor: Colors.yellow })]),
+      expect.arrayContaining([expect.objectContaining({ backgroundColor: Colors.accentSoft })]),
     );
   });
 
@@ -33,7 +33,7 @@ describe('Pill', () => {
     const { getByTestId } = render(<Pill title="Green Pill" variant="green" />);
     const pillBox = getByTestId('pill-box');
     expect(pillBox.props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining({ backgroundColor: Colors.green })]),
+      expect.arrayContaining([expect.objectContaining({ backgroundColor: Colors.greenSoft })]),
     );
   });
 });

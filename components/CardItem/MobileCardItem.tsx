@@ -1,55 +1,56 @@
 import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Image } from 'expo-image';
-import { FontAwesome } from '@expo/vector-icons';
-
-import { View } from '../View/View';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
+import { Pressable, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Box } from '../Box';
 import { Text } from '../Text';
-import { Button } from '../Button';
+import { OwnerActions } from '../OwnerActions/OwnerActions';
+import { useDeleteListing } from '@/hooks/useDeleteListing';
 import { MobileCarousel } from '@/components/MobileCarousel/MobileCarousel';
-
+import { ListingImage } from '@/components/ListingImage/ListingImage';
+import { Avatar } from '@/components/Avatar/Avatar';
 import { useAuth } from '@/context/AuthContext';
 import { formatDate, listingHasExpired } from '@/utils';
-import { ImageType, Listing } from '@/types';
+import { Listing } from '@/types';
 import Colors from '@/constants/Colors';
-import { BLURHASH_TRANSITION } from '@/constants/global';
+
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
+
+const isSet = (value?: string | number) =>
+  value !== undefined && value !== null && value !== '' && value !== 'undefined';
+
+export const Feature = ({ icon, label }: { icon: IconName; label: string }) => (
+  <Box style={styles.feature}>
+    <Ionicons name={icon} size={12} color={Colors.textMuted} />
+    <Text style={styles.featureText}>{label}</Text>
+  </Box>
+);
 
 export const MobileCardItem = ({
   city,
   neighborhood,
   images,
-  description,
   user,
   price,
   _id,
   createdAt,
   currentFlatmates,
+  flatmateGender,
   rooms,
   blurhash,
   blurhashes,
 }: Listing) => {
-  const router = useRouter();
+  const router = useSafeRouter();
   const { userId } = useAuth();
   const [carouselIndex, setCarouselIndex] = useState(0);
 
   const isOwner = user?._id === userId;
   const isExpired = listingHasExpired(createdAt);
-
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-
-  const maxThumbs = 5;
-  let start = 0;
-  if (carouselIndex > 1 && images.length > maxThumbs) {
-    start = Math.min(carouselIndex - 1, images.length - maxThumbs);
-  }
-  const thumbnailsToShow = images.slice(start, start + maxThumbs);
-  const thumbnailIndexes = thumbnailsToShow.map((img: ImageType) => images.indexOf(img));
+  const confirmDelete = useDeleteListing();
 
   return (
     <Pressable
-      style={styles.cardLink}
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
       onPress={() =>
         router.push({
           pathname: `/(item)/[item]`,
@@ -57,304 +58,181 @@ export const MobileCardItem = ({
         })
       }
     >
-      <View style={styles.card}>
-        <MobileCarousel
+      <Box style={styles.media}>
+        <MobileCarousel<string>
+          aspectRatio={3 / 2}
           controlledIndex={carouselIndex}
           data={images}
           onProgressChange={setCarouselIndex}
-          renderItem={({ item }) => (
-            <Box style={styles.cardImage}>
-              <Image
-                style={styles.cardImage}
-                source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${item}` }}
-                placeholder={{ blurhash: blurhash || '' }}
-                contentFit="cover"
-                transition={BLURHASH_TRANSITION}
-              />
-            </Box>
+          renderItem={({ item, index }) => (
+            <ListingImage path={item} blurhash={blurhashes?.[index] || blurhash} style={styles.cardImage} />
           )}
         />
-        <View style={styles.cardContent}>
-          <View style={styles.topCardContent}>
-            <Box flexDirection="row" justifyContent="space-between" flex={1} gap={12} flexWrap="wrap">
-              <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start" gap={8}>
-                <Box flexDirection="column" justifyContent="flex-start" alignItems="flex-start" width="100%">
-                  <Box marginBottom={8}>
-                    {((rooms && rooms !== undefined) || (currentFlatmates && currentFlatmates !== undefined)) && (
-                      <Box style={styles.featuresBox}>
-                        {rooms && rooms !== 'undefined' && (
-                          <Box style={styles.featureItem}>
-                            <Text style={styles.text}>{rooms}</Text>
-                            <FontAwesome name="bed" size={12} />
-                          </Box>
-                        )}
-                        {currentFlatmates && currentFlatmates !== 'undefined' && (
-                          <Box style={styles.featureItem}>
-                            <Text style={styles.text}>{currentFlatmates}</Text>
-                            <FontAwesome name="user" size={12} />
-                          </Box>
-                        )}
-                      </Box>
-                    )}
-                  </Box>
-                  <Box flexDirection="row" alignItems="flex-end" justifyContent="space-between" width="100%">
-                    {createdAt && <Text>{formatDate(createdAt)}</Text>}
-                    <Text style={styles.cardPrice}>{price}€ për muaj</Text>
-                  </Box>
-                </Box>
-                <Box>
-                  <Text style={styles.cardTitle}>
-                    {city}, {neighborhood}
-                  </Text>
-                </Box>
-              </Box>
+        <Box style={styles.badges} pointerEvents="none">
+          {isExpired && (
+            <Box style={[styles.badge, styles.badgeExpired]}>
+              <Text style={styles.badgeExpiredText}>Skaduar</Text>
             </Box>
-            <Text style={styles.cardSubtitle} ellipsizeMode="tail" numberOfLines={2}>
-              {description}
-            </Text>
-            {isExpired && <Text style={styles.expiredText}>Listimi është skaduar</Text>}
-            {isOwner && (
-              <Box flexDirection="row" gap={8} marginTop={12}>
-                <Button
-                  disabled={isExpired}
-                  variant={isExpired ? 'secondary' : 'primary'}
-                  onPress={() => {
-                    if (!isExpired) router.push(`/edit/${_id}`);
-                  }}
-                >
-                  Modifiko listimin
-                </Button>
-              </Box>
-            )}
-          </View>
-        </View>
-      </View>
-      <Modal visible={lightboxIndex !== null} transparent>
-        <Pressable style={styles.lightboxWrapper} onPress={() => setLightboxIndex(null)}>
-          <Box
-            style={{
-              position: 'relative',
-              width: '90%',
-              height: '80%',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            {images.length > 1 && (
-              <TouchableOpacity
-                onPress={(e) => {
-                  e.stopPropagation();
-                  setLightboxIndex(lightboxIndex === 0 ? images.length - 1 : (lightboxIndex ?? 0) - 1);
-                }}
-                style={styles.lightboxArrowLeft}
-              >
-                <Text style={{ color: 'white', fontSize: 36, lineHeight: 36 }}>{'‹'}</Text>
-              </TouchableOpacity>
-            )}
-
-            <Image
-              style={styles.lightboxImage}
-              contentFit="contain"
-              source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${images[lightboxIndex ?? 0]}` }}
-            />
-
-            {/* Right arrow */}
-            {images.length > 1 && (
-              <TouchableOpacity
-                onPress={(e) => {
-                  e.stopPropagation();
-                  setLightboxIndex(lightboxIndex === images.length - 1 ? 0 : (lightboxIndex ?? 0) + 1);
-                }}
-                style={styles.lightboxArrowRight}
-              >
-                <Text style={{ color: 'white', fontSize: 36, lineHeight: 36 }}>{'›'}</Text>
-              </TouchableOpacity>
-            )}
-
-            {/* Image counter */}
-            <Text style={styles.imageCounter}>
-              {(lightboxIndex ?? 0) + 1} / {images.length}
-            </Text>
+          )}
+          {isOwner && (
+            <Box style={styles.badge}>
+              <Text style={styles.badgeText}>Listimi yt</Text>
+            </Box>
+          )}
+        </Box>
+        {!!user && (
+          <Box style={styles.posterAvatar}>
+            <Avatar user={user} size={36} />
           </Box>
-          <Text style={styles.lightboxHint}>(prek kudo për të mbyllur)</Text>
-        </Pressable>
-      </Modal>
+        )}
+      </Box>
+
+      <Box style={styles.content}>
+        <Box flexDirection="row" justifyContent="space-between" alignItems="flex-start" gap={12}>
+          <Box flex={1}>
+            <Text style={styles.title} numberOfLines={1}>
+              {neighborhood}
+            </Text>
+            <Box flexDirection="row" alignItems="center" gap={6} marginTop={2}>
+              <Ionicons name="location-outline" size={12} color={Colors.textMuted} />
+              <Text style={styles.subtitle} numberOfLines={1}>
+                {city}
+                {createdAt ? ` · ${formatDate(createdAt)}` : ''}
+              </Text>
+            </Box>
+          </Box>
+          <Text style={styles.price}>
+            {price}€<Text style={styles.priceUnit}> /muaj</Text>
+          </Text>
+        </Box>
+
+        {(isSet(rooms) || isSet(currentFlatmates) || isSet(flatmateGender)) && (
+          <Box flexDirection="row" gap={8} flexWrap="wrap" marginTop={12}>
+            {isSet(rooms) && <Feature icon="bed-outline" label={`${rooms} dhoma`} />}
+            {isSet(currentFlatmates) && <Feature icon="person-outline" label={`${currentFlatmates} cimerë`} />}
+            {isSet(flatmateGender) && (
+              <Feature
+                icon={flatmateGender === 'Mashkull' ? 'male' : flatmateGender === 'Femër' ? 'female' : 'people-outline'}
+                label={flatmateGender as string}
+              />
+            )}
+          </Box>
+        )}
+      </Box>
+      {isOwner && (
+        <Box style={styles.ownerBar}>
+          <OwnerActions
+            onEdit={() => router.push(`/edit/${_id}`)}
+            editDisabled={isExpired}
+            onDelete={() => confirmDelete(_id)}
+          />
+        </Box>
+      )}
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
-  text: {
-    fontSize: 14,
-    color: Colors.textFade,
-  },
-  lightboxHint: {
-    color: 'white',
-    marginTop: 12,
-    fontSize: 14,
-  },
-  imageCounter: {
-    position: 'absolute',
-    bottom: 40,
-    color: 'white',
-    fontSize: 16,
-  },
   card: {
-    marginVertical: 0,
     width: '100%',
+    borderRadius: 18,
+    backgroundColor: Colors.surface,
     borderWidth: 1,
-    borderRadius: 16,
+    borderColor: Colors.cardBorder,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+  cardPressed: {
+    opacity: 0.92,
+  },
+  media: {
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
     overflow: 'hidden',
-    borderColor: Colors.lightGray,
-  },
-  cardLink: {
-    width: '100%',
-    flex: 1,
-  },
-  cardContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    padding: 16,
-    paddingTop: 8,
   },
   cardImage: {
-    flex: 1,
-    backgroundColor: '#0553',
-    height: 200,
-    width: '100%',
-    position: 'relative',
-  },
-  topCardContent: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.textFade,
-  },
-  cardPrice: {
-    fontSize: 14,
-    marginTop: 4,
-  },
-  expiredText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: 'red',
-    marginTop: 8,
-  },
-  cardSubtitle: {
-    fontSize: 14,
-    fontWeight: '400',
-    marginTop: 16,
-    display: 'none',
-  },
-  featuresBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 2,
-    borderRadius: 24,
-    gap: 8,
-    paddingHorizontal: 8,
-    borderWidth: 1,
-    borderColor: Colors.lightGray,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-  webCarousel: {
-    alignSelf: 'flex-start',
-    maxHeight: 300,
-    touchAction: 'auto',
-  },
-  webTopBox: {
-    flexWrap: 'wrap',
-  },
-  webColumnBox: {
-    width: '100%',
-  },
-  webHeaderRow: {
-    width: '100%',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-  },
-  thumbnailRow: {
-    flexDirection: 'row',
-    justifyContent: 'center', // changed from 'center'
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 8,
-    marginBottom: 0,
-    width: '100%',
-    paddingHorizontal: 12,
-  },
-  thumbnailWrapper: {
-    flex: 1, // take equal space
-    borderRadius: 8,
-    maxHeight: 85,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'transparent',
-    aspectRatio: 1.5, // or 1.2, adjust as you like
-    minWidth: 0, // allow shrinking
-    maxWidth: '100%', // optional, to avoid too large thumbs
-  },
-  thumbnailActive: {
-    borderColor: Colors.yellow,
-    borderWidth: 2,
-  },
-  thumbnailImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 4,
+  },
+  badges: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    flexDirection: 'row',
+    gap: 6,
+  },
+  ownerBar: {
+    borderBottomLeftRadius: 18,
+    borderBottomRightRadius: 18,
+    overflow: 'hidden',
+  },
+  posterAvatar: {
+    position: 'absolute',
+    right: 12,
+    bottom: 12,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: Colors.white,
+  },
+  badge: {
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.text,
+  },
+  badgeExpired: {
+    backgroundColor: Colors.danger,
+  },
+  badgeExpiredText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.white,
+  },
+  content: {
+    padding: 16,
+  },
+  title: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: Colors.text,
+    letterSpacing: -0.2,
+  },
+  subtitle: {
+    fontSize: 13,
+    color: Colors.textMuted,
+    flexShrink: 1,
+  },
+  price: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: Colors.text,
+    letterSpacing: -0.3,
+  },
+  priceUnit: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: Colors.textMuted,
+  },
+  feature: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
     backgroundColor: Colors.lightGray,
   },
-  lightboxWrapper: {
-    position: 'fixed', // for web
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0,0,0,0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 9999,
-  },
-  lightboxImage: {
-    width: '90%',
-    height: '80%',
-    borderRadius: 16,
-  },
-  lightboxArrowLeft: {
-    position: 'absolute',
-    left: 28,
-    top: '50%',
-    transform: [{ translateY: -20 }],
-    zIndex: 200,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    borderRadius: 150,
-  },
-  lightboxArrowRight: {
-    position: 'absolute',
-    right: 28,
-    top: '50%',
-    transform: [{ translateY: -20 }],
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    borderRadius: 150,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+  featureText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: Colors.textFade,
   },
 });

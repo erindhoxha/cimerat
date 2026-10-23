@@ -1,31 +1,50 @@
-import { useRouter } from 'expo-router';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
+import { RequireAuth } from '@/components/RequireAuth/RequireAuth';
 import Toast from 'react-native-toast-message';
 import { useAuth } from '@/context/AuthContext';
 import { ListingForm } from '@/components/ListingForm/ListingForm';
 import { ImageType, Listing } from '@/types';
-import { buildListingFormData } from '@/utils';
+import { buildListingFormData, uploadForm } from '@/utils';
+import { useQueryClient } from '@tanstack/react-query';
 
-export default function CreateScreen() {
-  const router = useRouter();
+function CreateScreenContent() {
+  const router = useSafeRouter();
   const { token } = useAuth();
+  const queryClient = useQueryClient();
 
-  const onSubmit = async (data: Omit<Listing, '_id' | 'user' | 'createdAt' | 'updatedAt'>, images: ImageType[]) => {
+  const onSubmit = async (
+    data: Omit<Listing, '_id' | 'user' | 'createdAt' | 'updatedAt'>,
+    images: ImageType[],
+    onProgress: (fraction: number) => void,
+  ) => {
     const formData = await buildListingFormData(data, images);
 
     try {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/listings`, {
+      await uploadForm({
+        url: `${process.env.EXPO_PUBLIC_API_URL}/listings`,
         method: 'POST',
         body: formData,
-        headers: { Authorization: `Bearer ${token}` },
+        token,
+        onProgress,
       });
-      const json = await res.json();
-      if (!res.ok) return Promise.reject(json.error || 'Gabim gjatë krijimit.');
-      Toast.show({ type: 'success', text1: 'Listimi u krijua' });
-      router.push('/');
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+      queryClient.invalidateQueries({ queryKey: ['my-listings'] });
+      queryClient.invalidateQueries({ queryKey: ['public-user'] });
+      Toast.show({ type: 'success', text1: 'Listimi u publikua' });
+      // Land on "Listimet e mia" so the new listing is right there
+      router.replace({ pathname: '/profile', params: { tab: 'listings' } });
     } catch (e) {
-      Toast.show({ type: 'error', text1: 'Gabim gjatë krijimit' });
+      Toast.show({ type: 'error', text1: e instanceof Error ? e.message : 'Gabim gjatë krijimit' });
     }
   };
 
   return <ListingForm onSubmit={onSubmit} />;
+}
+
+export default function CreateScreen() {
+  return (
+    <RequireAuth reason="postuar një dhomë">
+      <CreateScreenContent />
+    </RequireAuth>
+  );
 }

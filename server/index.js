@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 const express = require('express');
 const { default: mongoose } = require('mongoose');
 const bodyParser = require('body-parser');
@@ -11,12 +12,16 @@ const port = process.env.PORT || 3000;
 
 const authRoutes = require('./routes/authRoutes');
 const listingRoutes = require('./routes/listingRoutes');
+const cimerRoutes = require('./routes/cimerRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(authRoutes);
 app.use(listingRoutes);
+app.use(cimerRoutes);
+app.use(userRoutes);
 
 const mongoUri = process.env.MONGO_URI;
 
@@ -40,7 +45,7 @@ app.get('/liked-listings', requireAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate({
       path: 'likedListings',
-      options: { sort: { createdAt: -1 } }, // Sort by latest to oldest
+      options: { sort: { createdAt: -1 } },
     });
     return res.status(200).json(user.likedListings);
   } catch (error) {
@@ -53,7 +58,17 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-app.use('/uploads', express.static('uploads'));
+app.use(
+  '/uploads',
+  express.static('uploads', {
+    maxAge: '30d',
+    immutable: true,
+    setHeaders: (res, filePath) => {
+      // Older uploads were saved by multer without an extension
+      if (!path.extname(filePath)) res.setHeader('Content-Type', 'image/jpeg');
+    },
+  }),
+);
 
 app.get('/health', (req, res) => {
   res.send('Server is healthy');

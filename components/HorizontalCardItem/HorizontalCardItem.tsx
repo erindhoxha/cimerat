@@ -1,16 +1,16 @@
-import { Image } from 'expo-image';
-import { StyleSheet } from 'react-native';
-import { View } from '../View/View';
+import { Pressable, StyleSheet } from 'react-native';
 import { Router } from 'expo-router';
 import { Text } from '../Text';
 import Colors from '@/constants/Colors';
 import { Box } from '../Box';
-import { Button } from '../Button';
+import { OwnerActions } from '../OwnerActions/OwnerActions';
+import { useDeleteListing } from '@/hooks/useDeleteListing';
+import { ListingImage } from '../ListingImage/ListingImage';
 import { Listing } from '@/types';
 import { formatDate, listingHasExpired } from '@/utils';
-import { BLURHASH_TRANSITION } from '@/constants/global';
 import { useAuth } from '@/context/AuthContext';
-import { FontAwesome } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+
 interface HorizontalCardItemProps {
   item: Listing;
   router: Router;
@@ -25,109 +25,139 @@ export const HorizontalCardItem = ({
   const { userId } = useAuth();
   const isOwner = user?._id === userId;
   const isExpired = listingHasExpired(createdAt);
+  const confirmDelete = useDeleteListing();
+
   return (
-    <View style={styles.listCard}>
-      <Box style={styles.cardWrapper}>
-        <Box flex={1}>
-          <Image
-            style={styles.cardImage}
-            source={{
-              uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}`,
-            }}
-            placeholder={{
-              blurhash: blurhash || '',
-            }}
-            contentFit="cover"
-            transition={BLURHASH_TRANSITION}
-          />
+    <Box style={styles.card}>
+      <Pressable
+        style={({ pressed }) => [styles.listCard, pressed && styles.pressed]}
+        onPress={() => router.push(`/${_id}`)}
+      >
+        <Box style={styles.cardWrapper}>
+          <ListingImage path={images[0]} blurhash={blurhash} style={styles.cardImage} />
           {liked && (
-            <Text style={styles.liked}>
-              <FontAwesome name={liked ? 'heart' : 'heart-o'} size={14} color={Colors.yellow} />
+            <Box style={styles.liked}>
+              <Ionicons name="heart" size={12} color={Colors.accent} />
+            </Box>
+          )}
+          {images?.length > 1 && <Text style={styles.imageCounter}>+{images.length - 1}</Text>}
+        </Box>
+        <Box style={styles.cardContent}>
+          <Box flexDirection="row" justifyContent="space-between" alignItems="flex-start" gap={8}>
+            <Text style={styles.cardTitle} numberOfLines={1}>
+              {neighborhood}
+            </Text>
+            <Text style={styles.price}>{price}€</Text>
+          </Box>
+          <Text style={styles.meta} numberOfLines={1}>
+            {city}
+            {createdAt ? ` · ${formatDate(createdAt)}` : ''}
+          </Text>
+          {isExpired ? (
+            <Text style={styles.expiredText}>Listimi është skaduar</Text>
+          ) : (
+            <Text numberOfLines={1} style={styles.cardDescription} ellipsizeMode="tail">
+              {description}
             </Text>
           )}
-          {images?.length > 1 && <Text style={styles.imageCounter}>+{images.length - 1} foto</Text>}
         </Box>
-      </Box>
-      <View style={styles.cardContent}>
-        <Box flexDirection="row" gap={4} alignItems="center" marginBottom={4}>
-          <Text style={styles.cardTitle}>
-            {city}, {neighborhood}
-          </Text>
-        </Box>
-        {isExpired ? (
-          <Text style={styles.expiredText}>Listimi është skaduar</Text>
-        ) : (
-          <Text>
-            {createdAt ? formatDate(createdAt) : ''}, {price}€ për muaj
-          </Text>
-        )}
-        <Text numberOfLines={1} style={styles.cardDescription} ellipsizeMode="tail">
-          {description}
-        </Text>
-        <Box flexDirection="row" gap={8} alignSelf="flex-start" marginTop={8}>
-          {isOwner && (
-            <Button
-              disabled={isExpired}
-              variant={!isExpired ? 'primary' : 'secondary'}
-              onPress={() => router.push(`/edit/${_id}`)}
-            >
-              Modifiko listimin
-            </Button>
-          )}
-          <Button variant="tertiary" onPress={() => router.push(`/${_id}`)}>
-            Shiko detajet
-          </Button>
-        </Box>
-      </View>
-    </View>
+      </Pressable>
+      {isOwner && (
+        <OwnerActions
+          onEdit={() => router.push(`/edit/${_id}`)}
+          editDisabled={isExpired}
+          onDelete={() => confirmDelete(_id)}
+        />
+      )}
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
-  cardContent: {
-    flexShrink: 1,
-    maxWidth: '100%',
-    padding: 12,
+  card: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 1,
   },
-  expiredText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: 'red',
+  listCard: {
+    flexDirection: 'row',
+    gap: 14,
+    padding: 10,
   },
-  cardImage: {
-    backgroundColor: '#0553',
-    width: 100,
-    height: '100%',
-    borderRadius: 10,
+  pressed: {
+    opacity: 0.9,
   },
   cardWrapper: {
-    width: 100,
+    width: 96,
+    height: 96,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  cardImage: {
+    width: '100%',
     height: '100%',
+  },
+  cardContent: {
+    flex: 1,
+    minWidth: 0,
+    paddingVertical: 2,
+  },
+  cardTitle: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.text,
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: Colors.text,
+  },
+  meta: {
+    fontSize: 13,
+    color: Colors.textMuted,
+    marginTop: 2,
   },
   cardDescription: {
     fontSize: 14,
-    marginTop: 8,
+    color: Colors.textFade,
+    marginTop: 6,
+  },
+  expiredText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.danger,
+    marginTop: 6,
   },
   liked: {
     position: 'absolute',
     top: 6,
     right: 6,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   imageCounter: {
     position: 'absolute',
     bottom: 6,
     right: 6,
     color: 'white',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderRadius: 12,
-    padding: 6,
-  },
-  cardTitle: {
-    fontSize: 16,
+    fontSize: 11,
     fontWeight: '600',
-  },
-  listCard: {
-    flexDirection: 'row',
-    borderColor: Colors.lightGray,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+    borderRadius: 8,
+    overflow: 'hidden',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
   },
 });

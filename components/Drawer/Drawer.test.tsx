@@ -25,12 +25,12 @@ jest.mock('../../context/AuthContext', () => ({
 describe('DrawerExample', () => {
   it('does not render when not visible', () => {
     const { queryByText } = render(<DrawerExample open={false} onClose={jest.fn()} />);
-    expect(queryByText('Faqja kryesore')).toBeNull();
+    expect(queryByText('Dhomat')).toBeNull();
   });
 
   it('renders when open is true', () => {
     const { getByText } = render(<DrawerExample open={true} onClose={jest.fn()} />);
-    expect(getByText('Faqja kryesore')).toBeTruthy();
+    expect(getByText('Dhomat')).toBeTruthy();
   });
 
   it('calls onClose when overlay is pressed', () => {

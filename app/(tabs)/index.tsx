@@ -1,91 +1,44 @@
-import { FlatList, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
-import SelectDropdown from 'react-native-select-dropdown';
-import React, { useEffect, useState } from 'react';
-import { FontAwesome, FontAwesome6 } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useTabReselect } from '@/hooks/useTabReselect';
+import { FlatList, ScrollView, StyleSheet } from 'react-native';
+import Toast from 'react-native-toast-message';
+import React, { useEffect, useRef, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { Box } from '@/components/Box';
-import Label from '@/components/Label/Label';
 import { Text } from '@/components/Text';
-import { cmimi } from '@/constants/Price';
 import { cities } from '@/constants/Cities';
-import { neighborhoods } from '@/constants/Neighborhoods';
+import { neighborhoodOptions } from '@/constants/Neighborhoods';
+import { neighborhoodId, parseNeighborhoodId } from '@/constants/NeighborhoodIds';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { styles as dropdownStyles } from '@/components/DropdownController/styles';
 import Colors from '@/constants/Colors';
 import { Loading } from '@/components/Loading/Loading';
 import * as Location from 'expo-location';
-import { MultiSelect } from 'react-native-element-dropdown';
-import { Pill } from '@/components/Pill/Pill';
-import Input from '@/components/Input';
 import { useAuth } from '@/context/AuthContext';
 import { View } from '@/components/View';
 import { WebView } from '@/components/WebView/WebView';
-import { AccordionView } from '@/components/Accordion';
 import { numriIDhomave } from '@/constants/NumberOfRooms';
 import { cimerat } from '@/constants/NumberOfCimera';
 import { MobileCardItem } from '@/components/CardItem/MobileCardItem';
+import { Select } from '@/components/Select/Select';
+import { SearchBar } from '@/components/SearchBar/SearchBar';
+import { ClearFiltersChip, FilterChip, filterBarStyles } from '@/components/FilterChip/FilterChip';
+import { findPriceRange, PRICE_RANGES, PriceRangeLabel } from '@/constants/PriceRanges';
+import { Button } from '@/components/Button';
 
 const PAGE_SIZE = 5;
 
-interface SelectButtonProps {
-  title: string | null;
-  isOpened?: boolean;
-  placeholder: string;
-  disabled?: boolean;
-}
-
 const MemoMobileCardItem = React.memo(MobileCardItem);
-
-const SelectButton = ({ title, placeholder, disabled }: SelectButtonProps) => (
-  <Box style={[dropdownStyles.dropdownButtonStyle, disabled ? dropdownStyles.dropdownButtonDisabledStyle : null]}>
-    <Text
-      style={[
-        dropdownStyles.dropdownButtonTxtStyle,
-        disabled ? dropdownStyles.dropdownButtonTxtDisabledStyle : null,
-        {
-          color: title ? '#000' : Colors.gray,
-        },
-      ]}
-    >
-      {title || placeholder}
-    </Text>
-    <Text>
-      <FontAwesome color={Colors.gray} size={16} name="chevron-down" />
-    </Text>
-  </Box>
-);
-
-interface SelectItemProps {
-  item: string | number;
-  isSelected: boolean;
-}
-
-const SelectItem = ({ isSelected, item }: SelectItemProps) => {
-  return (
-    <Box style={[dropdownStyles.dropdownItemStyle, isSelected && dropdownStyles.dropdownItemSelected]}>
-      <Text style={dropdownStyles.dropdownItemTxtStyle}>{item}</Text>
-    </Box>
-  );
-};
 
 export default function TabOneScreen() {
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const listRef = useRef<FlatList>(null);
+  // Tapping the tab again while on it scrolls back to the top
+  useTabReselect('index', () => listRef.current?.scrollToOffset({ offset: 0, animated: true }));
   const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<string[]>([]);
-  const [selectedPriceFrom, setSelectedPriceFrom] = useState<number | null>(null);
-  const [selectedPriceTo, setSelectedPriceTo] = useState<number | null>(null);
+  const [selectedPrice, setSelectedPrice] = useState<PriceRangeLabel | null>(null);
+  const [search, setSearch] = useState('');
 
-  const [selectedNumberOfRooms, setSelectedNumberOfRooms] = useState<number | null>(null);
-  const [selectedNumberOfFlatmates, setSelectedNumberOfFlatmates] = useState<number | null>(null);
-
-  const [accordionOpen, setAccordionOpen] = useState(false); // or false if you want it closed by default
-  const router = useRouter();
-
-  useEffect(() => {
-    if (router.canGoBack()) {
-      router.dismissAll();
-      router.replace('/');
-    }
-  }, []);
+  const [selectedNumberOfRooms, setSelectedNumberOfRooms] = useState<string | null>(null);
+  const [selectedNumberOfFlatmates, setSelectedNumberOfFlatmates] = useState<string | null>(null);
 
   const [locationLoading, setLocationLoading] = useState(false);
 
@@ -123,8 +76,8 @@ export default function TabOneScreen() {
       'listings',
       selectedCities,
       selectedNeighborhoods,
-      selectedPriceFrom,
-      selectedPriceTo,
+      selectedPrice,
+      search,
       selectedNumberOfRooms,
       selectedNumberOfFlatmates,
     ],
@@ -132,8 +85,10 @@ export default function TabOneScreen() {
       const params = new URLSearchParams();
       selectedCities.forEach((city) => params.append('city', city));
       selectedNeighborhoods.forEach((n) => params.append('neighborhood', n));
-      if (selectedPriceFrom) params.append('priceFrom', String(selectedPriceFrom));
-      if (selectedPriceTo) params.append('priceTo', String(selectedPriceTo));
+      if (search) params.append('q', search);
+      const priceRange = findPriceRange(selectedPrice);
+      if (priceRange?.from) params.append('priceFrom', String(priceRange.from));
+      if (priceRange?.to) params.append('priceTo', String(priceRange.to));
       if (selectedNumberOfRooms) params.append('numberOfRooms', String(selectedNumberOfRooms));
       if (selectedNumberOfFlatmates) params.append('numberOfFlatmates', String(selectedNumberOfFlatmates));
       params.append('limit', String(PAGE_SIZE));
@@ -156,38 +111,116 @@ export default function TabOneScreen() {
 
   const isLoggedIn = !!token && username;
 
-  {
-    locationLoading && (
-      <Box marginTop={24}>
-        <Loading />
-      </Box>
-    );
-  }
+  const total: number | undefined = data?.pages[0]?.total;
 
-  const showFilter =
-    (selectedNumberOfRooms !== null && selectedNumberOfRooms !== undefined) ||
-    (selectedNumberOfFlatmates !== null && selectedNumberOfFlatmates !== undefined) ||
-    (selectedPriceFrom !== null && selectedPriceFrom !== undefined) ||
-    (selectedPriceTo !== null && selectedPriceTo !== undefined) ||
-    selectedCities.length > 0 ||
-    selectedNeighborhoods.length > 0;
+  const activeFilters =
+    (search ? 1 : 0) +
+    (selectedCities.length > 0 ? 1 : 0) +
+    (selectedNeighborhoods.length > 0 ? 1 : 0) +
+    (selectedPrice ? 1 : 0) +
+    (selectedNumberOfRooms ? 1 : 0) +
+    (selectedNumberOfFlatmates ? 1 : 0);
 
-  const { width } = useWindowDimensions();
+  const clearFilters = () => {
+    setSearch('');
+    setSelectedCities([]);
+    setSelectedNeighborhoods([]);
+    setSelectedPrice(null);
+    setSelectedNumberOfRooms(null);
+    setSelectedNumberOfFlatmates(null);
+  };
 
   return (
     <View style={[styles.container]}>
       <WebView noPadding>
+        {/* Kept outside the list so the filters stay visible while scrolling */}
+        <Box style={filterBarStyles.bar}>
+          <SearchBar value={search} onSearch={setSearch} placeholder="Kërko qytet, lagje, çmim..." />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={filterBarStyles.row}>
+            {activeFilters > 0 && <ClearFiltersChip count={activeFilters} onPress={clearFilters} />}
+            <Select<string>
+              multiple
+              title="Zgjedh qytetet"
+              placeholder="Qyteti"
+              options={cities}
+              value={selectedCities}
+              onChange={(value) => {
+                setSelectedCities(value);
+                // Drop neighborhoods that no longer belong to a selected city
+                setSelectedNeighborhoods((prev) => prev.filter((id) => value.includes(parseNeighborhoodId(id).city)));
+              }}
+              renderTrigger={({ open, text }) => (
+                <FilterChip icon="location-outline" label="Qyteti" value={text} onPress={open} />
+              )}
+            />
+            <Select<string>
+              multiple
+              title="Zgjedh lagjet"
+              placeholder="Lagja"
+              // Ids are "City|Name" so equal names in different cities stay separate
+              options={selectedCities.flatMap((city) => neighborhoodOptions(city).map((n) => neighborhoodId(city, n)))}
+              formatOption={(id) => {
+                const { city, name } = parseNeighborhoodId(id);
+                return selectedCities.length > 1 ? `${name} · ${city}` : name;
+              }}
+              value={selectedNeighborhoods}
+              onChange={setSelectedNeighborhoods}
+              renderTrigger={({ open, text }) => (
+                <FilterChip
+                  label="Lagja"
+                  value={text}
+                  onPress={open}
+                  // Neighborhoods depend on the city: look disabled until one is picked, and say why on tap
+                  disabled={selectedCities.length === 0}
+                  onDisabledPress={() => Toast.show({ type: 'info', text1: 'Zgjidhni fillimisht qytetin' })}
+                />
+              )}
+            />
+            <Select<PriceRangeLabel>
+              clearable
+              title="Çmimi për muaj"
+              placeholder="Çmimi"
+              options={PRICE_RANGES.map((range) => range.label)}
+              value={selectedPrice}
+              onChange={setSelectedPrice}
+              renderTrigger={({ open, text }) => <FilterChip label="Çmimi" value={text} onPress={open} />}
+            />
+            <Select<string>
+              clearable
+              title="Numri i dhomave"
+              placeholder="Dhoma"
+              options={numriIDhomave}
+              formatOption={(n) => `${n} dhoma`}
+              value={selectedNumberOfRooms}
+              onChange={setSelectedNumberOfRooms}
+              renderTrigger={({ open, text }) => <FilterChip label="Dhoma" value={text} onPress={open} />}
+            />
+            <Select<string>
+              clearable
+              title="Numri i cimerave"
+              placeholder="Cimerë"
+              options={cimerat}
+              formatOption={(n) => `${n} cimerë`}
+              value={selectedNumberOfFlatmates}
+              onChange={setSelectedNumberOfFlatmates}
+              renderTrigger={({ open, text }) => <FilterChip label="Cimerë" value={text} onPress={open} />}
+            />
+          </ScrollView>
+        </Box>
         <FlatList
+          ref={listRef}
           initialNumToRender={10}
           windowSize={5}
           removeClippedSubviews={true}
           scrollEnabled
           data={listings}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          // Without a key, a new listing at the top reuses the first card's state (e.g. a failed image)
+          keyExtractor={(item) => item._id}
           progressViewOffset={-5}
           numColumns={1}
-          renderItem={({ item }) => (
-            <Box style={{ gap: 12, paddingVertical: 8 }}>{<MemoMobileCardItem {...item} />}</Box>
-          )}
+          renderItem={({ item }) => <Box style={styles.cardRow}>{<MemoMobileCardItem {...item} />}</Box>}
           contentContainerStyle={[styles.contentContainerStyle]}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) fetchNextPage();
@@ -209,283 +242,38 @@ export default function TabOneScreen() {
               </Box>
             ) : (
               <Box marginTop={0} width="auto" style={styles.emptyWrapper}>
-                <FontAwesome name="frown-o" size={32} color={Colors.yellow} />
+                <Ionicons name="search-outline" size={28} color={Colors.textMuted} />
                 <Text
                   style={{
                     textAlign: 'center',
+                    color: Colors.textMuted,
                   }}
                 >
                   Asnjë rezultat. Ju lutem provoni me filtera tjera ose provoni më vonë.
                 </Text>
+                {activeFilters > 0 && (
+                  <Button variant="tertiary" icon="close" onPress={clearFilters}>
+                    Pastro filtrat
+                  </Button>
+                )}
               </Box>
             )
           }
-          ListHeaderComponent={() => (
-            <Box gap={12}>
+          ListHeaderComponent={
+            <Box gap={4} marginBottom={6}>
               {isLoggedIn && (
-                <Text fontSize="lg" fontWeight="bold">
-                  <Text fontWeight="regular">Përshëndetje</Text>, {username}
+                <Text style={styles.greeting}>
+                  Përshëndetje, <Text style={styles.greetingName}>{username}</Text>
                 </Text>
               )}
-              <Box flex={1} flexDirection="row" gap={12}>
-                <Box flex={1}>
-                  <Label>Qyteti</Label>
-                  <MultiSelect
-                    style={dropdownStyles.multiSelectStyle}
-                    data={cities.map((c) => ({ label: c, value: c }))}
-                    labelField="label"
-                    valueField="value"
-                    placeholder="Zgjedh Qytetet"
-                    placeholderStyle={dropdownStyles.placeholderStyle}
-                    value={selectedCities}
-                    onChange={(value) => {
-                      setSelectedCities(value);
-                      if (value.length === 0) {
-                        setSelectedNeighborhoods([]);
-                      }
-                    }}
-                    showsVerticalScrollIndicator
-                    renderRightIcon={() => (
-                      <Box marginRight={12}>
-                        <FontAwesome name="chevron-down" size={16} color={Colors.gray} />
-                      </Box>
-                    )}
-                    renderSelectedItem={(item, unSelect) => (
-                      <TouchableOpacity onPress={unSelect} style={styles.pillStyle}>
-                        <Pill title={item.label} iconLeft={<FontAwesome name="times" size={12} color="#000" />} />
-                      </TouchableOpacity>
-                    )}
-                    renderInputSearch={(onSearch) => (
-                      <Box padding={12}>
-                        <Input placeholder="Kërko lagjet..." onChangeText={onSearch} />
-                      </Box>
-                    )}
-                    search
-                    searchPlaceholder="Kërko qytetet..."
-                  />
-                </Box>
-                <Box flex={1}>
-                  <Label>Lagja</Label>
-                  <MultiSelect
-                    style={[
-                      dropdownStyles.multiSelectStyle,
-                      selectedCities.length === 0 && dropdownStyles.disabledMultiSelectStyle,
-                    ]}
-                    showsVerticalScrollIndicator
-                    data={
-                      selectedCities.length > 0
-                        ? selectedCities.flatMap((city) =>
-                            (neighborhoods[city] || []).map((n) => ({ label: n, value: n })),
-                          )
-                        : []
-                    }
-                    renderRightIcon={() => (
-                      <Box marginRight={12}>
-                        <FontAwesome name="chevron-down" size={16} color={Colors.gray} />
-                      </Box>
-                    )}
-                    labelField="label"
-                    valueField="value"
-                    disable={selectedCities.length === 0}
-                    placeholder="Zgjedh Lagjet"
-                    placeholderStyle={[
-                      dropdownStyles.placeholderStyle,
-                      selectedCities.length === 0 && dropdownStyles.placeholderGray,
-                    ]}
-                    value={selectedNeighborhoods}
-                    onChange={setSelectedNeighborhoods}
-                    dropdownPosition="bottom"
-                    renderInputSearch={(onSearch) => (
-                      <Box padding={12}>
-                        <Input placeholder="Kërko lagjet..." onChangeText={onSearch} />
-                      </Box>
-                    )}
-                    selectedStyle={dropdownStyles.dropdownItemSelected}
-                    renderSelectedItem={(item, unSelect) => (
-                      <TouchableOpacity onPress={unSelect} style={styles.pillStyle}>
-                        <Pill title={item.label} iconLeft={<FontAwesome name="times" size={12} color="#000" />} />
-                      </TouchableOpacity>
-                    )}
-                    search
-                    searchPlaceholder="Kërko lagjet..."
-                  />
-                </Box>
-              </Box>
-              <AccordionView open={accordionOpen} setOpen={setAccordionOpen}>
-                <>
-                  <Box>
-                    <Label>Çmimi për muaj</Label>
-                    <Box flex={1} flexDirection="row" gap={12}>
-                      <Box flex={1} style={styles.flexShrink}>
-                        <SelectDropdown
-                          key={JSON.stringify(selectedPriceFrom)}
-                          data={cmimi}
-                          onSelect={(selectedItem) => {
-                            setSelectedPriceFrom((prev) => {
-                              if (prev === selectedItem) {
-                                return undefined;
-                              }
-                              return selectedItem;
-                            });
-                          }}
-                          defaultValue={selectedPriceFrom}
-                          renderButton={(_, isOpened) => {
-                            return (
-                              <Box style={styles.selectDropdownStyles}>
-                                <SelectButton
-                                  title={(selectedPriceFrom && 'Nga ' + selectedPriceFrom + '€') || ''}
-                                  isOpened={isOpened}
-                                  placeholder="Nga"
-                                />
-                              </Box>
-                            );
-                          }}
-                          showsVerticalScrollIndicator
-                          renderItem={(item, _, isSelected) => (
-                            <>
-                              <SelectItem item={item} isSelected={isSelected} />
-                            </>
-                          )}
-                          dropdownStyle={dropdownStyles.dropdownMenuStyle}
-                        />
-                      </Box>
-                      <Box flex={1} style={styles.flexShrink}>
-                        <SelectDropdown
-                          key={JSON.stringify(selectedPriceTo)}
-                          data={selectedPriceFrom == null ? cmimi : cmimi.filter((price) => price > selectedPriceFrom)}
-                          onSelect={(selectedItem) => {
-                            setSelectedPriceTo((prev) => {
-                              if (prev === selectedItem) {
-                                return undefined;
-                              }
-                              return selectedItem;
-                            });
-                          }}
-                          defaultValue={selectedPriceTo}
-                          renderButton={(_, isOpened) => (
-                            <Input style={styles.inputStyle}>
-                              <SelectButton
-                                title={(selectedPriceTo && 'Deri në ' + selectedPriceTo + '€') || ''}
-                                isOpened={isOpened}
-                                placeholder="Deri në"
-                              />
-                            </Input>
-                          )}
-                          renderItem={(item, _, isSelected) => (
-                            <>
-                              <SelectItem item={item} isSelected={isSelected} />
-                            </>
-                          )}
-                          showsVerticalScrollIndicator={false}
-                          dropdownStyle={dropdownStyles.dropdownMenuStyle}
-                        />
-                      </Box>
-                    </Box>
-                  </Box>
-                  <Box>
-                    <Box flex={1} flexDirection="row" gap={12}>
-                      <Box flex={1} style={styles.flexShrink}>
-                        <Label>Numri i cimerave</Label>
-                        <SelectDropdown
-                          key={JSON.stringify(selectedNumberOfFlatmates)}
-                          data={cimerat}
-                          onSelect={(selectedItem) => {
-                            setSelectedNumberOfFlatmates((prev) => {
-                              if (prev === selectedItem) {
-                                return undefined;
-                              }
-                              return selectedItem;
-                            });
-                          }}
-                          defaultValue={selectedNumberOfFlatmates}
-                          renderButton={(_, isOpened) => {
-                            return (
-                              <Box style={styles.selectDropdownStyles}>
-                                <SelectButton
-                                  title={(selectedNumberOfFlatmates && selectedNumberOfFlatmates + ' cimerë') || ''}
-                                  isOpened={isOpened}
-                                  placeholder="Numri i cimerave"
-                                />
-                              </Box>
-                            );
-                          }}
-                          disableAutoScroll
-                          showsVerticalScrollIndicator
-                          renderItem={(item, _, isSelected) => (
-                            <>
-                              <SelectItem item={item} isSelected={isSelected} />
-                            </>
-                          )}
-                          dropdownStyle={dropdownStyles.dropdownMenuStyle}
-                        />
-                      </Box>
-                      <Box flex={1} style={styles.flexShrink}>
-                        <Label>Numri i dhomave</Label>
-                        <SelectDropdown
-                          key={JSON.stringify(selectedNumberOfRooms)}
-                          data={numriIDhomave}
-                          onSelect={(selectedItem) => {
-                            setSelectedNumberOfRooms((prev) => {
-                              if (prev === selectedItem) {
-                                return undefined;
-                              }
-                              return selectedItem;
-                            });
-                          }}
-                          defaultValue={selectedNumberOfRooms}
-                          renderButton={(_, isOpened) => {
-                            console.log(isOpened);
-                            return (
-                              <Input
-                                style={{
-                                  outlineColor: Colors.yellow,
-                                  borderRadius: 12,
-                                }}
-                              >
-                                <SelectButton
-                                  title={(selectedNumberOfRooms && selectedNumberOfRooms + ' dhoma') || ''}
-                                  isOpened={isOpened}
-                                  placeholder="Numri i dhomave"
-                                />
-                              </Input>
-                            );
-                          }}
-                          renderItem={(item, _, isSelected) => (
-                            <>
-                              <SelectItem item={item} isSelected={isSelected} />
-                            </>
-                          )}
-                          showsVerticalScrollIndicator={false}
-                          dropdownStyle={dropdownStyles.dropdownMenuStyle}
-                        />
-                      </Box>
-                    </Box>
-                  </Box>
-                </>
-              </AccordionView>
-              {showFilter && (
-                <Box flexDirection="row" justifyContent="center" alignItems="center">
-                  <Box flexDirection="row" alignItems="center">
-                    <Text
-                      style={styles.filter}
-                      onPress={() => {
-                        setSelectedCities([]);
-                        setSelectedNeighborhoods([]);
-                        setSelectedPriceFrom(null);
-                        setSelectedPriceTo(null);
-                        setSelectedNumberOfRooms(null);
-                        setSelectedNumberOfFlatmates(null);
-                        setAccordionOpen(false);
-                      }}
-                    >
-                      Pastro filtrat
-                    </Text>
-                    <FontAwesome6 name="broom" size={12} color={Colors.textFade} />
-                  </Box>
-                </Box>
+              {total !== undefined && (
+                <Text style={styles.resultCount}>
+                  {total === 1 ? '1 dhomë' : `${total} dhoma`}
+                  {activeFilters > 0 ? ' sipas filtrave tuaj' : ' të disponueshme'}
+                </Text>
               )}
             </Box>
-          )}
+          }
         />
       </WebView>
     </View>
@@ -493,14 +281,6 @@ export default function TabOneScreen() {
 }
 
 const styles = StyleSheet.create({
-  selectDropdownStyles: {
-    outlineColor: Colors.yellow,
-    borderRadius: 12,
-  },
-  pillStyle: {
-    marginTop: 4,
-    marginRight: 4,
-  },
   container: {
     flex: 1,
     backgroundColor: 'white',
@@ -509,17 +289,28 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
     padding: 20,
   },
-  flexShrink: {
-    flexShrink: 1,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: Colors.gray,
-  },
   filter: {
     padding: 8,
-    borderRadius: 8,
-    textDecorationLine: 'underline',
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.accentInk,
+  },
+  resultCount: {
+    fontSize: 14,
+    color: Colors.textMuted,
+  },
+  greeting: {
+    fontSize: 22,
+    fontWeight: '500',
+    letterSpacing: -0.4,
+    color: Colors.textMuted,
+  },
+  greetingName: {
+    fontWeight: '800',
+    color: Colors.text,
+  },
+  cardRow: {
+    paddingVertical: 10,
   },
   emptyWrapper: {
     width: '100%',
@@ -527,9 +318,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 24,
     gap: 12,
-  },
-  inputStyle: {
-    outlineColor: Colors.yellow,
-    borderRadius: 12,
   },
 });
