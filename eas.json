@@ -14,8 +14,7 @@
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://cimerat-867b40a42c12.herokuapp.com",
-        "MONGO_URI": "mongodb+srv://admin:Helloworld1244!@cimeratcluster.qu0aygm.mongodb.net/production?retryWrites=true&w=majority"
+        "EXPO_PUBLIC_API_URL": "https://cimerat-867b40a42c12.herokuapp.com"
       }
     }
   },
