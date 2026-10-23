@@ -9,6 +9,7 @@ import { Pill } from '../Pill/Pill';
 import Colors from '@/constants/Colors';
 import { formatDate, listingHasExpired } from '@/utils';
 import { Listing } from '@/types';
+import { imageUrl } from '../ListingImage/ListingImage';
 import { BLURHASH_TRANSITION } from '@/constants/global';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -49,7 +50,7 @@ export const WebCardItem = ({
         <Box style={styles.cardBox}>
           <Image
             style={styles.cardImage}
-            source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${images[0]}` }}
+            source={{ uri: imageUrl(images[0], 600) }}
             placeholder={{ blurhash: blurhash || '' }}
             contentFit="cover"
             transition={BLURHASH_TRANSITION}

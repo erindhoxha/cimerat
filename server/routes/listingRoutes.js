@@ -2,7 +2,7 @@ const express = require('express');
 
 const Listing = require('../models/Listing');
 const requireAuth = require('../middlewares/requireAuthentication');
-const { upload, saveImage, PUBLIC_USER_FIELDS } = require('../utils/images');
+const { upload, saveImage, deleteImages, PUBLIC_USER_FIELDS } = require('../utils/images');
 const { buildSearchFilter } = require('../utils/search');
 
 const router = express.Router();
@@ -65,6 +65,7 @@ router.delete('/listings/:id', requireAuth, async (req, res) => {
       return res.status(403).json({ error: 'You are not allowed to delete this listing' });
     }
     await listing.deleteOne();
+    await deleteImages(listing.images);
     res.status(200).json({ message: 'Listing deleted successfully' });
   } catch (error) {
     console.error(error);
@@ -91,6 +92,7 @@ router.put('/listings/:id', requireAuth, upload.array('images'), async (req, res
     const imagePaths = saved.map((img) => img.path);
     const blurhashes = saved.map((img) => img.blurhash);
 
+    const previousImages = [...listing.images];
     Object.assign(listing, {
       city,
       neighborhood,
@@ -106,6 +108,8 @@ router.put('/listings/:id', requireAuth, upload.array('images'), async (req, res
     });
 
     await listing.save();
+    // The app re-uploads every photo when editing, so the previous copies are now unused
+    await deleteImages(previousImages.filter((img) => !listing.images.includes(img)));
     res.status(200).json({ message: 'Listing updated successfully', listing });
   } catch (error) {
     console.error(error);

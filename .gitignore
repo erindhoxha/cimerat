@@ -42,3 +42,6 @@ yarn-error.*
 
 # reset-content.js backups (contain personal data)
 server/scripts/backups/
+
+# User uploads (local dev only; production photos live in Cloudinary)
+uploads/

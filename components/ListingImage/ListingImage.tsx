@@ -11,12 +11,26 @@ interface ListingImageProps {
   style?: StyleProp<ImageStyle>;
   contentFit?: ImageContentFit;
   priority?: 'low' | 'normal' | 'high';
+  /** Pixel width to request from Cloudinary; omit for the full-size original */
+  width?: number;
 }
 
-export const imageUrl = (path?: string) => (path ? `${process.env.EXPO_PUBLIC_API_URL}${path}` : undefined);
+/**
+ * Turns a stored image path into a URL. New uploads are full Cloudinary URLs; older ones are
+ * "/uploads/..." paths on our API. For Cloudinary, `width` asks for a resized, auto-format copy
+ * (cards don't need the 1600px original, and smaller files save bandwidth credits).
+ */
+export const imageUrl = (path?: string, width?: number) => {
+  if (!path) return undefined;
+  if (!/^https?:\/\//.test(path)) return `${process.env.EXPO_PUBLIC_API_URL}${path}`;
+  if (width && path.includes('res.cloudinary.com') && path.includes('/upload/')) {
+    return path.replace('/upload/', `/upload/c_limit,w_${width},f_auto,q_auto/`);
+  }
+  return path;
+};
 
-export const ListingImage = ({ path, blurhash, style, contentFit = 'cover', priority }: ListingImageProps) => {
-  const uri = imageUrl(path);
+export const ListingImage = ({ path, blurhash, style, contentFit = 'cover', priority, width }: ListingImageProps) => {
+  const uri = imageUrl(path, width);
   // Tracked per uri so a recycled list cell doesn't keep a previous image's error
   const [failedUri, setFailedUri] = useState<string>();
   const [retried, setRetried] = useState<string>();

@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message';
 import { useAuth } from '@/context/AuthContext';
 import { ImageType, Listing } from '@/types';
 import { ListingForm } from '@/components/ListingForm/ListingForm';
+import { imageUrl } from '@/components/ListingImage/ListingImage';
 import { buildListingFormData, uploadForm } from '@/utils';
 
 function EditScreenContent() {
@@ -57,7 +58,7 @@ function EditScreenContent() {
       defaultValues={{
         ...listing.data,
         images: listing.data.images.map((img: Listing['images']) => ({
-          uri: `${process.env.EXPO_PUBLIC_API_URL}${img}`,
+          uri: imageUrl(img) as string,
           name: img.split('/').pop(),
           type: 'image/jpeg',
         })),

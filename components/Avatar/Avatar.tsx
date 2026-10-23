@@ -20,7 +20,7 @@ export const Avatar = ({ user, size = 40, linked = true }: AvatarProps) => {
 
   const content = user?.avatar ? (
     <Image
-      source={{ uri: imageUrl(user.avatar) }}
+      source={{ uri: imageUrl(user.avatar, Math.ceil(size * 3)) }}
       style={[styles.image, circle]}
       contentFit="cover"
       cachePolicy="memory-disk"

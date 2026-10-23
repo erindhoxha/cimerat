@@ -5,7 +5,7 @@ const Listing = require('../models/Listing');
 const CimerPost = require('../models/CimerPost');
 const requireAuth = require('../middlewares/requireAuthentication');
 const { isValidPhoneNumber } = require('libphonenumber-js');
-const { upload, saveImage, PUBLIC_USER_FIELDS } = require('../utils/images');
+const { upload, saveImage, deleteImages, PUBLIC_USER_FIELDS } = require('../utils/images');
 
 const router = express.Router();
 
@@ -15,11 +15,13 @@ router.post('/me/avatar', requireAuth, upload.single('avatar'), async (req, res)
 
   try {
     const { path, blurhash } = await saveImage(req.file, { avatar: true });
+    const previousAvatar = req.user.avatar;
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { avatar: path, avatarBlurhash: blurhash },
       { new: true },
     ).select(PUBLIC_USER_FIELDS);
+    await deleteImages([previousAvatar]);
     res.status(200).json({ user });
   } catch (error) {
     console.error(error);

@@ -159,6 +159,7 @@ export default function ItemDetailScreen() {
               <Pressable style={styles.heroSlide} onPress={() => setLightboxIndex(index)}>
                 <ListingImage
                   path={item}
+                  width={1200}
                   blurhash={data?.blurhashes?.[index] || data?.blurhash}
                   style={styles.cardImage}
                   priority={index === heroIndex ? 'high' : 'normal'}

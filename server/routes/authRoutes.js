@@ -1,5 +1,5 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
+const { signToken } = require('../utils/auth');
 const User = require('../models/User');
 const router = express.Router();
 
@@ -11,12 +11,7 @@ router.post('/signup', async (req, res) => {
   try {
     const user = new User({ username, password });
 
-    const token = jwt.sign(
-      {
-        userId: user._id,
-      },
-      'MY_SECRET_KEY',
-    );
+    const token = signToken(user._id);
     await user.save();
     return res.status(201).json({ token, userId: user._id, username: user.username });
   } catch (error) {
@@ -45,13 +40,9 @@ router.post('/signin', async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ error: 'Gabim i username-it ose fjalëkalimit. Ju lutemi provoni përsëri.' });
     }
-    const token = jwt.sign(
-      {
-        userId: user._id,
-      },
-      'MY_SECRET_KEY',
-    );
-    console.log('User signed in:', user.username, token);
+    const token = signToken(user._id);
+    // Never log the token itself: anyone with log access could use it to act as this user
+    console.log('User signed in:', user.username);
     return res.status(200).json({ token, userId: user._id, username: user.username });
   } catch (error) {
     console.log('ERROR', error);

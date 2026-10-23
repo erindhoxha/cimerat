@@ -34,7 +34,7 @@ export const HorizontalCardItem = ({
         onPress={() => router.push(`/${_id}`)}
       >
         <Box style={styles.cardWrapper}>
-          <ListingImage path={images[0]} blurhash={blurhash} style={styles.cardImage} />
+          <ListingImage path={images[0]} blurhash={blurhash} style={styles.cardImage} width={300} />
           {liked && (
             <Box style={styles.liked}>
               <Ionicons name="heart" size={12} color={Colors.accent} />

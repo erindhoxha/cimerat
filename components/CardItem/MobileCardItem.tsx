@@ -65,7 +65,7 @@ export const MobileCardItem = ({
           data={images}
           onProgressChange={setCarouselIndex}
           renderItem={({ item, index }) => (
-            <ListingImage path={item} blurhash={blurhashes?.[index] || blurhash} style={styles.cardImage} />
+            <ListingImage path={item} blurhash={blurhashes?.[index] || blurhash} style={styles.cardImage} width={800} />
           )}
         />
         <Box style={styles.badges} pointerEvents="none">

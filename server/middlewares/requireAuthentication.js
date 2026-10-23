@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const { verifyToken } = require('../utils/auth');
 const User = require('../models/User');
 
 module.exports = async (req, res, next) => {
@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
   const token = authorization.replace('Bearer ', '');
 
   try {
-    const payload = jwt.verify(token, 'MY_SECRET_KEY');
+    const payload = verifyToken(token);
     const { userId } = payload;
     // Never expose the password hash through req.user (it's returned by GET /user)
     const user = await User.findById(userId).select('-password');
